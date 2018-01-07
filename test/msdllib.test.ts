@@ -1,4 +1,4 @@
-import {MilitaryScenario} from "../src/index";
+import {MilitaryScenario, ScenarioId} from "../src/index";
 import {} from 'jest'
 import {EMPTY_SCENARIO} from "./testdata";
 
@@ -35,6 +35,8 @@ describe("MilitaryScenario", () => {
         expect(scenario.equipment.length).toBe(0);
         expect(scenario.forceSides).toBeInstanceOf(Array);
         expect(scenario.forceSides.length).toBe(0);
+        expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
+        expect(scenario.scenarioId.name).toBe("Empty scenario");
     });
 
 });

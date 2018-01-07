@@ -1,3 +1,9 @@
+export function parseFromString(xmlString): Element {
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(xmlString, "text/xml");
+    return doc.documentElement;
+}
+
 export const EMPTY_SCENARIO = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <MilitaryScenario xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
                   xmlns:modelID="http://www.sisostds.org/schemas/modelID">
@@ -30,6 +36,7 @@ export const EMPTY_SCENARIO = `<?xml version="1.0" encoding="UTF-8" standalone="
     <MOOTWGraphics></MOOTWGraphics>
 </MilitaryScenario>
 `;
+
 
 export const UNIT_TEMPLATE = `<Unit>
     <ObjectHandle></ObjectHandle>
