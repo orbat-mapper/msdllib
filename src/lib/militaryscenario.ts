@@ -1,0 +1,7 @@
+/**
+ * MilitaryScenarioType
+ *
+ */
+
+export class MilitaryScenario {
+}
