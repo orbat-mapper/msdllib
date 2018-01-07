@@ -19,3 +19,12 @@ export function getTagElement(element: Element, tagName: string, required?: bool
     return el;
 }
 
+export function getTagElements(element: Element, tagName: string): Element[] {
+    let _elements = element.getElementsByTagNameNS(MSDL_NS, tagName);
+    let elements = [];
+    for (let i = 0; i < _elements.length; i++) {
+        elements.push(_elements[i]);
+    }
+    return elements;
+}
+
