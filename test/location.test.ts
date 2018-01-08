@@ -2,6 +2,11 @@ import {} from 'jest'
 import {parseFromString} from "./testdata";
 import {MsdlLocation} from "../src/lib/geo";
 
+function precisionRound(num, precision) {
+    let factor = Math.pow(10, precision);
+    return Math.round(num * factor) / factor;
+}
+
 const LOCATION_GDC_TEMPLATE = `
     <Location>
         <CoordinateChoice>GDC</CoordinateChoice>
@@ -25,6 +30,33 @@ const LOCATION_GDC_TEMPLATE2 = `
         </CoordinateData>
     </Location>`;
 
+const LOCATION_MGRS_TEMPLATE = `<Location>
+    <CoordinateChoice>MGRS</CoordinateChoice>
+    <CoordinateData>
+        <MGRS>
+            <MGRSGridZone>33V</MGRSGridZone>
+            <MGRSGridSquare>WE</MGRSGridSquare>
+            <MGRSPrecision>5</MGRSPrecision>
+            <MGRSEasting>02263</MGRSEasting>
+            <MGRSNorthing>89259</MGRSNorthing>
+            <ElevationAGL>10</ElevationAGL>
+        </MGRS>
+    </CoordinateData>
+</Location>`;
+
+const LOCATION_MGRS_TEMPLATE2 = `<Location>
+    <CoordinateChoice>MGRS</CoordinateChoice>
+    <CoordinateData>
+        <MGRS>
+            <MGRSGridZone>33V</MGRSGridZone>
+            <MGRSGridSquare>WE</MGRSGridSquare>
+            <MGRSPrecision>5</MGRSPrecision>
+            <MGRSEasting>02263</MGRSEasting>
+            <MGRSNorthing>89259</MGRSNorthing>
+        </MGRS>
+    </CoordinateData>
+</Location>`;
+
 
 describe("MSDL Location", () => {
     it("defined", () => {
@@ -41,7 +73,7 @@ describe("MSDL Location", () => {
         let element = parseFromString(LOCATION_GDC_TEMPLATE);
         let loc = new MsdlLocation(element);
         expect(loc.location.length).toBe(3);
-        expect(loc.location[0]).toBe(58.54383);
+        expect(precisionRound(loc.location[0], 4)).toBe(58.5438);
         expect(loc.location[1]).toBe(15.038887);
         expect(loc.location[2]).toBe(141.03737);
     });
@@ -54,6 +86,22 @@ describe("MSDL Location", () => {
         expect(loc.location[1]).toBe(15.038887);
     });
 
+    it("MGRS", () => {
+        let element = parseFromString(LOCATION_MGRS_TEMPLATE);
+        let loc = new MsdlLocation(element);
+        expect(loc.location.length).toBe(3);
+        expect(loc.location[0]).toBeCloseTo(58.54383, 5);
+        expect(loc.location[1]).toBeCloseTo(15.038887, 5);
+        expect(loc.location[2]).toBe(10)
+    });
+
+    it("MGRS no height", () => {
+        let element = parseFromString(LOCATION_MGRS_TEMPLATE2);
+        let loc = new MsdlLocation(element);
+        expect(loc.location.length).toBe(2);
+        expect(loc.location[0]).toBeCloseTo(58.54383, 5);
+        expect(loc.location[1]).toBeCloseTo(15.038887, 5);
+    });
 
 });
 

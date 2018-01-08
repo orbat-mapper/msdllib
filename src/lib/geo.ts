@@ -35,7 +35,7 @@ export class MsdlLocation {
         }
     }
 
-    private parseMgrsLocation() {
+    private parseMgrsLocation(): number[] {
         let mgrsElement = getTagElement(this.element, "MGRS");
         let gridZone = getTagValue(mgrsElement, "MGRSGridZone");
         let gridSquare = getTagValue(mgrsElement, "MGRSGridSquare");
@@ -43,7 +43,15 @@ export class MsdlLocation {
         let northing = getTagValue(mgrsElement, "MGRSNorthing");
         let precision = getTagValue(mgrsElement, "MGRSPrecision");
         let mgrsString = gridZone + gridSquare + String('00000' + easting).slice(-5) + String('00000' + northing).slice(-5);
-        return mgrs.toPoint(mgrsString).reverse();
+        let elevationValue = getTagValue(mgrsElement, "ElevationAGL");
+        let point = mgrs.toPoint(mgrsString).reverse();
+        if (elevationValue.length > 0) {
+            let elevation = Number(elevationValue);
+            return [...point, elevation]
+        } else {
+            return point;
+        }
+
     }
 
     private parseGDCLocation(): number[] {
@@ -53,7 +61,7 @@ export class MsdlLocation {
         let longitude = Number(getTagValue(gdcElement, 'Longitude'));
         let elevationValue = getTagValue(gdcElement, "ElevationAGL");
         if (elevationValue.length > 0) {
-            let elevation = Number(getTagValue(gdcElement, "ElevationAGL"));
+            let elevation = Number(elevationValue);
             return [latitude, longitude, elevation];
         } else {
             return [latitude, longitude];
