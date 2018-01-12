@@ -88,12 +88,12 @@
         "tslint-config-prettier": "^1.6.0",
         "tslint-config-standard": "^7.0.0",
         "typedoc": "^0.9.0",
-        "typescript": "^2.6.2"
-    },
-    "dependencies": {
+        "typescript": "^2.6.2",
         "ecef-projector": "^1.0.1",
-        "leaflet": "^1.2.0",
         "mgrs": "^1.0.0",
         "uuid": "^3.1.0"
+    },
+    "dependencies": {
+
     }
 }
