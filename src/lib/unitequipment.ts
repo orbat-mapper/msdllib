@@ -45,6 +45,10 @@ export class Unit implements UnitEquipmentInterface {
 
     private getDisposition() {
         let dispositionElement = getTagElement(this.element, "Disposition");
+        let speed = getTagValue(dispositionElement, "Speed");
+        let directionOfMovement = getTagValue(dispositionElement, "DirectionOfMovement");
+        this.speed = speed ? +speed : undefined;
+        this.directionOfMovement = directionOfMovement ? +directionOfMovement : undefined;
         this._msdlLocation = new MsdlLocation(dispositionElement);
         this.location = this._msdlLocation.location;
     }

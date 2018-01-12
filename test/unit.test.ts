@@ -24,7 +24,7 @@ const UNIT_TEMPLATE = ` <Unit>
                         </CoordinateData>
                     </Location>
                     <DirectionOfMovement>175.37999</DirectionOfMovement>
-                    <Speed>0.0</Speed>
+                    <Speed>4</Speed>
                     <FormationPosition>
                         <OutOfFormation>false</OutOfFormation>
                         <FormationOrder>2</FormationOrder>
@@ -79,6 +79,8 @@ describe("MSDL Unit", () => {
         expect(unit.location[1]).toBe(58.54383);
         expect(unit.location[0]).toBe(15.038887);
         expect(unit.location[2]).toBe(141.03737);
+        expect(unit.speed).toBe(4);
+        expect(unit.directionOfMovement).toBe(175.37999);
     });
 
     it("GeoJson interface", () => {

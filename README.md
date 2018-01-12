@@ -8,6 +8,10 @@ Organization (SISO)](https://www.sisostds.org/Home.aspx). For more information a
 visit the [SISO standards page](https://www.sisostds.org/productspublications/standards/sisostandards.aspx)
 and [SISO Product data files page](https://www.sisostds.org/Schemas.aspx)
 
+The purpose of MSDLlib is to provide a simple way to read and manipulate a MSDL data from
+JavaScript. Currently MSDLlib only supports the most commonly used MSDL data structures
+ 
+
 
 ## Copyright notice
 
@@ -15,7 +19,30 @@ The MSDL schema [SISO-STD-007-2008](https://www.sisostds.org/DesktopModules/Brin
 is copyright © 2015 by the Simulation Interoperability Standards Organization, Inc. 
 
 
+## Install
+
+MSDLlib is available as a npm package:
+
+```
+npm install msdllib
+```
+
+or if you prefer yarn:
+
+```
+yarn add msdllib
+```
+
 ## Usage
 
-### Installation
 
+
+## Development
+
+MSDLlib is developed in TypeScript. 
+
+
+
+
+    
+    
