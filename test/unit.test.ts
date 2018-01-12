@@ -72,7 +72,7 @@ describe("MSDL Unit", () => {
     it("read data", () => {
         let element = parseFromString(UNIT_TEMPLATE);
         let unit = new Unit(element);
-        expect(unit.objectHandle).toBe("f9e16593-2dcd-11e2-be2b-000c294c9df8")
+        expect(unit.objectHandle).toBe("f9e16593-2dcd-11e2-be2b-000c294c9df8");
         expect(unit.name).toBe("1/OPFOR-ARMOR");
         expect(unit.symbolIdentifier).toBe("S-G-----------G");
         expect(unit.location.length).toBe(3);
@@ -93,6 +93,9 @@ describe("MSDL Unit", () => {
         expect(gjson.geometry.coordinates[1]).toBe(58.54383);
         expect(gjson.geometry.coordinates[0]).toBe(15.038887);
         expect(gjson.geometry.coordinates[2]).toBe(141.03737);
+        expect(gjson.properties.speed).toBe(4);
+        expect(gjson.properties.direction).toBe(175.37999);
+
     })
 
 });

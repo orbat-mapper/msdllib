@@ -2,6 +2,12 @@ import {getTagElement, getTagElements, getTagValue} from "./utils";
 import {Feature, Point} from "geojson";
 import {LngLatElevationTuple, LngLatTuple, MsdlLocation} from "./geo";
 
+export interface TacticalJson {
+    sidc?: string;
+    speed?: number;
+    direction?: number;
+}
+
 export interface UnitEquipmentInterface {
     objectHandle: string;
     symbolIdentifier: string;
@@ -29,8 +35,17 @@ export class Unit implements UnitEquipmentInterface {
         this.getDisposition();
     }
 
-    toGeoJson(): Feature<Point> {
+    toGeoJson(): Feature<Point, TacticalJson> {
         let feature: Feature<Point>;
+        let properties:TacticalJson = {};
+
+        if (this.speed) {
+            properties.speed = this.speed;
+        }
+        if (this.directionOfMovement) {
+            properties.direction = this.directionOfMovement;
+        }
+
         feature = {
             id: this.objectHandle,
             type: "Feature",
@@ -38,7 +53,7 @@ export class Unit implements UnitEquipmentInterface {
                 type: "Point",
                 coordinates: this.location
             },
-            properties: null
+            properties
         };
         return feature;
     }
