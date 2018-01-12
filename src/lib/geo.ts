@@ -34,7 +34,7 @@ export class MsdlLocation {
             this.location = this.parseGCCLocation();
         } else {
             console.warn(`Unhandled coordinate choice ${this.coordinateChoice}`);
-            this.location = null;
+            this.location = undefined;
         }
     }
 

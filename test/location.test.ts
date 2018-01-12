@@ -70,6 +70,18 @@ const LOCATION_MGRS_TEMPLATE2 = `<Location>
     </CoordinateData>
 </Location>`;
 
+const UNKNOWN_TEMPLATE = `
+    <Location>
+        <CoordinateChoice>XXX</CoordinateChoice>
+        <CoordinateData>
+            <XXX>
+                <X>3222337.24</X>
+                <Y>865767.13</Y>
+                <Z>5417712.62</Z>
+            </XXX>
+        </CoordinateData>
+    </Location>`;
+
 
 describe("MSDL Location", () => {
     it("defined", () => {
@@ -123,6 +135,12 @@ describe("MSDL Location", () => {
         expect(loc.location.length).toBe(2);
         expect(loc.location[1]).toBeCloseTo(58.54383, 5);
         expect(loc.location[0]).toBeCloseTo(15.038887, 5);
+    });
+
+    it("Unknown coordinate choice", () => {
+        let element = parseFromString(UNKNOWN_TEMPLATE);
+        let loc = new MsdlLocation(element);
+        expect(loc.location).toBeUndefined();
     });
 
 });
