@@ -1,18 +1,24 @@
 import {getTagElement, getTagElements, getTagValue} from "./utils";
 import {Feature, Point} from "geojson";
-import {MsdlLocation} from "./geo";
+import {LngLatElevationTuple, LngLatTuple, MsdlLocation} from "./geo";
 
 export interface UnitEquipmentInterface {
     objectHandle: string;
     symbolIdentifier: string;
     name: string;
-    location: number[];
+    location: LngLatTuple | LngLatElevationTuple;
+    /** The field speed in meters per second */
+    speed: number;
+    /** The direction of movement, in compass degrees */
+    directionOfMovement: number;
 }
 
 export class Unit implements UnitEquipmentInterface {
+    location: LngLatTuple | LngLatElevationTuple;
+    speed: number;
+    directionOfMovement: number;
     symbolIdentifier: string;
     name: string;
-    location: number[];
     objectHandle: string;
     private _msdlLocation: MsdlLocation;
 

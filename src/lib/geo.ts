@@ -3,8 +3,11 @@ import {getTagElement, getTagValue} from "./utils";
 import * as mgrs from 'mgrs';
 import * as projector from 'ecef-projector';
 
+export type LngLatTuple = [number, number];
+export type LngLatElevationTuple = [number, number, number];
+
 export class MsdlLocation {
-    public location: number[];
+    location: LngLatTuple | LngLatElevationTuple;
     coordinateChoice: string;
 
     constructor(private element) {
@@ -35,7 +38,7 @@ export class MsdlLocation {
         }
     }
 
-    private parseMgrsLocation(): number[] {
+    private parseMgrsLocation(): LngLatTuple | LngLatElevationTuple {
         let mgrsElement = getTagElement(this.element, "MGRS");
         let gridZone = getTagValue(mgrsElement, "MGRSGridZone");
         let gridSquare = getTagValue(mgrsElement, "MGRSGridSquare");
@@ -44,17 +47,17 @@ export class MsdlLocation {
         let precision = getTagValue(mgrsElement, "MGRSPrecision");
         let mgrsString = gridZone + gridSquare + String('00000' + easting).slice(-5) + String('00000' + northing).slice(-5);
         let elevationValue = getTagValue(mgrsElement, "ElevationAGL");
-        let point = mgrs.toPoint(mgrsString).reverse();
+        let point:LngLatTuple = mgrs.toPoint(mgrsString);
         if (elevationValue.length > 0) {
             let elevation = Number(elevationValue);
-            return [...point, elevation]
+            return [point[0], point[1], elevation]
         } else {
             return point;
         }
 
     }
 
-    private parseGDCLocation(): number[] {
+    private parseGDCLocation(): LngLatTuple | LngLatElevationTuple {
         // Geodetic coordinates in fractional degress of latitude and longitude.
         let gdcElement = getTagElement(this.element, "GDC");
         let latitude = Number(getTagValue(gdcElement, 'Latitude'));
@@ -62,9 +65,9 @@ export class MsdlLocation {
         let elevationValue = getTagValue(gdcElement, "ElevationAGL");
         if (elevationValue.length > 0) {
             let elevation = Number(elevationValue);
-            return [latitude, longitude, elevation];
+            return [longitude, latitude, elevation];
         } else {
-            return [latitude, longitude];
+            return [longitude, latitude];
         }
     }
 

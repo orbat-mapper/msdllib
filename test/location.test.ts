@@ -73,8 +73,8 @@ describe("MSDL Location", () => {
         let element = parseFromString(LOCATION_GDC_TEMPLATE);
         let loc = new MsdlLocation(element);
         expect(loc.location.length).toBe(3);
-        expect(precisionRound(loc.location[0], 4)).toBe(58.5438);
-        expect(loc.location[1]).toBe(15.038887);
+        expect(precisionRound(loc.location[1], 4)).toBe(58.5438);
+        expect(loc.location[0]).toBe(15.038887);
         expect(loc.location[2]).toBe(141.03737);
     });
 
@@ -82,16 +82,16 @@ describe("MSDL Location", () => {
         let element = parseFromString(LOCATION_GDC_TEMPLATE2);
         let loc = new MsdlLocation(element);
         expect(loc.location.length).toBe(2);
-        expect(loc.location[0]).toBe(58.54383);
-        expect(loc.location[1]).toBe(15.038887);
+        expect(loc.location[1]).toBe(58.54383);
+        expect(loc.location[0]).toBe(15.038887);
     });
 
     it("MGRS", () => {
         let element = parseFromString(LOCATION_MGRS_TEMPLATE);
         let loc = new MsdlLocation(element);
         expect(loc.location.length).toBe(3);
-        expect(loc.location[0]).toBeCloseTo(58.54383, 5);
-        expect(loc.location[1]).toBeCloseTo(15.038887, 5);
+        expect(loc.location[1]).toBeCloseTo(58.54383, 5);
+        expect(loc.location[0]).toBeCloseTo(15.038887, 5);
         expect(loc.location[2]).toBe(10)
     });
 
@@ -99,8 +99,8 @@ describe("MSDL Location", () => {
         let element = parseFromString(LOCATION_MGRS_TEMPLATE2);
         let loc = new MsdlLocation(element);
         expect(loc.location.length).toBe(2);
-        expect(loc.location[0]).toBeCloseTo(58.54383, 5);
-        expect(loc.location[1]).toBeCloseTo(15.038887, 5);
+        expect(loc.location[1]).toBeCloseTo(58.54383, 5);
+        expect(loc.location[0]).toBeCloseTo(15.038887, 5);
     });
 
 });
