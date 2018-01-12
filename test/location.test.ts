@@ -19,6 +19,19 @@ const LOCATION_GDC_TEMPLATE = `
         </CoordinateData>
     </Location>`;
 
+const LOCATION_GCC_TEMPLATE = `
+    <Location>
+        <CoordinateChoice>GCC</CoordinateChoice>
+        <CoordinateData>
+            <GCC>
+                <X>3222337.24</X>
+                <Y>865767.13</Y>
+                <Z>5417712.62</Z>
+            </GCC>
+        </CoordinateData>
+    </Location>`;
+
+
 const LOCATION_GDC_TEMPLATE2 = `
     <Location>
         <CoordinateChoice>GDC</CoordinateChoice>
@@ -73,9 +86,18 @@ describe("MSDL Location", () => {
         let element = parseFromString(LOCATION_GDC_TEMPLATE);
         let loc = new MsdlLocation(element);
         expect(loc.location.length).toBe(3);
-        expect(precisionRound(loc.location[1], 4)).toBe(58.5438);
+        expect(loc.location[1]).toBeCloseTo(58.5438);
         expect(loc.location[0]).toBe(15.038887);
         expect(loc.location[2]).toBe(141.03737);
+    });
+
+    it("GCC", () => {
+        let element = parseFromString(LOCATION_GCC_TEMPLATE);
+        let loc = new MsdlLocation(element);
+        expect(loc.location.length).toBe(3);
+        expect(loc.location[1]).toBeCloseTo(58.5438);
+        expect(loc.location[0]).toBeCloseTo(15.038887);
+        expect(loc.location[2]).toBeCloseTo(141.03737);
     });
 
     it("GDC no height", () => {

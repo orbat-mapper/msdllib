@@ -78,12 +78,13 @@ export class MsdlLocation {
 //     setTagValue(gdcElement, "ElevationAGL", latlng.alt ? latlng.alt.toString() : "");
 // }
 
-    private parseGCCLocation() {
+    private parseGCCLocation(): LngLatElevationTuple {
         let gccElement = getTagElement(this.element, "GCC");
         let X = Number(getTagValue(gccElement, 'X'));
         let Y = Number(getTagValue(gccElement, 'Y'));
         let Z = Number(getTagValue(gccElement, 'Z'));
-        return projector.unproject(X, Y, Z);
+        let latLonAlt = projector.unproject(X, Y, Z);
+        return [latLonAlt[1], latLonAlt[0], latLonAlt[2]];
 
     }
 }
