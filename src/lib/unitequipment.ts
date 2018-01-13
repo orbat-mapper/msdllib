@@ -19,14 +19,14 @@ export interface UnitEquipmentInterface {
     directionOfMovement: number;
 }
 
-export class Unit implements UnitEquipmentInterface {
+export class UnitEquipmentBase implements UnitEquipmentInterface {
     location: LngLatTuple | LngLatElevationTuple;
     speed: number;
     directionOfMovement: number;
     symbolIdentifier: string;
     name: string;
     objectHandle: string;
-    private _msdlLocation: MsdlLocation;
+    protected _msdlLocation: MsdlLocation;
 
     constructor(readonly element: Element) {
         this.objectHandle = getTagValue(element, "ObjectHandle");
@@ -35,9 +35,25 @@ export class Unit implements UnitEquipmentInterface {
         this.getDisposition();
     }
 
+    private getDisposition() {
+        let dispositionElement = getTagElement(this.element, "Disposition");
+        let speed = getTagValue(dispositionElement, "Speed");
+        let directionOfMovement = getTagValue(dispositionElement, "DirectionOfMovement");
+        this.speed = speed ? +speed : undefined;
+        this.directionOfMovement = directionOfMovement ? +directionOfMovement : undefined;
+        this._msdlLocation = new MsdlLocation(dispositionElement);
+        this.location = this._msdlLocation.location;
+    }
+}
+
+export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
+    constructor(readonly element: Element) {
+        super(element);
+    }
+
     toGeoJson(): Feature<Point, TacticalJson> {
         let feature: Feature<Point>;
-        let properties:TacticalJson = {};
+        let properties: TacticalJson = {};
 
         if (this.speed) {
             properties.speed = this.speed;
@@ -57,14 +73,11 @@ export class Unit implements UnitEquipmentInterface {
         };
         return feature;
     }
+}
 
-    private getDisposition() {
-        let dispositionElement = getTagElement(this.element, "Disposition");
-        let speed = getTagValue(dispositionElement, "Speed");
-        let directionOfMovement = getTagValue(dispositionElement, "DirectionOfMovement");
-        this.speed = speed ? +speed : undefined;
-        this.directionOfMovement = directionOfMovement ? +directionOfMovement : undefined;
-        this._msdlLocation = new MsdlLocation(dispositionElement);
-        this.location = this._msdlLocation.location;
+export class EquipmentItem extends UnitEquipmentBase {
+    constructor(readonly element: Element) {
+        super(element);
     }
+
 }
