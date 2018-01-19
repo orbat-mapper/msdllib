@@ -1,9 +1,10 @@
 import {MilitaryScenario, ScenarioId} from "../src/index";
 import {} from 'jest'
 import {EMPTY_SCENARIO} from "./testdata";
+import * as fs from "fs";
 
-describe("MilitaryScenario", () => {
-    it("defined", () => {
+describe("MilitaryScenario class", () => {
+    it("is defined", () => {
         expect(MilitaryScenario).toBeDefined();
     });
 
@@ -27,17 +28,34 @@ describe("MilitaryScenario", () => {
         expect(scenario.equipment.length).toBe(0);
     });
 
-    it("empty", () => {
-        let scenario = MilitaryScenario.createFromString(EMPTY_SCENARIO);
+    it("create empty scenario", () => {
+        let scenario = new MilitaryScenario();
         expect(scenario.units).toBeInstanceOf(Array);
         expect(scenario.units.length).toBe(0);
         expect(scenario.equipment).toBeInstanceOf(Array);
         expect(scenario.equipment.length).toBe(0);
         expect(scenario.forceSides).toBeInstanceOf(Array);
         expect(scenario.forceSides.length).toBe(0);
-        expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
-        expect(scenario.scenarioId.name).toBe("Empty scenario");
     });
+
+    it("load from file", () => {
+        fs.readFile(__dirname + '/data/minimal.xml', function (err, data) {
+            if (err) {
+                throw err;
+            }
+            let scenario = MilitaryScenario.createFromString(data.toString());
+            expect(scenario.units).toBeInstanceOf(Array);
+            expect(scenario.units.length).toBe(0);
+            expect(scenario.equipment).toBeInstanceOf(Array);
+            expect(scenario.equipment.length).toBe(0);
+            expect(scenario.forceSides).toBeInstanceOf(Array);
+            expect(scenario.forceSides.length).toBe(0);
+            expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
+            expect(scenario.scenarioId.name).toBe("Empty scenario");
+
+        });
+
+    })
 
 });
 
