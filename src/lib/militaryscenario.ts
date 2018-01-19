@@ -1,6 +1,6 @@
 import {ScenarioId} from "./scenarioid";
 import {getTagElement, getTagElements} from "./utils";
-import {Unit} from "./unitequipment";
+import {EquipmentItem, Unit} from "./unitequipment";
 
 /**
  * MilitaryScenarioType
@@ -21,9 +21,12 @@ export class MilitaryScenario implements MilitaryScenarioType{
     equipment: any[] = [];
     units: any[] = [];
 
-    constructor(public element: Element) {
-        this.initializeMetaInfo();
-        this.initializeUnits();
+    constructor(public element?: Element) {
+        if (element) {
+            this.initializeMetaInfo();
+            this.initializeUnits();
+            this.initializeEquipment();
+        }
     }
 
     static createFromString(xmlString: string) {
@@ -43,5 +46,20 @@ export class MilitaryScenario implements MilitaryScenarioType{
             this.units.push(unit);
             // this.unitMap[unit.objectHandle] = unit;
         }
+    }
+
+    private initializeEquipment() {
+        this.equipment = [];
+        let equipmentItemElements = getTagElements(this.element, "EquipmentItem");
+        for (let equipmentItemElement of equipmentItemElements) {
+            this.equipment.push(new EquipmentItem(equipmentItemElement));
+        }
+        // for (let equip of this.equipment) {
+        //     if (!equip.organicSuperiorHandle) continue;
+        //     let unit = this.unitMap[equip.organicSuperiorHandle];
+        //     if (unit) {
+        //         unit.equipment.push(equip);
+        //     }
+        // }
     }
 }
