@@ -80,4 +80,26 @@ export class EquipmentItem extends UnitEquipmentBase {
         super(element);
     }
 
+    toGeoJson(): Feature<Point, TacticalJson> {
+        let feature: Feature<Point>;
+        let properties: TacticalJson = {};
+
+        if (this.speed !== undefined) {
+            properties.speed = this.speed;
+        }
+        if (this.directionOfMovement !== undefined) {
+            properties.direction = this.directionOfMovement;
+        }
+
+        feature = {
+            id: this.objectHandle,
+            type: "Feature",
+            geometry: {
+                type: "Point",
+                coordinates: this.location
+            },
+            properties
+        };
+        return feature;
+    }
 }
