@@ -65,10 +65,10 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
         feature = {
             id: this.objectHandle,
             type: "Feature",
-            geometry: {
+            geometry: this.location ? {
                 type: "Point",
                 coordinates: this.location
-            },
+            } : null,
             properties
         };
         return feature;

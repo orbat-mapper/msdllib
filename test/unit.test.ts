@@ -57,6 +57,33 @@ const UNIT_TEMPLATE = ` <Unit>
                 </Model>
             </Unit>`;
 
+const UNIT_NO_DISPOSITION = `<Unit>
+    <ObjectHandle>f9e16593-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
+    <SymbolIdentifier>S-G-----------G</SymbolIdentifier>
+    <Name>1/OPFOR-ARMOR</Name>
+    <UnitSymbolModifiers>
+        <Echelon>COMPANY</Echelon>
+        <CombatEffectiveness>GREEN</CombatEffectiveness>
+        <HigherFormation>OPFOR-ARMOR</HigherFormation>
+        <UniqueDesignation>1</UniqueDesignation>
+    </UnitSymbolModifiers>
+    <Relations>
+        <ForceRelation>
+            <ForceRelationChoice>UNIT</ForceRelationChoice>
+            <ForceRelationData>
+                <CommandRelation>
+                    <CommandingSuperiorHandle>f9c2b9f6-2dcd-11e2-be2b-000c294c9df8</CommandingSuperiorHandle>
+                    <CommandRelationshipType>ATTACHED</CommandRelationshipType>
+                </CommandRelation>
+            </ForceRelationData>
+        </ForceRelation>
+    </Relations>
+    <Model>
+        <Resolution>HIGH</Resolution>
+        <AggregateBased>false</AggregateBased>
+    </Model>
+</Unit>`;
+
 
 describe("MSDL Unit", () => {
     it("defined", () => {
@@ -96,7 +123,19 @@ describe("MSDL Unit", () => {
         expect(gjson.properties.speed).toBe(4);
         expect(gjson.properties.direction).toBe(175.37999);
 
-    })
+    });
+
+    it("no disposition", () => {
+        let element = parseFromString(UNIT_NO_DISPOSITION);
+        let unit = new Unit(element);
+        expect(unit.location).toBeUndefined();
+        expect(unit.speed).toBeUndefined();
+        expect(unit.directionOfMovement).toBeUndefined();
+        let gjson = unit.toGeoJson();
+        expect(gjson.geometry).toBeNull();
+        expect(gjson.properties.speed).toBeUndefined();
+        expect(gjson.properties.direction).toBeUndefined();
+    });
 
 });
 
