@@ -106,6 +106,7 @@ describe("MSDL Equipment", () => {
         expect(equipmentItem.location[2]).toBe(137.71353);
         expect(equipmentItem.speed).toBe(0);
         expect(equipmentItem.directionOfMovement).toBe(176.17091);
+        expect(equipmentItem.superiorHandle).toBe("f9e2ec3e-2dcd-11e2-be2b-000c294c9df8");
     });
 
     it("GeoJson interface", () => {
@@ -129,6 +130,6 @@ describe("MSDL Equipment", () => {
         let gjson = equipmentItem.toGeoJson();
         expect(gjson.properties.speed).toBeUndefined();
         expect(gjson.properties.direction).toBeUndefined();
-    })
+    });
 });
 

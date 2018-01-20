@@ -17,6 +17,7 @@ export interface UnitEquipmentInterface {
     speed: number;
     /** The direction of movement, in compass degrees */
     directionOfMovement: number;
+    superiorHandle: string;
 }
 
 export class UnitEquipmentBase implements UnitEquipmentInterface {
@@ -26,6 +27,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
     symbolIdentifier: string;
     name: string;
     objectHandle: string;
+    superiorHandle: string;
     protected _msdlLocation: MsdlLocation;
 
     constructor(readonly element: Element) {
@@ -47,6 +49,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
 }
 
 export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
+    equipment: EquipmentItem[] = [];
     constructor(readonly element: Element) {
         super(element);
     }
@@ -78,6 +81,8 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
 export class EquipmentItem extends UnitEquipmentBase {
     constructor(readonly element: Element) {
         super(element);
+        // Todo: OrganicSuperiorHandle not necessarily set.
+        this.superiorHandle = getTagValue(element, "OrganicSuperiorHandle");
     }
 
     toGeoJson(): Feature<Point, TacticalJson> {

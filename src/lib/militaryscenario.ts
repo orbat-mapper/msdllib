@@ -18,7 +18,7 @@ export interface MilitaryScenarioType {
 export class MilitaryScenario implements MilitaryScenarioType{
     scenarioId: ScenarioId;
     forceSides: any[] = [];
-    equipment: any[] = [];
+    equipment: EquipmentItem[] = [];
     units: any[] = [];
 
     constructor(public element?: Element) {
@@ -49,11 +49,11 @@ export class MilitaryScenario implements MilitaryScenarioType{
     }
 
     private initializeEquipment() {
-        this.equipment = [];
         let equipmentItemElements = getTagElements(this.element, "EquipmentItem");
         for (let equipmentItemElement of equipmentItemElements) {
             this.equipment.push(new EquipmentItem(equipmentItemElement));
         }
+
         // for (let equip of this.equipment) {
         //     if (!equip.organicSuperiorHandle) continue;
         //     let unit = this.unitMap[equip.organicSuperiorHandle];
