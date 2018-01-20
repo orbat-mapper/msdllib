@@ -70,6 +70,31 @@ const LOCATION_MGRS_TEMPLATE2 = `<Location>
     </CoordinateData>
 </Location>`;
 
+// http://www.earthpoint.us/Convert.aspx
+// Calculated Values - based on Degrees Lat Long to seven decimal places.
+// Position Type	Lat Lon
+// Degrees Lat Long 	58.5438300°, 015.0388870°
+// Degrees Minutes	58°32.62980', 015°02.33322'
+// Degrees Minutes Seconds 	58°32'37.7880", 015°02'19.9932"
+// UTM	33V 502263mE 6489259mN
+// UTM centimeter	33V 502263.62mE 6489259.69mN
+// MGRS	33VWE0226389259
+// Grid North	0.0°
+// GARS	391NK37
+// Maidenhead	JO78MN40PM94
+// GEOREF	PKAP02333262
+const LOCATION_UTM = `<Location>
+    <CoordinateChoice>UTM</CoordinateChoice>
+    <CoordinateData>
+        <UTM>
+            <UTMGridZone>33V</UTMGridZone>
+            <UTMEasting>502263</UTMEasting>
+            <UTMNorthing>6489259</UTMNorthing>
+            <ElevationAGL>10</ElevationAGL>
+        </UTM>
+    </CoordinateData>
+</Location>`;
+
 const UNKNOWN_TEMPLATE = `
     <Location>
         <CoordinateChoice>XXX</CoordinateChoice>
@@ -135,6 +160,15 @@ describe("MSDL Location", () => {
         expect(loc.location.length).toBe(2);
         expect(loc.location[1]).toBeCloseTo(58.54383, 5);
         expect(loc.location[0]).toBeCloseTo(15.038887, 5);
+    });
+
+    it("UTM", () => {
+        let element = parseFromString(LOCATION_UTM);
+        let loc = new MsdlLocation(element);
+        expect(loc.location.length).toBe(3);
+        expect(loc.location[1]).toBeCloseTo(58.54383, 5);
+        expect(loc.location[0]).toBeCloseTo(15.038887, 5);
+        expect(loc.location[2]).toBe(10)
     });
 
     it("Unknown coordinate choice", () => {
