@@ -108,6 +108,8 @@ describe("MSDL Unit", () => {
         expect(unit.location[2]).toBe(141.03737);
         expect(unit.speed).toBe(4);
         expect(unit.directionOfMovement).toBe(175.37999);
+        expect(unit.isRoot).toBe(false);
+        expect(unit.superiorHandle).toBe("f9c2b9f6-2dcd-11e2-be2b-000c294c9df8");
     });
 
     it("GeoJson interface", () => {

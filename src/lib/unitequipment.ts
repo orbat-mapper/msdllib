@@ -1,6 +1,7 @@
 import {getTagElement, getTagElements, getTagValue} from "./utils";
 import {Feature, Point} from "geojson";
 import {LngLatElevationTuple, LngLatTuple, MsdlLocation} from "./geo";
+import {ForceOwnerType} from "./enums";
 
 export interface TacticalJson {
     sidc?: string;
@@ -50,8 +51,16 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
 
 export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     equipment: EquipmentItem[] = [];
+    subordinates: Unit[] = [];
+    private forceRelationChoice: ForceOwnerType;
+
     constructor(readonly element: Element) {
         super(element);
+        this.initializeRelations();
+    }
+
+    get isRoot(): boolean {
+        return this.forceRelationChoice === ForceOwnerType.ForceSide;
     }
 
     toGeoJson(): Feature<Point, TacticalJson> {
@@ -75,6 +84,24 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
             properties
         };
         return feature;
+    }
+
+
+
+    private initializeRelations() {
+        let forceRelationChoice = getTagValue(this.element, "ForceRelationChoice");
+
+        if (forceRelationChoice === ForceOwnerType.Unit) {
+            this.forceRelationChoice = ForceOwnerType.Unit;
+            this.superiorHandle = getTagValue(this.element, "CommandingSuperiorHandle");
+        } else if (forceRelationChoice === ForceOwnerType.ForceSide) {
+            this.forceRelationChoice = ForceOwnerType.ForceSide;
+            this.superiorHandle = getTagValue(this.element, "ForceSideHandle");
+        } else {
+            console.error("Invalid ForceRelationChoice " + this.forceRelationChoice)
+        }
+        // Todo: Add support for support and organic relations
+
     }
 }
 
