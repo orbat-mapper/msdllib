@@ -1,13 +1,11 @@
 import {ScenarioId} from "./scenarioid";
-import {getTagElement, getTagElements} from "./utils";
+import {getTagElement, getTagElements, getTagValue} from "./utils";
 import {EquipmentItem, Unit} from "./unitequipment";
 
 /**
  * MilitaryScenarioType
  *
  */
-
-
 export interface MilitaryScenarioType {
     scenarioId: ScenarioId;
     forceSides: any[];
@@ -15,15 +13,40 @@ export interface MilitaryScenarioType {
     equipment: any[];
 }
 
-export class MilitaryScenario implements MilitaryScenarioType{
+export interface ForceSideType {
+    objectHandle: string;
+    name: string;
+    allegianceHandle?: string;
+}
+
+export class ForceSide implements ForceSideType {
+    objectHandle: string;
+    name: string;
+    allegianceHandle: string;
+
+
+    constructor(public element: Element) {
+        this.name = getTagValue(element, "ForceSideName");
+        this.objectHandle = getTagValue(element, "ObjectHandle");
+        this.allegianceHandle = getTagValue(element, "AllegianceHandle");
+    }
+
+    get isSide(): boolean {
+        return !this.allegianceHandle || this.objectHandle === this.allegianceHandle;
+    }
+}
+
+export class MilitaryScenario implements MilitaryScenarioType {
     scenarioId: ScenarioId;
-    forceSides: any[] = [];
+    forceSides: ForceSideType[] = [];
     equipment: EquipmentItem[] = [];
-    units: any[] = [];
+    units: Unit[] = [];
+    private forceSideMap: { [id: string]: ForceSide } = {};
 
     constructor(public element?: Element) {
         if (element) {
             this.initializeMetaInfo();
+            this.initializeForceSides();
             this.initializeUnits();
             this.initializeEquipment();
         }
@@ -37,6 +60,16 @@ export class MilitaryScenario implements MilitaryScenarioType{
 
     private initializeMetaInfo() {
         this.scenarioId = new ScenarioId(getTagElement(this.element, 'ScenarioID'));
+    }
+
+    private initializeForceSides() {
+        let forceSideElements = getTagElements(this.element, "ForceSide");
+        this.forceSides = [];
+        for (let e of forceSideElements) {
+            let forceSide = new ForceSide(e);
+            this.forceSides.push(forceSide);
+            this.forceSideMap[forceSide.objectHandle] = forceSide;
+        }
     }
 
     private initializeUnits() {

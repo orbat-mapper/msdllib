@@ -39,23 +39,34 @@ describe("MilitaryScenario class", () => {
     });
 
     it("load from file", () => {
-        fs.readFile(__dirname + '/data/minimal.xml', function (err, data) {
-            if (err) {
-                throw err;
-            }
-            let scenario = MilitaryScenario.createFromString(data.toString());
-            expect(scenario.units).toBeInstanceOf(Array);
-            expect(scenario.units.length).toBe(0);
-            expect(scenario.equipment).toBeInstanceOf(Array);
-            expect(scenario.equipment.length).toBe(0);
-            expect(scenario.forceSides).toBeInstanceOf(Array);
-            expect(scenario.forceSides.length).toBe(0);
-            expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
-            expect(scenario.scenarioId.name).toBe("Empty scenario");
+        let data = fs.readFileSync(__dirname + '/data/minimal.xml', { encoding: "utf-8" });
 
-        });
 
-    })
+        let scenario = MilitaryScenario.createFromString(data.toString());
+        expect(scenario.units).toBeInstanceOf(Array);
+        expect(scenario.units.length).toBe(0);
+        expect(scenario.equipment).toBeInstanceOf(Array);
+        expect(scenario.equipment.length).toBe(0);
+        expect(scenario.forceSides).toBeInstanceOf(Array);
+        expect(scenario.forceSides.length).toBe(0);
+        expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
+        expect(scenario.scenarioId.name).toBe("Empty scenario");
+    });
+});
 
+
+describe("Simple scenario", () => {
+    it("load from file", () => {
+        let data = fs.readFileSync(__dirname + '/data/SimpleScenario.xml', { encoding: "utf-8" });
+        let scenario = MilitaryScenario.createFromString(data.toString());
+        expect(scenario.units).toBeInstanceOf(Array);
+        expect(scenario.units.length).toBe(1);
+        expect(scenario.equipment).toBeInstanceOf(Array);
+        expect(scenario.equipment.length).toBe(1);
+        expect(scenario.forceSides).toBeInstanceOf(Array);
+        expect(scenario.forceSides.length).toBe(3);
+        expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
+        expect(scenario.scenarioId.name).toBe("Simple scenario");
+    });
 });
 
