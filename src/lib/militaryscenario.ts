@@ -17,13 +17,14 @@ export interface ForceSideType {
     objectHandle: string;
     name: string;
     allegianceHandle?: string;
+    rootUnits: Unit[];
 }
 
 export class ForceSide implements ForceSideType {
     objectHandle: string;
     name: string;
     allegianceHandle: string;
-
+    rootUnits: Unit[] = [];
 
     constructor(public element: Element) {
         this.name = getTagValue(element, "ForceSideName");
@@ -41,6 +42,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
     forceSides: ForceSideType[] = [];
     equipment: EquipmentItem[] = [];
     units: Unit[] = [];
+    rootUnits: Unit[] = [];
+    private unitMap: { [id: string]: Unit } = {};
     private forceSideMap: { [id: string]: ForceSide } = {};
 
     constructor(public element?: Element) {
@@ -77,8 +80,29 @@ export class MilitaryScenario implements MilitaryScenarioType {
         for (let unitElement of unitElements) {
             let unit = new Unit(unitElement);
             this.units.push(unit);
-            // this.unitMap[unit.objectHandle] = unit;
+            this.unitMap[unit.objectHandle] = unit;
         }
+        this.buildHierarchy(this.units);
+    }
+
+    private buildHierarchy(units: Unit[]) {
+        for (let unit of units) {
+            if (!unit.superiorHandle) continue;
+            if (unit.isRoot) {
+                this.rootUnits.push(unit);
+                let forceSide = this.forceSideMap[unit.superiorHandle];
+                if (forceSide) {
+                    forceSide.rootUnits.push(unit);
+                }
+            }
+            else {
+                let parentUnit = this.unitMap[unit.superiorHandle];
+                if (parentUnit) {
+                    parentUnit.subordinates.push(unit);
+                }
+            }
+        }
+
     }
 
     private initializeEquipment() {

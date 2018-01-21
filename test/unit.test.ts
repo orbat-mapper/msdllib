@@ -1,6 +1,8 @@
 import {} from 'jest'
 import {parseFromString} from "./testdata";
 import {Unit} from "../src/lib/unitequipment";
+import * as fs from "fs";
+import {MilitaryScenario, ScenarioId} from "../src";
 
 const UNIT_TEMPLATE = ` <Unit>
                 <ObjectHandle>f9e16593-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -138,6 +140,21 @@ describe("MSDL Unit", () => {
         expect(gjson.properties.speed).toBeUndefined();
         expect(gjson.properties.direction).toBeUndefined();
     });
-
 });
+
+describe("Unit relations", () => {
+    it("subordinates", () => {
+        let data = fs.readFileSync(__dirname + '/data/SimpleScenario.xml', { encoding: "utf-8" });
+        let scenario = MilitaryScenario.createFromString(data.toString());
+        expect(scenario.rootUnits.length).toBe(2);
+        let hq = scenario.rootUnits[0];
+        expect(hq.name).toBe("HQ");
+        expect(hq.subordinates.length).toBe(2);
+        expect(hq.subordinates[0].name).toBe("1th");
+        expect(hq.subordinates[1].name).toBe("2nd");
+
+
+    });
+});
+
 
