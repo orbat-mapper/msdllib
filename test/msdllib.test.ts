@@ -60,7 +60,7 @@ describe("Simple scenario", () => {
         let data = fs.readFileSync(__dirname + '/data/SimpleScenario.xml', { encoding: "utf-8" });
         let scenario = MilitaryScenario.createFromString(data.toString());
         expect(scenario.units).toBeInstanceOf(Array);
-        expect(scenario.units.length).toBe(1);
+        expect(scenario.units.length).toBe(6);
         expect(scenario.equipment).toBeInstanceOf(Array);
         expect(scenario.equipment.length).toBe(1);
         expect(scenario.forceSides).toBeInstanceOf(Array);
