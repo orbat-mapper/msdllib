@@ -37,6 +37,16 @@ describe("ForceSide class", () => {
         expect(forceSide.name).toBe("Friendly");
         expect(forceSide.isSide).toBe(true);
     });
+
+    it("has GeoJSON interface", () => {
+        let scenario = loadTestScenario();
+        let forceSide = scenario.forceSides[0];
+        expect(forceSide.name).toBe("Friendly");
+        expect(forceSide.toGeoJson).toBeDefined();
+        let gjson = forceSide.toGeoJson();
+        expect(gjson.type).toBe("FeatureCollection");
+        expect(gjson.features.length).toBe(3);
+    })
 });
 
 describe("Side relations", () => {

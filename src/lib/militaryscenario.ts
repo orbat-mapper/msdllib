@@ -1,6 +1,7 @@
 import {ScenarioId} from "./scenarioid";
 import {getTagElement, getTagElements, getTagValue} from "./utils";
-import {EquipmentItem, Unit} from "./unitequipment";
+import {EquipmentItem, TacticalJson, Unit} from "./unitequipment";
+import {Feature, FeatureCollection, Point} from "geojson";
 
 /**
  * MilitaryScenarioType
@@ -35,11 +36,32 @@ export class ForceSide implements ForceSideType {
     get isSide(): boolean {
         return !this.allegianceHandle || this.objectHandle === this.allegianceHandle;
     }
+
+    toGeoJson(): FeatureCollection<Point, TacticalJson> {
+        let features: Feature<Point>[] = [];
+
+        function addSubordinates(subordinates: Unit[]) {
+            for (let unit of subordinates) {
+                features.push(unit.toGeoJson());
+                if (unit.subordinates) {
+                    addSubordinates(unit.subordinates);
+                }
+            }
+        }
+
+        for (let rootUnit of this.rootUnits) {
+            features.push(rootUnit.toGeoJson());
+            if (rootUnit.subordinates) {
+                addSubordinates(rootUnit.subordinates);
+            }
+        }
+        return { type: "FeatureCollection", features };
+    }
 }
 
 export class MilitaryScenario implements MilitaryScenarioType {
     scenarioId: ScenarioId;
-    forceSides: ForceSideType[] = [];
+    forceSides: ForceSide[] = [];
     equipment: EquipmentItem[] = [];
     units: Unit[] = [];
     rootUnits: Unit[] = [];
