@@ -3,6 +3,7 @@ import {parseFromString} from "./testdata";
 import {Unit} from "../src/lib/unitequipment";
 import * as fs from "fs";
 import {MilitaryScenario, ScenarioId} from "../src";
+import {loadTestScenario} from "./testutils";
 
 const UNIT_TEMPLATE = ` <Unit>
                 <ObjectHandle>f9e16593-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -144,8 +145,7 @@ describe("MSDL Unit", () => {
 
 describe("Unit relations", () => {
     it("subordinates", () => {
-        let data = fs.readFileSync(__dirname + '/data/SimpleScenario.xml', { encoding: "utf-8" });
-        let scenario = MilitaryScenario.createFromString(data.toString());
+        let scenario = loadTestScenario();
         expect(scenario.rootUnits.length).toBe(2);
         let hq = scenario.rootUnits[0];
         expect(hq.name).toBe("HQ");

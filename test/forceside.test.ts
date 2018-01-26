@@ -3,6 +3,7 @@ import {parseFromString} from "./testdata";
 import {EquipmentItem} from "../src/lib/unitequipment";
 import {ForceSide, MilitaryScenario, ScenarioId} from "../src";
 import * as fs from "fs";
+import {loadTestScenario} from "./testutils";
 
 const FORCESIDE_TEMPLATE = `<ForceSide>
     <ObjectHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -40,8 +41,7 @@ describe("ForceSide class", () => {
 
 describe("Side relations", () => {
     it("root units", () => {
-        let data = fs.readFileSync(__dirname + '/data/SimpleScenario.xml', { encoding: "utf-8" });
-        let scenario = MilitaryScenario.createFromString(data.toString());
+        let scenario = loadTestScenario();
         expect(scenario.forceSides).toBeInstanceOf(Array);
         expect(scenario.forceSides.length).toBe(3);
         let forceSide = scenario.forceSides[0];

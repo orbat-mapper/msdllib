@@ -1,7 +1,7 @@
 import {MilitaryScenario, ScenarioId} from "../src/index";
-import {} from 'jest'
 import {EMPTY_SCENARIO} from "./testdata";
 import * as fs from "fs";
+import {loadTestScenario} from "./testutils";
 
 describe("MilitaryScenario class", () => {
     it("is defined", () => {
@@ -57,8 +57,7 @@ describe("MilitaryScenario class", () => {
 
 describe("Simple scenario", () => {
     it("load from file", () => {
-        let data = fs.readFileSync(__dirname + '/data/SimpleScenario.xml', { encoding: "utf-8" });
-        let scenario = MilitaryScenario.createFromString(data.toString());
+        let scenario = loadTestScenario();
         expect(scenario.units).toBeInstanceOf(Array);
         expect(scenario.units.length).toBe(6);
         expect(scenario.equipment).toBeInstanceOf(Array);
