@@ -1,4 +1,4 @@
-import {getTagElement, getTagElements, getTagValue} from "./utils";
+import {getTagElement, getTagElements, getTagValue, setCharAt} from "./utils";
 import {Feature, Point} from "geojson";
 import {LngLatElevationTuple, LngLatTuple, MsdlLocation} from "./geo";
 import {ForceOwnerType} from "./enums";
@@ -73,6 +73,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
         if (this.directionOfMovement) {
             properties.direction = this.directionOfMovement;
         }
+        properties.sidc = setCharAt(this.symbolIdentifier, 1, "F");
 
         feature = {
             id: this.objectHandle,
