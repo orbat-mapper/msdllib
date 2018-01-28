@@ -2,7 +2,7 @@ import {ScenarioId} from "./scenarioid";
 import {getTagElement, getTagElements, getTagValue} from "./utils";
 import {EquipmentItem, TacticalJson, Unit} from "./unitequipment";
 import {Feature, FeatureCollection, Point} from "geojson";
-import {HostilityStatusCode} from "./enums";
+import {HostilityStatusCode, rel2code} from "./enums";
 
 /**
  * MilitaryScenarioType
@@ -85,6 +85,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     rootUnits: Unit[] = [];
     private unitMap: { [id: string]: Unit } = {};
     private forceSideMap: { [id: string]: ForceSide } = {};
+    private _primarySide: ForceSide;
 
     constructor(public element?: Element) {
         if (element) {
@@ -92,6 +93,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
             this.initializeForceSides();
             this.initializeUnits();
             this.initializeEquipment();
+            this.primarySide = this.forceSides[0];
         }
     }
 
@@ -158,5 +160,40 @@ export class MilitaryScenario implements MilitaryScenarioType {
         //         unit.equipment.push(equip);
         //     }
         // }
+    }
+
+    set primarySide(side: ForceSide) {
+        if (!side) {
+            this._primarySide = null;
+            return;
+        }
+        this._primarySide = side;
+        for (let rootUnit of side.rootUnits) {
+            this.setAffiliation(rootUnit, "F")
+        }
+        for (let association of side.associations) {
+            let code = rel2code(association.relationship);
+            if (association.affiliateHandle === side.objectHandle) {
+                console.warn(side.name + " has an association with itself");
+                continue;
+            }
+            let rootUnits = this.forceSideMap[association.affiliateHandle].rootUnits;
+            for (let unit of rootUnits) {
+                this.setAffiliation(unit, code);
+            }
+        }
+    }
+
+    get primarySide() {
+        return this._primarySide;
+    }
+
+
+
+    private setAffiliation(unit: Unit, s: string) {
+        unit.setAffilitation(s);
+        for (let subordinate of unit.subordinates) {
+            this.setAffiliation(subordinate, s);
+        }
     }
 }

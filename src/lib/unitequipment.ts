@@ -19,9 +19,11 @@ export interface UnitEquipmentInterface {
     /** The direction of movement, in compass degrees */
     directionOfMovement: number;
     superiorHandle: string;
+    sidc: string;
 }
 
 export class UnitEquipmentBase implements UnitEquipmentInterface {
+    sidc: string;
     location: LngLatTuple | LngLatElevationTuple;
     speed: number;
     directionOfMovement: number;
@@ -36,6 +38,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
         this.symbolIdentifier = getTagValue(this.element, "SymbolIdentifier");
         this.name = getTagValue(element, "Name");
         this.getDisposition();
+        this.sidc = this.symbolIdentifier;
     }
 
     private getDisposition() {
@@ -57,6 +60,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     constructor(readonly element: Element) {
         super(element);
         this.initializeRelations();
+        this.initializeSymbol();
     }
 
     get isRoot(): boolean {
@@ -73,7 +77,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
         if (this.directionOfMovement) {
             properties.direction = this.directionOfMovement;
         }
-        properties.sidc = setCharAt(this.symbolIdentifier, 1, "F");
+        properties.sidc = this.sidc;
 
         feature = {
             id: this.objectHandle,
@@ -87,7 +91,12 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
         return feature;
     }
 
-
+    setAffilitation(s: string) {
+        this.sidc = setCharAt(this.sidc, 1, s);
+        for (let equipment of this.equipment) {
+            equipment.setAffilitation(s);
+        }
+    }
 
     private initializeRelations() {
         let forceRelationChoice = getTagValue(this.element, "ForceRelationChoice");
@@ -104,6 +113,12 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
         // Todo: Add support for support and organic relations
 
     }
+
+    private initializeSymbol() {
+        //
+    }
+
+
 }
 
 export class EquipmentItem extends UnitEquipmentBase {
@@ -134,5 +149,9 @@ export class EquipmentItem extends UnitEquipmentBase {
             properties
         };
         return feature;
+    }
+
+    public setAffilitation(s: string) {
+        this.sidc = setCharAt(this.symbolIdentifier, 1, s);
     }
 }

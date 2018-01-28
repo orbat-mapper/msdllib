@@ -153,8 +153,6 @@ describe("Unit relations", () => {
         expect(hq.subordinates.length).toBe(2);
         expect(hq.subordinates[0].name).toBe("1th");
         expect(hq.subordinates[1].name).toBe("2nd");
-
-
     });
 });
 
