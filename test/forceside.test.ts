@@ -4,6 +4,7 @@ import {EquipmentItem} from "../src/lib/unitequipment";
 import {ForceSide, MilitaryScenario, ScenarioId} from "../src";
 import * as fs from "fs";
 import {loadTestScenario} from "./testutils";
+import {HostilityStatusCode} from "../src/lib/enums";
 
 const FORCESIDE_TEMPLATE = `<ForceSide>
     <ObjectHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -13,6 +14,10 @@ const FORCESIDE_TEMPLATE = `<ForceSide>
         <Association>
             <AffiliateHandle>e7ae4710-2dcd-11e2-be2b-000c294c9df8</AffiliateHandle>
             <Relationship>HO</Relationship>
+        </Association>
+        <Association>
+            <AffiliateHandle>e7ae4710-2ccc-11e2-be2b-000c294c9df8</AffiliateHandle>
+            <Relationship>FR</Relationship>
         </Association>
     </Associations>
 </ForceSide>`;
@@ -36,6 +41,13 @@ describe("ForceSide class", () => {
         expect(forceSide.allegianceHandle).toBe("e7ad0e8d-2dcd-11e2-be2b-000c294c9df8");
         expect(forceSide.name).toBe("Friendly");
         expect(forceSide.isSide).toBe(true);
+        expect(forceSide.associations).toBeDefined();
+        expect(forceSide.associations.length).toBe(2);
+        expect(forceSide.associations[0].affiliateHandle).toBe("e7ae4710-2dcd-11e2-be2b-000c294c9df8");
+        expect(forceSide.associations[0].relationship).toBe(HostilityStatusCode.Hostile);
+        expect(forceSide.associations[1].relationship).toBe(HostilityStatusCode.Friend);
+
+
     });
 
     it("has GeoJSON interface", () => {

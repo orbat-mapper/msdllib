@@ -2,6 +2,7 @@ import {ScenarioId} from "./scenarioid";
 import {getTagElement, getTagElements, getTagValue} from "./utils";
 import {EquipmentItem, TacticalJson, Unit} from "./unitequipment";
 import {Feature, FeatureCollection, Point} from "geojson";
+import {HostilityStatusCode} from "./enums";
 
 /**
  * MilitaryScenarioType
@@ -21,16 +22,23 @@ export interface ForceSideType {
     rootUnits: Unit[];
 }
 
+export interface AssociationType {
+    affiliateHandle: string;
+    relationship: HostilityStatusCode;
+}
+
 export class ForceSide implements ForceSideType {
     objectHandle: string;
     name: string;
     allegianceHandle: string;
     rootUnits: Unit[] = [];
+    associations: AssociationType[] = [];
 
     constructor(public element: Element) {
         this.name = getTagValue(element, "ForceSideName");
         this.objectHandle = getTagValue(element, "ObjectHandle");
         this.allegianceHandle = getTagValue(element, "AllegianceHandle");
+        this.initAssociations();
     }
 
     get isSide(): boolean {
@@ -56,6 +64,16 @@ export class ForceSide implements ForceSideType {
             }
         }
         return { type: "FeatureCollection", features };
+    }
+
+    private initAssociations() {
+        for (let e of getTagElements(this.element, "Association")) {
+            let association = {
+                affiliateHandle: getTagValue(e, "AffiliateHandle"),
+                relationship: getTagValue(e, "Relationship") as HostilityStatusCode
+            };
+            this.associations.push(association);
+        }
     }
 }
 
