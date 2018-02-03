@@ -1,28 +1,32 @@
 import * as L from 'leaflet';
+import './styles.css';
 import 'leaflet/dist/leaflet.css';
+
 import { xml } from 'd3-request';
 import { MilitaryScenario } from 'msdllib'
 import url from '../../test/data/SimpleScenario.xml';
 import * as ms from 'milsymbol';
 
-
-/** @type {MilitaryScenario} */
-var scenario;
-
-
-let map = initializeMap();
+/** @type {L.Map} */
+var map = initializeMap();
+/** @type {L.Control.Layers} */
+var layersControl;
 
 function initializeMap() {
     let map = L.map('map').setView([51.505, -0.09], 13);
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    let baseLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    });
+    baseLayer.addTo(map);
+
+    layersControl = L.control.layers({}, {}, { hideSingleBase: true }).addTo(map);
     L.control.scale({ metric: true, imperial: false }).addTo(map);
     console.info("Map initialized")
     return map;
 }
 
 function createMilsymbolIcon(feature, size = 25) {
+
     // https://www.spatialillusions.com/milsymbol/docs/index.html
     let mysymbol = new ms.Symbol(
         feature.properties.sidc, {});
@@ -38,20 +42,31 @@ function createMilsymbolIcon(feature, size = 25) {
 }
 
 function createUnitMarker(feature, latlng) {
-
     let myicon = createMilsymbolIcon(feature)
     return L.marker(latlng, { icon: myicon, draggable: true });
 }
 
-function addUnitsToMap() {
-    let mlayer = L.geoJSON(scenario.forceSides[0].toGeoJson(), { pointToLayer: createUnitMarker });
-    map.addLayer(mlayer)
-    mlayer.bindPopup(layer => `${layer.feature.properties.sidc}`);
+/** @param {MilitaryScenario} scenario */
+function addUnitsToMap(scenario) {
+    let g = L.featureGroup();
+    for (let forceSide of scenario.forceSides) {
+        let mlayer = L.geoJSON(forceSide.toGeoJson(), { pointToLayer: createUnitMarker });
+        map.addLayer(mlayer);
+        g.addLayer(mlayer);
+        layersControl.addOverlay(mlayer, forceSide.name);
+    }
 
+    map.fitBounds(g.getBounds());
 }
 
+/** @param {MilitaryScenario} scenario */
+function initializeScenario(scenario) {
+    addUnitsToMap(scenario);
+}
+
+// Load scenario
 xml(url, (doc) => {
-    scenario = new MilitaryScenario(doc);
-    addUnitsToMap();
+    let scenario = new MilitaryScenario(doc);
+    initializeScenario(scenario);
 });
 
