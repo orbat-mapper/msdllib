@@ -8,9 +8,14 @@ import url from '../../test/data/SimpleScenario.xml';
 import * as ms from 'milsymbol';
 
 /** @type {L.Map} */
-var map = initializeMap();
+var map;
 /** @type {L.Control.Layers} */
 var layersControl;
+/** @type {L.Layer[]} */
+var unitLayers = [];
+
+map = initializeMap();
+setupDragNDrop();
 
 function initializeMap() {
     let map = L.map('map').setView([51.505, -0.09], 13);
@@ -24,6 +29,34 @@ function initializeMap() {
     console.info("Map initialized")
     return map;
 }
+
+function setupDragNDrop() {
+    let dropArea = document.getElementById('drop-area');
+    dropArea.ondragover = function () { this.className = 'hover'; return false; };
+    dropArea.ondragend = function () { this.className = ''; return false; };
+    dropArea.ondrop = function (e) {
+        this.className = '';
+        e.preventDefault();
+        readfiles(e.dataTransfer.files);
+    }
+}
+
+function readfiles(files) {
+    if (!files.length) {
+        console.warn("Please drag file");
+        return;
+    }
+    var reader = new FileReader();
+
+    reader.onload = function (event) {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(event.target.result, "application/xml");
+        let scenario = new MilitaryScenario(doc);
+        initializeScenario(scenario);
+    };
+    reader.readAsText(files[0]);
+}
+
 
 function createMilsymbolIcon(feature, size = 25) {
 
@@ -43,7 +76,7 @@ function createMilsymbolIcon(feature, size = 25) {
 
 function createUnitMarker(feature, latlng) {
     let myicon = createMilsymbolIcon(feature)
-    return L.marker(latlng, { icon: myicon, draggable: true });
+    return L.marker(latlng, { icon: myicon, draggable: false });
 }
 
 /** @param {MilitaryScenario} scenario */
@@ -51,6 +84,7 @@ function addUnitsToMap(scenario) {
     let g = L.featureGroup();
     for (let forceSide of scenario.forceSides) {
         let mlayer = L.geoJSON(forceSide.toGeoJson(), { pointToLayer: createUnitMarker });
+        unitLayers.push(mlayer);
         map.addLayer(mlayer);
         g.addLayer(mlayer);
         layersControl.addOverlay(mlayer, forceSide.name);
@@ -61,6 +95,13 @@ function addUnitsToMap(scenario) {
 
 /** @param {MilitaryScenario} scenario */
 function initializeScenario(scenario) {
+    if (unitLayers.length > 0) {
+        for (let layer of unitLayers) {
+            layersControl.removeLayer(layer);
+            layer.remove();
+        }
+        unitLayers = [];
+    }
     addUnitsToMap(scenario);
 }
 
