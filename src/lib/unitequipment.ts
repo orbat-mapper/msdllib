@@ -1,7 +1,7 @@
 import {getTagElement, getTagElements, getTagValue, setCharAt} from "./utils";
 import {Feature, Point} from "geojson";
 import {LngLatElevationTuple, LngLatTuple, MsdlLocation} from "./geo";
-import {ForceOwnerType} from "./enums";
+import {ForceOwnerType, StandardIdentities} from "./enums";
 
 export interface TacticalJson {
     sidc?: string;
@@ -38,7 +38,8 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
         this.symbolIdentifier = getTagValue(this.element, "SymbolIdentifier");
         this.name = getTagValue(element, "Name");
         this.getDisposition();
-        this.sidc = this.symbolIdentifier;
+        this.sidc = setCharAt(this.symbolIdentifier,1, StandardIdentities.NoneSpecified);
+
     }
 
     private getDisposition() {
@@ -91,7 +92,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
         return feature;
     }
 
-    setAffilitation(s: string) {
+    setAffilitation(s: StandardIdentities) {
         this.sidc = setCharAt(this.sidc, 1, s);
         for (let equipment of this.equipment) {
             equipment.setAffilitation(s);

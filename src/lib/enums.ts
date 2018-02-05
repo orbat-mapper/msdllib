@@ -19,7 +19,7 @@ export enum HostilityStatusCode {
     Unknown = "UNK"
 }
 
-export function rel2code(relationship: HostilityStatusCode) {
+export function rel2code(relationship: HostilityStatusCode): StandardIdentities {
     //     if(standardVersion == 'NATO'){
     // 		values = {	"P":"Pending",
     // 					"U":"Unknown",
@@ -35,34 +35,51 @@ export function rel2code(relationship: HostilityStatusCode) {
     switch (relationship) {
 
         case "AFR":
-            return "A";
+            return StandardIdentities.AssumedFriend;
         case "AHO":
-            return "H";
+            return StandardIdentities.Hostile;
         case "AIV":
-            return "O";
+            return StandardIdentities.NoneSpecified;
         case "ANT":
-            return "N";
+            return StandardIdentities.Neutral;
         case "FAKER":
-            return "K";
+            return StandardIdentities.Faker;
         case "FR":
-            return "F";
+            return StandardIdentities.Friend;
         case "HO":
-            return "H";
+            return StandardIdentities.Hostile;
         case "IV":
-            return "O";
+            return StandardIdentities.NoneSpecified;
         case "JOKER":
-            return "J";
+            return StandardIdentities.Joker;
         case "NEUTRL":
-            return "N";
+            return StandardIdentities.Neutral;
         case "PENDNG":
-            return "P";
+            return StandardIdentities.Pending;
         case "SUSPCT":
-            return "S";
+            return StandardIdentities.Suspect;
         case "UNK":
-            return "U";
+            return StandardIdentities.Unknown;
         default:
-            return "O";
+            return StandardIdentities.NoneSpecified;
     }
-
 }
 
+
+export enum StandardIdentities {
+    Pending = "P",
+    Unknown = "U",
+    AssumedFriend = "A",
+    Friend = "F",
+    Neutral = "N",
+    Suspect = "S",
+    Hostile = "H",
+    ExercisePending = "G",
+    ExerciseUnknown = "W",
+    ExerciseFriend = "D",
+    ExerciseNeutral = "L",
+    ExerciseAssumedFriend = "M",
+    Joker = "J",
+    Faker = "K",
+    NoneSpecified = "O"
+}

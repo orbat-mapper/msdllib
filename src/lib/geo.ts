@@ -33,7 +33,7 @@ export class MsdlLocation {
         } else if (this.coordinateChoice === "GCC") {
             this.location = this.parseGCCLocation();
         } else {
-            console.warn(`Unhandled coordinate choice ${this.coordinateChoice}`);
+            // console.warn(`Unhandled coordinate choice ${this.coordinateChoice}`);
             this.location = undefined;
         }
     }
@@ -54,7 +54,6 @@ export class MsdlLocation {
         } else {
             return point;
         }
-
     }
 
     private parseGDCLocation(): LngLatTuple | LngLatElevationTuple {

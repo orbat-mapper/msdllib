@@ -2,7 +2,7 @@ import {ScenarioId} from "./scenarioid";
 import {getTagElement, getTagElements, getTagValue} from "./utils";
 import {EquipmentItem, TacticalJson, Unit} from "./unitequipment";
 import {Feature, FeatureCollection, Point} from "geojson";
-import {HostilityStatusCode, rel2code} from "./enums";
+import {HostilityStatusCode, rel2code, StandardIdentities} from "./enums";
 
 /**
  * MilitaryScenarioType
@@ -169,7 +169,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
         }
         this._primarySide = side;
         for (let rootUnit of side.rootUnits) {
-            this.setAffiliation(rootUnit, "F")
+            this.setAffiliation(rootUnit, StandardIdentities.Friend)
         }
         for (let association of side.associations) {
             let code = rel2code(association.relationship);
@@ -190,7 +190,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
 
 
-    private setAffiliation(unit: Unit, s: string) {
+    private setAffiliation(unit: Unit, s: StandardIdentities) {
         unit.setAffilitation(s);
         for (let subordinate of unit.subordinates) {
             this.setAffiliation(subordinate, s);
