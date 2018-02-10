@@ -3,7 +3,7 @@ import './styles.css';
 import 'leaflet/dist/leaflet.css';
 
 import { xml } from 'd3-request';
-import { MilitaryScenario } from 'msdllib'
+import { MilitaryScenario, TacticalJson } from 'msdllib'
 import url from '../../test/data/SimpleScenario.xml';
 import * as ms from 'milsymbol';
 
@@ -83,7 +83,7 @@ function createUnitMarker(feature, latlng) {
 function addUnitsToMap(scenario) {
     let g = L.featureGroup();
     for (let forceSide of scenario.forceSides) {
-        let mlayer = L.geoJSON(forceSide.toGeoJson(), { pointToLayer: createUnitMarker });
+        let mlayer = L.geoJSON(forceSide.toGeoJson(), { pointToLayer: createUnitMarker, onEachFeature });
         unitLayers.push(mlayer);
         map.addLayer(mlayer);
         g.addLayer(mlayer);
@@ -92,6 +92,17 @@ function addUnitsToMap(scenario) {
 
     map.fitBounds(g.getBounds());
 }
+
+function onEachFeature(feature, layer) {
+    // does this feature have a property named popupContent?
+    if (feature.properties) {
+        /** @type {TacticalJson} */
+        let properties = feature.properties;
+    
+        layer.bindPopup(`<b>SIDC</b> ${properties.sidc}`);
+    }
+}
+
 
 /** @param {MilitaryScenario} scenario */
 function initializeScenario(scenario) {
