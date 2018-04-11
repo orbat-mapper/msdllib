@@ -1,5 +1,7 @@
 # MSDLlib
 
+**Work in progress**
+
 A JavaScript library for manipulating Military Scenario Definition Language (MSDL) data.
 
 The Military Scenario Definition Language is an XML-based language designed to support military
@@ -18,20 +20,6 @@ JavaScript. Currently MSDLlib only supports the most commonly used MSDL data str
 The MSDL schema [SISO-STD-007-2008](https://www.sisostds.org/DesktopModules/Bring2mind/DMX/Download.aspx?Command=Core_Download&EntryId=45690&PortalId=0&TabId=105)
 is copyright © 2015 by the Simulation Interoperability Standards Organization, Inc. 
 
-
-## Install
-
-MSDLlib is available as a npm package:
-
-```
-npm install msdllib
-```
-
-or if you prefer yarn:
-
-```
-yarn add msdllib
-```
 
 ## Usage
 
