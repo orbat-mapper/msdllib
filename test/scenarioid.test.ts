@@ -1,5 +1,5 @@
-import {MilitaryScenario, ScenarioId} from "../src/index";
-import {parseFromString} from "./testdata";
+import { MilitaryScenario, ScenarioId } from "../src/index";
+import { parseFromString } from "./testdata";
 
 const SCENARIO_ID_TEMPLATE = `<ScenarioID xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
                   xmlns:modelID="http://www.sisostds.org/schemas/modelID">
@@ -17,24 +17,24 @@ const SCENARIO_ID_TEMPLATE = `<ScenarioID xmlns="urn:sisostds:scenario:military:
 
 
 describe("ScenarioId", () => {
-    it("defined", () => {
-        expect(MilitaryScenario).toBeDefined();
-    });
+  it("defined", () => {
+    expect(MilitaryScenario).toBeDefined();
+  });
 
-    it("create from Element", () => {
-        let element = parseFromString(SCENARIO_ID_TEMPLATE);
-        let sid = new ScenarioId(element);
-        expect(sid.element).toBeInstanceOf(Element);
-        expect(sid.element).toBe(element);
-    });
+  it("create from Element", () => {
+    let element = parseFromString(SCENARIO_ID_TEMPLATE);
+    let sid = new ScenarioId(element);
+    expect(sid.element).toBeInstanceOf(Element);
+    expect(sid.element).toBe(element);
+  });
 
-    it("read data", () => {
-        let element = parseFromString(SCENARIO_ID_TEMPLATE);
-        let sid = new ScenarioId(element);
-        expect(sid.name).toBe("Empty scenario");
-        expect(sid.description).toBe("Description");
-        expect(sid.securityClassification).toBe("Unclassified");
-    });
+  it("read data", () => {
+    let element = parseFromString(SCENARIO_ID_TEMPLATE);
+    let sid = new ScenarioId(element);
+    expect(sid.name).toBe("Empty scenario");
+    expect(sid.description).toBe("Description");
+    expect(sid.securityClassification).toBe("Unclassified");
+  });
 
 });
 

@@ -1,199 +1,197 @@
-import {ScenarioId} from "./scenarioid";
-import {getTagElement, getTagElements, getTagValue} from "./utils";
-import {EquipmentItem, TacticalJson, Unit} from "./unitequipment";
-import {Feature, FeatureCollection, Point} from "geojson";
-import {HostilityStatusCode, rel2code, StandardIdentities} from "./enums";
+import { ScenarioId } from "./scenarioid";
+import { getTagElement, getTagElements, getTagValue } from "./utils";
+import { EquipmentItem, TacticalJson, Unit } from "./unitequipment";
+import { Feature, FeatureCollection, Point } from "geojson";
+import { HostilityStatusCode, rel2code, StandardIdentities } from "./enums";
 
 /**
  * MilitaryScenarioType
  *
  */
 export interface MilitaryScenarioType {
-    scenarioId: ScenarioId;
-    forceSides: any[];
-    units: any[];
-    equipment: any[];
+  scenarioId: ScenarioId;
+  forceSides: any[];
+  units: any[];
+  equipment: any[];
 }
 
 export interface ForceSideType {
-    objectHandle: string;
-    name: string;
-    allegianceHandle?: string;
-    rootUnits: Unit[];
+  objectHandle: string;
+  name: string;
+  allegianceHandle?: string;
+  rootUnits: Unit[];
 }
 
 export interface AssociationType {
-    affiliateHandle: string;
-    relationship: HostilityStatusCode;
+  affiliateHandle: string;
+  relationship: HostilityStatusCode;
 }
 
 export class ForceSide implements ForceSideType {
-    objectHandle: string;
-    name: string;
-    allegianceHandle: string;
-    rootUnits: Unit[] = [];
-    associations: AssociationType[] = [];
+  objectHandle: string;
+  name: string;
+  allegianceHandle: string;
+  rootUnits: Unit[] = [];
+  associations: AssociationType[] = [];
 
-    constructor(public element: Element) {
-        this.name = getTagValue(element, "ForceSideName");
-        this.objectHandle = getTagValue(element, "ObjectHandle");
-        this.allegianceHandle = getTagValue(element, "AllegianceHandle");
-        this.initAssociations();
-    }
+  constructor(public element: Element) {
+    this.name = getTagValue(element, "ForceSideName");
+    this.objectHandle = getTagValue(element, "ObjectHandle");
+    this.allegianceHandle = getTagValue(element, "AllegianceHandle");
+    this.initAssociations();
+  }
 
-    get isSide(): boolean {
-        return !this.allegianceHandle || this.objectHandle === this.allegianceHandle;
-    }
+  get isSide(): boolean {
+    return !this.allegianceHandle || this.objectHandle === this.allegianceHandle;
+  }
 
-    toGeoJson(): FeatureCollection<Point, TacticalJson> {
-        let features: Feature<Point>[] = [];
+  toGeoJson(): FeatureCollection<Point, TacticalJson> {
+    let features: Feature<Point>[] = [];
 
-        function addSubordinates(subordinates: Unit[]) {
-            for (let unit of subordinates) {
-                features.push(unit.toGeoJson());
-                if (unit.subordinates) {
-                    addSubordinates(unit.subordinates);
-                }
-            }
+    function addSubordinates(subordinates: Unit[]) {
+      for (let unit of subordinates) {
+        features.push(unit.toGeoJson());
+        if (unit.subordinates) {
+          addSubordinates(unit.subordinates);
         }
-
-        for (let rootUnit of this.rootUnits) {
-            features.push(rootUnit.toGeoJson());
-            if (rootUnit.subordinates) {
-                addSubordinates(rootUnit.subordinates);
-            }
-        }
-        return { type: "FeatureCollection", features };
+      }
     }
 
-    private initAssociations() {
-        for (let e of getTagElements(this.element, "Association")) {
-            let association = {
-                affiliateHandle: getTagValue(e, "AffiliateHandle"),
-                relationship: getTagValue(e, "Relationship") as HostilityStatusCode
-            };
-            this.associations.push(association);
-        }
+    for (let rootUnit of this.rootUnits) {
+      features.push(rootUnit.toGeoJson());
+      if (rootUnit.subordinates) {
+        addSubordinates(rootUnit.subordinates);
+      }
     }
+    return { type: "FeatureCollection", features };
+  }
+
+  private initAssociations() {
+    for (let e of getTagElements(this.element, "Association")) {
+      let association = {
+        affiliateHandle: getTagValue(e, "AffiliateHandle"),
+        relationship: getTagValue(e, "Relationship") as HostilityStatusCode
+      };
+      this.associations.push(association);
+    }
+  }
 }
 
 export class MilitaryScenario implements MilitaryScenarioType {
-    scenarioId: ScenarioId;
-    forceSides: ForceSide[] = [];
-    equipment: EquipmentItem[] = [];
-    units: Unit[] = [];
-    rootUnits: Unit[] = [];
-    private unitMap: { [id: string]: Unit } = {};
-    private forceSideMap: { [id: string]: ForceSide } = {};
-    private _primarySide: ForceSide;
+  scenarioId: ScenarioId;
+  forceSides: ForceSide[] = [];
+  equipment: EquipmentItem[] = [];
+  units: Unit[] = [];
+  rootUnits: Unit[] = [];
+  private unitMap: { [id: string]: Unit } = {};
+  private forceSideMap: { [id: string]: ForceSide } = {};
+  private _primarySide: ForceSide;
 
-    constructor(public element?: Element) {
-        if (element) {
-            this.initializeMetaInfo();
-            this.initializeForceSides();
-            this.initializeUnits();
-            this.initializeEquipment();
-            this.primarySide = this.forceSides[0];
+  constructor(public element?: Element) {
+    if (element) {
+      this.initializeMetaInfo();
+      this.initializeForceSides();
+      this.initializeUnits();
+      this.initializeEquipment();
+      this.primarySide = this.forceSides[0];
+    }
+  }
+
+  static createFromString(xmlString: string) {
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(xmlString, "text/xml");
+    return new MilitaryScenario(doc.documentElement);
+  }
+
+  private initializeMetaInfo() {
+    this.scenarioId = new ScenarioId(getTagElement(this.element, 'ScenarioID'));
+  }
+
+  private initializeForceSides() {
+    let forceSideElements = getTagElements(this.element, "ForceSide");
+    this.forceSides = [];
+    for (let e of forceSideElements) {
+      let forceSide = new ForceSide(e);
+      this.forceSides.push(forceSide);
+      this.forceSideMap[forceSide.objectHandle] = forceSide;
+    }
+  }
+
+  private initializeUnits() {
+    let unitElements = getTagElements(this.element, "Unit");
+    for (let unitElement of unitElements) {
+      let unit = new Unit(unitElement);
+      this.units.push(unit);
+      this.unitMap[unit.objectHandle] = unit;
+    }
+    this.buildHierarchy(this.units);
+  }
+
+  private buildHierarchy(units: Unit[]) {
+    for (let unit of units) {
+      if (!unit.superiorHandle) continue;
+      if (unit.isRoot) {
+        this.rootUnits.push(unit);
+        let forceSide = this.forceSideMap[unit.superiorHandle];
+        if (forceSide) {
+          forceSide.rootUnits.push(unit);
         }
-    }
-
-    static createFromString(xmlString: string) {
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(xmlString, "text/xml");
-        return new MilitaryScenario(doc.documentElement);
-    }
-
-    private initializeMetaInfo() {
-        this.scenarioId = new ScenarioId(getTagElement(this.element, 'ScenarioID'));
-    }
-
-    private initializeForceSides() {
-        let forceSideElements = getTagElements(this.element, "ForceSide");
-        this.forceSides = [];
-        for (let e of forceSideElements) {
-            let forceSide = new ForceSide(e);
-            this.forceSides.push(forceSide);
-            this.forceSideMap[forceSide.objectHandle] = forceSide;
+      } else {
+        let parentUnit = this.unitMap[unit.superiorHandle];
+        if (parentUnit) {
+          parentUnit.subordinates.push(unit);
         }
+      }
     }
 
-    private initializeUnits() {
-        let unitElements = getTagElements(this.element, "Unit");
-        for (let unitElement of unitElements) {
-            let unit = new Unit(unitElement);
-            this.units.push(unit);
-            this.unitMap[unit.objectHandle] = unit;
-        }
-        this.buildHierarchy(this.units);
+  }
+
+  private initializeEquipment() {
+    let equipmentItemElements = getTagElements(this.element, "EquipmentItem");
+    for (let equipmentItemElement of equipmentItemElements) {
+      this.equipment.push(new EquipmentItem(equipmentItemElement));
     }
 
-    private buildHierarchy(units: Unit[]) {
-        for (let unit of units) {
-            if (!unit.superiorHandle) continue;
-            if (unit.isRoot) {
-                this.rootUnits.push(unit);
-                let forceSide = this.forceSideMap[unit.superiorHandle];
-                if (forceSide) {
-                    forceSide.rootUnits.push(unit);
-                }
-            }
-            else {
-                let parentUnit = this.unitMap[unit.superiorHandle];
-                if (parentUnit) {
-                    parentUnit.subordinates.push(unit);
-                }
-            }
-        }
+    // for (let equip of this.equipment) {
+    //     if (!equip.organicSuperiorHandle) continue;
+    //     let unit = this.unitMap[equip.organicSuperiorHandle];
+    //     if (unit) {
+    //         unit.equipment.push(equip);
+    //     }
+    // }
+  }
 
+  set primarySide(side: ForceSide) {
+    if (!side) {
+      this._primarySide = null;
+      return;
     }
-
-    private initializeEquipment() {
-        let equipmentItemElements = getTagElements(this.element, "EquipmentItem");
-        for (let equipmentItemElement of equipmentItemElements) {
-            this.equipment.push(new EquipmentItem(equipmentItemElement));
-        }
-
-        // for (let equip of this.equipment) {
-        //     if (!equip.organicSuperiorHandle) continue;
-        //     let unit = this.unitMap[equip.organicSuperiorHandle];
-        //     if (unit) {
-        //         unit.equipment.push(equip);
-        //     }
-        // }
+    this._primarySide = side;
+    for (let rootUnit of side.rootUnits) {
+      this.setAffiliation(rootUnit, StandardIdentities.Friend)
     }
-
-    set primarySide(side: ForceSide) {
-        if (!side) {
-            this._primarySide = null;
-            return;
-        }
-        this._primarySide = side;
-        for (let rootUnit of side.rootUnits) {
-            this.setAffiliation(rootUnit, StandardIdentities.Friend)
-        }
-        for (let association of side.associations) {
-            let code = rel2code(association.relationship);
-            if (association.affiliateHandle === side.objectHandle) {
-                console.warn(side.name + " has an association with itself");
-                continue;
-            }
-            let rootUnits = this.forceSideMap[association.affiliateHandle].rootUnits;
-            for (let unit of rootUnits) {
-                this.setAffiliation(unit, code);
-            }
-        }
+    for (let association of side.associations) {
+      let code = rel2code(association.relationship);
+      if (association.affiliateHandle === side.objectHandle) {
+        console.warn(side.name + " has an association with itself");
+        continue;
+      }
+      let rootUnits = this.forceSideMap[association.affiliateHandle].rootUnits;
+      for (let unit of rootUnits) {
+        this.setAffiliation(unit, code);
+      }
     }
+  }
 
-    get primarySide() {
-        return this._primarySide;
+  get primarySide() {
+    return this._primarySide;
+  }
+
+
+  private setAffiliation(unit: Unit, s: StandardIdentities) {
+    unit.setAffiliation(s);
+    for (let subordinate of unit.subordinates) {
+      this.setAffiliation(subordinate, s);
     }
-
-
-
-    private setAffiliation(unit: Unit, s: StandardIdentities) {
-        unit.setAffiliation(s);
-        for (let subordinate of unit.subordinates) {
-            this.setAffiliation(subordinate, s);
-        }
-    }
+  }
 }
