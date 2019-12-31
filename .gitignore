@@ -6,6 +6,11 @@ coverage
 .vscode
 .idea
 dist
-compiled
+compiled/
 .awcache
 .cache
+
+build/
+cjs/
+es/
+*.tgz

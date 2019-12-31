@@ -3,11 +3,18 @@
   "version": "1.0.0",
   "description": "A library for manipulating Military Scenario Defintion Language (MSDL) data",
   "keywords": [],
-  "main": "dist/msdllib.umd.js",
-  "module": "dist/msdllib.es5.js",
-  "typings": "dist/types/msdllib.d.ts",
+  "main": "cjs/index.js",
+  "module": "es/index.js",
+  "unpkg": "dist/msdllib.min.js",
+  "typings": "cjs/index.d.ts",
   "files": [
-    "dist"
+    "cjs/",
+    "dist/",
+    "es/",
+    "src/",
+    "LICENSE.md",
+    "package.json",
+    "README.md"
   ],
   "author": "Kjell Magne Fauske <kjellmf@gmail.com>",
   "repository": {
@@ -21,7 +28,12 @@
   "scripts": {
     "lint": "",
     "prebuild": "rimraf dist",
-    "build": "tsc && rollup -c rollup.config.ts && rimraf compiled && typedoc --out dist/docs --target es6 --theme minimal --mode file src",
+    "obuild": "tsc && rollup -c rollup.config.ts && rimraf compiled && typedoc --out dist/docs --target es6 --theme minimal --mode file src",
+    "build": "npm run build:cjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "build:cjs": "tsc --module commonjs --outDir cjs",
+    "build:es": "tsc --module ES2015 --outDir es",
+    "build:umd": "rollup --config rollup.config.js --file dist/msdllib.js",
+    "build:umd:min": "rollup --config rollup.config.js --file dist/msdllib.min.js --environment MINIFY",
     "start": "tsc -w & rollup -c rollup.config.ts -w",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -46,10 +58,12 @@
     "ts-jest": "^24.2.0",
     "typedoc": "^0.15.6",
     "typescript": "^3.7.4",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "rollup-plugin-json": "latest",
+    "rollup-plugin-terser": "latest"
   },
   "dependencies": {
-    "ecef-projector": "^1.0.1",
-    "mgrs": "^1.0.0"
+    "mgrs": "^1.0.0",
+    "ecef-projector": "^1.0.1"
   }
 }
