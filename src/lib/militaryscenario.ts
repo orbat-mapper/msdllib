@@ -191,7 +191,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
 
     private setAffiliation(unit: Unit, s: StandardIdentities) {
-        unit.setAffilitation(s);
+        unit.setAffiliation(s);
         for (let subordinate of unit.subordinates) {
             this.setAffiliation(subordinate, s);
         }

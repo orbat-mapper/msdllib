@@ -92,7 +92,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
         return feature;
     }
 
-    setAffilitation(s: StandardIdentities) {
+    setAffiliation(s: StandardIdentities) {
         this.sidc = setCharAt(this.sidc, 1, s);
         for (let equipment of this.equipment) {
             equipment.setAffilitation(s);
