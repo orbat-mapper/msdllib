@@ -1,5 +1,4 @@
 import {MilitaryScenario, ScenarioId} from "../src/index";
-import {} from 'jest'
 import {parseFromString} from "./testdata";
 
 const SCENARIO_ID_TEMPLATE = `<ScenarioID xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"

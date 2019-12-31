@@ -1,97 +1,55 @@
 {
-    "name": "msdllib",
-    "version": "1.0.0",
-    "description": "A library for manipulating Military Scenario Defintion Language (MSDL) data",
-    "keywords": [],
-    "main": "dist/msdllib.umd.js",
-    "module": "dist/msdllib.es5.js",
-    "typings": "dist/types/msdllib.d.ts",
-    "files": [
-        "dist"
-    ],
-    "author": "Kjell Magne Fauske <kjellmf@gmail.com>",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/kjellmf/msdllib.git"
-    },
-    "license": "MIT",
-    "engines": {
-        "node": ">=6.0.0"
-    },
-    "scripts": {
-        "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-        "prebuild": "rimraf dist",
-        "build": "tsc && rollup -c rollup.config.ts && rimraf compiled && typedoc --out dist/docs --target es6 --theme minimal --mode file src",
-        "start": "tsc -w & rollup -c rollup.config.ts -w",
-        "test": "jest",
-        "test:watch": "jest --watch",
-        "test:prod": "npm run lint && npm run test -- --coverage --no-cache",
-        "report-coverage": "cat ./coverage/lcov.info | coveralls"
-    },
-    "lint-staged": {
-        "{src,test}/**/*.ts": [
-            "prettier --write --no-semi --single-quote",
-            "git add"
-        ]
-    },
-    "config": {},
-    "jest": {
-        "transform": {
-            ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-        },
-        "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-        "moduleFileExtensions": [
-            "ts",
-            "tsx",
-            "js"
-        ],
-        "coveragePathIgnorePatterns": [
-            "/node_modules/",
-            "/test/"
-        ],
-        "coverageThreshold": {
-            "global": {
-                "branches": 90,
-                "functions": 95,
-                "lines": 95,
-                "statements": 95
-            }
-        },
-        "collectCoverage": true,
-        "mapCoverage": true
-    },
-    "devDependencies": {
-        "@types/geojson": "^7946.0.0",
-        "@types/jest": "^21.1.2",
-        "@types/leaflet": "^1.2.5",
-        "@types/node": "^8.5.7",
-        "@types/uuid": "^3.4.3",
-        "colors": "^1.1.2",
-        "commitizen": "^2.9.6",
-        "coveralls": "^3.0.0",
-        "cross-env": "^5.1.3",
-        "ecef-projector": "^1.0.1",
-        "husky": "^0.15.0-beta.16",
-        "jest": "^22.0.6",
-        "lint-staged": "^6.0.0",
-        "lodash.camelcase": "^4.3.0",
-        "mgrs": "^1.0.0",
-        "prettier": "^1.9.2",
-        "prompt": "^1.0.0",
-        "replace-in-file": "^3.1.0",
-        "rimraf": "^2.6.2",
-        "rollup": "^0.53.3",
-        "rollup-plugin-commonjs": "^8.2.6",
-        "rollup-plugin-node-resolve": "^3.0.0",
-        "rollup-plugin-sourcemaps": "^0.4.2",
-        "ts-jest": "^22.0.1",
-        "ts-node": "^4.1.0",
-        "tslint": "^5.8.0",
-        "tslint-config-prettier": "^1.6.0",
-        "tslint-config-standard": "^7.0.0",
-        "typedoc": "^0.9.0",
-        "typescript": "^2.6.2",
-        "uuid": "^3.1.0"
-    },
-    "dependencies": {}
+  "name": "msdllib",
+  "version": "1.0.0",
+  "description": "A library for manipulating Military Scenario Defintion Language (MSDL) data",
+  "keywords": [],
+  "main": "dist/msdllib.umd.js",
+  "module": "dist/msdllib.es5.js",
+  "typings": "dist/types/msdllib.d.ts",
+  "files": [
+    "dist"
+  ],
+  "author": "Kjell Magne Fauske <kjellmf@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kjellmf/msdllib.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "lint": "",
+    "prebuild": "rimraf dist",
+    "build": "tsc && rollup -c rollup.config.ts && rimraf compiled && typedoc --out dist/docs --target es6 --theme minimal --mode file src",
+    "start": "tsc -w & rollup -c rollup.config.ts -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:prod": "npm run lint && npm run test -- --coverage --no-cache",
+    "report-coverage": "cat ./coverage/lcov.info | coveralls"
+  },
+  "config": {},
+  "devDependencies": {
+    "@types/geojson": "^7946.0.7",
+    "@types/jest": "^24.0.25",
+    "@types/leaflet": "^1.5.7",
+    "@types/node": "^13.1.2",
+    "@types/uuid": "^3.4.6",
+    "cross-env": "^6.0.3",
+    "jest": "^24.9.0",
+    "lodash.camelcase": "^4.3.0",
+    "rimraf": "^3.0.0",
+    "rollup": "^1.27.14",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "ts-jest": "^24.2.0",
+    "typedoc": "^0.15.6",
+    "typescript": "^3.7.4",
+    "uuid": "^3.3.3"
+  },
+  "dependencies": {
+    "ecef-projector": "^1.0.1",
+    "mgrs": "^1.0.0"
+  }
 }

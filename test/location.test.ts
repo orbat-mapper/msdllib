@@ -1,4 +1,3 @@
-import {} from 'jest'
 import {parseFromString} from "./testdata";
 import {MsdlLocation} from "../src/lib/geo";
 

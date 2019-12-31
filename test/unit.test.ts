@@ -1,4 +1,3 @@
-import {} from 'jest'
 import {parseFromString} from "./testdata";
 import {Unit} from "../src/lib/unitequipment";
 import * as fs from "fs";
