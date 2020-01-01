@@ -1,7 +1,5 @@
 import { parseFromString } from "./testdata";
 import { Unit } from "../src/lib/unitequipment";
-import * as fs from "fs";
-import { MilitaryScenario, ScenarioId } from "../src";
 import { loadTestScenario } from "./testutils";
 
 const UNIT_TEMPLATE = ` <Unit>

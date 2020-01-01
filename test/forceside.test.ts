@@ -1,7 +1,5 @@
 import { parseFromString } from "./testdata";
-import { EquipmentItem } from "../src/lib/unitequipment";
-import { ForceSide, MilitaryScenario, ScenarioId } from "../src";
-import * as fs from "fs";
+import { ForceSide } from "../src";
 import { loadTestScenario } from "./testutils";
 import { HostilityStatusCode } from "../src/lib/enums";
 
