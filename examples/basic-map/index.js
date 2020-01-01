@@ -98,7 +98,6 @@ function onEachFeature(feature, layer) {
     if (feature.properties) {
         /** @type {TacticalJson} */
         let properties = feature.properties;
-    
         layer.bindPopup(`<b>SIDC</b> ${properties.sidc}`);
     }
 }
