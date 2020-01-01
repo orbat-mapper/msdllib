@@ -27,18 +27,19 @@
   },
   "scripts": {
     "lint": "",
-    "prebuild": "rimraf dist",
+    "prebuild": "rimraf dist && rimraf cjs && rimraf es",
     "obuild": "tsc && rollup -c rollup.config.ts && rimraf compiled && typedoc --out dist/docs --target es6 --theme minimal --mode file src",
     "build": "npm run build:cjs && npm run build:es && npm run build:umd && npm run build:umd:min",
-    "build:cjs": "tsc --module commonjs --outDir cjs",
-    "build:es": "tsc --module ES2015 --outDir es",
+    "build:cjs": "tsc  -p ./config/tsconfig_build.json --module commonjs --outDir cjs",
+    "build:es": "tsc -p ./config/tsconfig_build.json --module ES2015 --outDir es",
     "build:umd": "rollup --config rollup.config.js --file dist/msdllib.js",
     "build:umd:min": "rollup --config rollup.config.js --file dist/msdllib.min.js --environment MINIFY",
     "start": "tsc -w & rollup -c rollup.config.ts -w",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:prod": "npm run lint && npm run test -- --coverage --no-cache",
-    "report-coverage": "cat ./coverage/lcov.info | coveralls"
+    "report-coverage": "cat ./coverage/lcov.info | coveralls",
+    "serve": "vue-cli-service serve example/main.ts"
   },
   "config": {},
   "devDependencies": {
@@ -60,7 +61,17 @@
     "typescript": "^3.7.4",
     "uuid": "^3.3.3",
     "rollup-plugin-json": "latest",
-    "rollup-plugin-terser": "latest"
+    "rollup-plugin-terser": "latest",
+    "core-js": "^3.4.4",
+    "vue": "^2.6.10",
+    "@vue/cli-plugin-babel": "^4.1.0",
+    "@vue/cli-plugin-eslint": "^4.1.0",
+    "@vue/cli-plugin-typescript": "^4.1.0",
+    "@vue/cli-service": "^4.1.0",
+    "@vue/eslint-config-typescript": "^4.0.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "vue-template-compiler": "^2.6.10"
   },
   "dependencies": {
     "mgrs": "^1.0.0",
