@@ -47,6 +47,7 @@
     "@types/jest": "^24.0.25",
     "@types/leaflet": "^1.5.7",
     "@types/node": "^13.1.2",
+    "@types/utm": "^1.1.1",
     "@types/uuid": "^3.4.6",
     "@vue/cli-plugin-babel": "^4.1.0",
     "@vue/cli-plugin-eslint": "^4.1.0",
@@ -76,7 +77,8 @@
     "vue-template-compiler": "^2.6.10"
   },
   "dependencies": {
+    "ecef-projector": "^1.0.1",
     "mgrs": "^1.0.0",
-    "ecef-projector": "^1.0.1"
+    "utm": "^1.1.1"
   }
 }

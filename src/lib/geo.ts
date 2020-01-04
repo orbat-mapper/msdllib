@@ -1,7 +1,8 @@
-import { getTagElement, getTagValue } from "./utils";
-
 import * as mgrs from 'mgrs';
 import * as projector from 'ecef-projector';
+import { toLatLon } from "utm";
+
+import { getTagElement, getTagValue } from "./utils";
 
 export type LngLatTuple = [number, number];
 export type LngLatElevationTuple = [number, number, number];
@@ -32,6 +33,9 @@ export class MsdlLocation {
       this.location = this.parseGDCLocation();
     } else if (this.coordinateChoice === "GCC") {
       this.location = this.parseGCCLocation();
+    } else if (this.coordinateChoice === "UTM") {
+      this.location = this.parseUTMLocation();
+
     } else {
       // console.warn(`Unhandled coordinate choice ${this.coordinateChoice}`);
       this.location = undefined;
@@ -84,6 +88,23 @@ export class MsdlLocation {
     let Z = Number(getTagValue(gccElement, 'Z'));
     let latLonAlt = projector.unproject(X, Y, Z);
     return [latLonAlt[1], latLonAlt[0], latLonAlt[2]];
+  }
 
+  private parseUTMLocation(): LngLatTuple | LngLatElevationTuple {
+    let utmElement = getTagElement(this.element, "UTM");
+    let gridZone = getTagValue(utmElement, "UTMGridZone");
+    const zoneLetter = gridZone[2];
+    const zoneNum = Number(gridZone.substr(0, 2));
+    let easting = Number(getTagValue(utmElement, "UTMEasting"));
+    let northing = Number(getTagValue(utmElement, "UTMNorthing"));
+    let elevationValue = getTagValue(utmElement, "ElevationAGL");
+    const { latitude, longitude } = toLatLon(easting, northing, zoneNum, zoneLetter)
+
+    if (elevationValue.length > 0) {
+      let elevation = Number(elevationValue);
+      return [longitude, latitude, elevation]
+    } else {
+      return [longitude, latitude];
+    }
   }
 }

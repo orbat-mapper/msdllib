@@ -165,8 +165,8 @@ describe("MSDL Location", () => {
     let element = parseFromString(LOCATION_UTM);
     let loc = new MsdlLocation(element);
     expect(loc.location.length).toBe(3);
-    expect(loc.location[1]).toBeCloseTo(58.54383, 5);
-    expect(loc.location[0]).toBeCloseTo(15.038887, 5);
+    expect(loc.location[1]).toBeCloseTo(58.54383, 4);
+    expect(loc.location[0]).toBeCloseTo(15.038887, 4);
     expect(loc.location[2]).toBe(10)
   });
 
