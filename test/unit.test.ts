@@ -124,7 +124,7 @@ describe("MSDL Unit", () => {
     expect(gjson.geometry.coordinates[2]).toBe(141.03737);
     expect(gjson.properties.speed).toBe(4);
     expect(gjson.properties.direction).toBe(175.37999);
-    expect(gjson.properties.sidc).toBe("S-G-----------G")
+    expect(gjson.properties.sidc).toBe("SOG-----------G")
 
   });
 
