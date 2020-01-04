@@ -80,6 +80,16 @@ describe("Simple scenario", () => {
     scenario.primarySide = scenario.forceSides[1];
     expect(scenario.forceSides[0].rootUnits[0].sidc[1]).toBe("H");
     expect(scenario.forceSides[1].rootUnits[0].sidc[1]).toBe("F");
+  });
+
+  it("get unit by object handle", () => {
+    let scenario = loadTestScenario();
+    const unit_id = "7a81590c-febb-11e7-8be5-0ed5f89f718b";
+    let unit = scenario.getUnitByObjectHandle(unit_id);
+    expect(unit.objectHandle).toBe(unit_id);
+    expect(unit.name).toBe("HQ");
+    let unit2 = scenario.getUnitByObjectHandle("invalid object handle");
+    expect(unit2).toBeUndefined();
   })
 });
 

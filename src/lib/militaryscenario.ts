@@ -194,4 +194,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
       this.setAffiliation(subordinate, s);
     }
   }
+
+  getUnitByObjectHandle(objectHandle: string): Unit | undefined {
+    return this.unitMap[objectHandle];
+  }
 }
