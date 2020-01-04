@@ -54,6 +54,7 @@
     "@vue/cli-plugin-typescript": "^4.1.0",
     "@vue/cli-service": "^4.1.0",
     "@vue/eslint-config-typescript": "^4.0.0",
+    "buefy": "^0.8.9",
     "core-js": "^3.4.4",
     "cross-env": "^6.0.3",
     "eslint": "^5.16.0",

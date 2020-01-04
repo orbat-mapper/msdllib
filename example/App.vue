@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <LeafletMap style="width:100%;height:100vh" @map-initialized="onMapInitialized"/>
+    <LeafletMap @map-initialized="onMapInitialized"/>
+    <UnitPanel :id="currentUnitId"/>
   </div>
 </template>
 
@@ -11,6 +12,8 @@ import { MilitaryScenario } from "msdllib";
 import * as L from "leaflet";
 import * as ms from 'milsymbol';
 import { Icon } from "leaflet";
+import UnitPanel from "./components/UnitPanel.vue";
+import { parseScenario, scenario } from "./scenario";
 
 function createMilsymbolIcon(feature, size = 25): Icon {
   // https://www.spatialillusions.com/milsymbol/docs/index.html
@@ -28,29 +31,26 @@ function createUnitMarker(feature, latlng) {
   return L.marker(latlng, { icon: myicon, draggable: false });
 }
 
-function onEachFeature(feature, layer) {
-  if (feature.properties) {
-    let properties = feature.properties;
-    layer.bindPopup(`<b>SIDC</b> ${properties.sidc}`);
-  }
-}
-
 export default Vue.extend({
   name: 'app',
   components: {
+    UnitPanel,
     LeafletMap,
   },
   data() {
     return {
-      mapRef: null
+      mapRef: null,
+      currentUnitId: null
     }
   },
 
   methods: {
     async loadScenario(): Promise<MilitaryScenario> {
       const response = await fetch("SimpleScenario.xml");
+      // const response = await fetch("MSDL.xml");
       const text = await response.text();
-      return MilitaryScenario.createFromString(text);
+      parseScenario(text);
+      return scenario;
     },
 
     async onMapInitialized({ map }) {
@@ -60,7 +60,13 @@ export default Vue.extend({
       for (let forceSide of scenario.forceSides) {
         let mlayer = L.geoJSON(forceSide.toGeoJson(), {
           pointToLayer: createUnitMarker,
-          onEachFeature
+          onEachFeature: (feature, layer) => {
+            if (feature.properties) {
+              layer.on("click", (e) => {
+                this.currentUnitId = feature.id;
+              });
+            }
+          }
         });
         map.addLayer(mlayer);
         g.addLayer(mlayer);
@@ -72,6 +78,11 @@ export default Vue.extend({
 </script>
 
 <style>
+#app {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
 
 body {
   margin: 0;
