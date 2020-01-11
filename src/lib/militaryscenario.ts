@@ -31,6 +31,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
       this.initializeForceSides();
       this.initializeUnits();
       this.initializeEquipment();
+      this.updateSidesRootUnits();
       this.primarySide = this.forceSides[0];
     }
   }
@@ -89,7 +90,6 @@ export class MilitaryScenario implements MilitaryScenarioType {
         }
       }
     }
-
   }
 
   private initializeEquipment() {
@@ -146,5 +146,15 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
   getUnitByObjectHandle(objectHandle: string): Unit | undefined {
     return this.unitMap[objectHandle];
+  }
+
+  private updateSidesRootUnits() {
+    for (let side of this.sides) {
+      for (let force of side.forces) {
+        for (let rootUnit of force.rootUnits) {
+          side.rootUnits.push(rootUnit);
+        }
+      }
+    }
   }
 }
