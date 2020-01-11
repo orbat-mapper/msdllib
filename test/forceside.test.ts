@@ -3,7 +3,7 @@ import { ForceSide } from "../src";
 import { loadTestScenario } from "./testutils";
 import { HostilityStatusCode } from "../src/lib/enums";
 
-const FORCESIDE_TEMPLATE = `<ForceSide>
+const FORCESIDE_TEMPLATE_IS_SIDE = `<ForceSide>
     <ObjectHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
     <ForceSideName>Friendly</ForceSideName>
     <AllegianceHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</AllegianceHandle>
@@ -19,6 +19,26 @@ const FORCESIDE_TEMPLATE = `<ForceSide>
     </Associations>
 </ForceSide>`;
 
+const FORCESIDE_TEMPLATE_IS_SIDE2 = `<ForceSide>
+    <ObjectHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
+    <ForceSideName>Friendly</ForceSideName>
+    <Associations>
+        <Association>
+            <AffiliateHandle>e7ae4710-2dcd-11e2-be2b-000c294c9df8</AffiliateHandle>
+            <Relationship>HO</Relationship>
+        </Association>
+        <Association>
+            <AffiliateHandle>e7ae4710-2ccc-11e2-be2b-000c294c9df8</AffiliateHandle>
+            <Relationship>FR</Relationship>
+        </Association>
+    </Associations>
+</ForceSide>`;
+
+const FORCESIDE_TEMPLATE_IS_FORCE = `<ForceSide>
+    <ObjectHandle>e7ae4710-2ccc-11e2-be2b-000c294c9df8</ObjectHandle>
+    <ForceSideName>Army</ForceSideName>
+    <AllegianceHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</AllegianceHandle>
+</ForceSide>`;
 
 describe("ForceSide class", () => {
   it("is defined", () => {
@@ -26,13 +46,13 @@ describe("ForceSide class", () => {
   });
 
   it("create from Element", () => {
-    let element = parseFromString(FORCESIDE_TEMPLATE);
+    let element = parseFromString(FORCESIDE_TEMPLATE_IS_SIDE);
     let forceSide = new ForceSide(element);
     expect(forceSide).toBeInstanceOf(ForceSide);
   });
 
   it("read attributes", () => {
-    let element = parseFromString(FORCESIDE_TEMPLATE);
+    let element = parseFromString(FORCESIDE_TEMPLATE_IS_SIDE);
     let forceSide = new ForceSide(element);
     expect(forceSide.objectHandle).toBe("e7ad0e8d-2dcd-11e2-be2b-000c294c9df8");
     expect(forceSide.allegianceHandle).toBe("e7ad0e8d-2dcd-11e2-be2b-000c294c9df8");
@@ -43,8 +63,28 @@ describe("ForceSide class", () => {
     expect(forceSide.associations[0].affiliateHandle).toBe("e7ae4710-2dcd-11e2-be2b-000c294c9df8");
     expect(forceSide.associations[0].relationship).toBe(HostilityStatusCode.Hostile);
     expect(forceSide.associations[1].relationship).toBe(HostilityStatusCode.Friend);
+  });
 
+  it("detect side if allegiance with itself", () => {
+    let element = parseFromString(FORCESIDE_TEMPLATE_IS_SIDE);
+    let forceSide = new ForceSide(element);
+    expect(forceSide.objectHandle).toBe("e7ad0e8d-2dcd-11e2-be2b-000c294c9df8");
+    expect(forceSide.allegianceHandle).toBe("e7ad0e8d-2dcd-11e2-be2b-000c294c9df8");
+    expect(forceSide.isSide).toBe(true);
+  });
 
+  it("detect side if no allegiance", () => {
+    let element = parseFromString(FORCESIDE_TEMPLATE_IS_SIDE2);
+    let forceSide = new ForceSide(element);
+    expect(forceSide.allegianceHandle).toBe("");
+    expect(forceSide.isSide).toBe(true);
+  });
+
+  it("detect force", () => {
+    let element = parseFromString(FORCESIDE_TEMPLATE_IS_FORCE);
+    let forceSide = new ForceSide(element);
+    expect(forceSide.allegianceHandle).toBe("e7ad0e8d-2dcd-11e2-be2b-000c294c9df8");
+    expect(forceSide.isSide).toBe(false);
   });
 
   it("has GeoJSON interface", () => {

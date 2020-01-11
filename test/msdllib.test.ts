@@ -68,18 +68,24 @@ describe("Simple scenario", () => {
     expect(scenario.scenarioId.name).toBe("Simple scenario");
   });
 
-  it("default primaryforce side ", () => {
+  it("default primary force side ", () => {
     let scenario = loadTestScenario();
     expect(scenario.primarySide).toBe(scenario.forceSides[0]);
     expect(scenario.forceSides[0].rootUnits[0].sidc[1]).toBe("F");
     expect(scenario.forceSides[1].rootUnits[0].sidc[1]).toBe("H");
   });
 
-  it("set force side ", () => {
+  it("set primary force side ", () => {
     let scenario = loadTestScenario();
     scenario.primarySide = scenario.forceSides[1];
     expect(scenario.forceSides[0].rootUnits[0].sidc[1]).toBe("H");
     expect(scenario.forceSides[1].rootUnits[0].sidc[1]).toBe("F");
+  });
+
+  it("has sides property", () => {
+    let scenario = loadTestScenario();
+    expect(scenario.sides).toBeInstanceOf(Array);
+    expect(scenario.sides.length).toBe(2);
   });
 
   it("get unit by object handle", () => {

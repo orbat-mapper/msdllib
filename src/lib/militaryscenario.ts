@@ -187,6 +187,9 @@ export class MilitaryScenario implements MilitaryScenarioType {
     return this._primarySide;
   }
 
+  get sides() {
+    return this.forceSides.filter(fs => fs.isSide);
+  }
 
   private setAffiliation(unit: Unit, s: StandardIdentities) {
     unit.setAffiliation(s);
