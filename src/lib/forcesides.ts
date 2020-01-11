@@ -22,6 +22,7 @@ export class ForceSide implements ForceSideType {
   allegianceHandle: string;
   rootUnits: Unit[] = [];
   associations: AssociationType[] = [];
+  forces: ForceSide[] = [];
 
   constructor(public element: Element) {
     this.name = getTagValue(element, "ForceSideName");
