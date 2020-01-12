@@ -13,25 +13,25 @@ export interface UnitEquipmentInterface {
   objectHandle: string;
   symbolIdentifier: string;
   name: string;
-  location: LngLatTuple | LngLatElevationTuple;
+  location?: LngLatTuple | LngLatElevationTuple;
   /** The field speed in meters per second */
-  speed: number;
+  speed?: number;
   /** The direction of movement, in compass degrees */
-  directionOfMovement: number;
+  directionOfMovement?: number;
   superiorHandle: string;
   sidc: string;
 }
 
 export class UnitEquipmentBase implements UnitEquipmentInterface {
   sidc: string;
-  location: LngLatTuple | LngLatElevationTuple;
-  speed: number;
-  directionOfMovement: number;
+  location?: LngLatTuple | LngLatElevationTuple;
+  speed?: number;
+  directionOfMovement?: number;
   symbolIdentifier: string;
   name: string;
   objectHandle: string;
-  superiorHandle: string;
-  protected _msdlLocation: MsdlLocation;
+  superiorHandle: string = "";
+  protected _msdlLocation?: MsdlLocation;
 
   constructor(readonly element: Element) {
     this.objectHandle = getTagValue(element, "ObjectHandle");
@@ -39,7 +39,6 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
     this.name = getTagValue(element, "Name");
     this.getDisposition();
     this.sidc = setCharAt(this.symbolIdentifier, 1, StandardIdentities.NoneSpecified);
-
   }
 
   private getDisposition() {
@@ -56,7 +55,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
 export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   equipment: EquipmentItem[] = [];
   subordinates: Unit[] = [];
-  private forceRelationChoice: ForceOwnerType;
+  private forceRelationChoice: ForceOwnerType | undefined;
 
   constructor(readonly element: Element) {
     super(element);
@@ -68,8 +67,8 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     return this.forceRelationChoice === ForceOwnerType.ForceSide;
   }
 
-  toGeoJson(): Feature<Point, TacticalJson> {
-    let feature: Feature<Point>;
+  toGeoJson(): Feature<Point | null, TacticalJson> {
+    let feature: Feature<Point | null, TacticalJson>;
     let properties: TacticalJson = {};
 
     if (this.speed) {
@@ -129,8 +128,8 @@ export class EquipmentItem extends UnitEquipmentBase {
     this.superiorHandle = getTagValue(element, "OrganicSuperiorHandle");
   }
 
-  toGeoJson(): Feature<Point, TacticalJson> {
-    let feature: Feature<Point>;
+  toGeoJson(): Feature<Point | null, TacticalJson> {
+    let feature: Feature<Point | null, TacticalJson>;
     let properties: TacticalJson = {};
 
     if (this.speed !== undefined) {
@@ -143,10 +142,10 @@ export class EquipmentItem extends UnitEquipmentBase {
     feature = {
       id: this.objectHandle,
       type: "Feature",
-      geometry: {
+      geometry: this.location ? {
         type: "Point",
         coordinates: this.location
-      },
+      } : null,
       properties
     };
     return feature;

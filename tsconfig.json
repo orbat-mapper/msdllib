@@ -5,7 +5,7 @@
     "strict": false,
     "jsx": "preserve",
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": false,
     "importHelpers": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
@@ -28,6 +28,7 @@
     "src/**/*.vue",
     "example/**/*.ts",
     "example/**/*.tsx",
+    "example/**/*.vue",
     "test/**/*.ts",
     "test/**/*.tsx"
   ],

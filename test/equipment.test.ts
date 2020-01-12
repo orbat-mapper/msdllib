@@ -99,10 +99,13 @@ describe("MSDL Equipment", () => {
     expect(equipmentItem.objectHandle).toBe("f9ee8509-2dcd-11e2-be2b-000c294c9df8");
     expect(equipmentItem.name).toBe("111");
     expect(equipmentItem.symbolIdentifier).toBe("S-G-EVAT------G");
-    expect(equipmentItem.location.length).toBe(3);
-    expect(equipmentItem.location[1]).toBe(58.538208);
-    expect(equipmentItem.location[0]).toBe(15.040084);
-    expect(equipmentItem.location[2]).toBe(137.71353);
+    expect(equipmentItem.location).toBeDefined();
+    if (equipmentItem.location) {
+      expect(equipmentItem.location.length).toBe(3);
+      expect(equipmentItem.location[1]).toBe(58.538208);
+      expect(equipmentItem.location[0]).toBe(15.040084);
+      expect(equipmentItem.location[2]).toBe(137.71353);
+    }
     expect(equipmentItem.speed).toBe(0);
     expect(equipmentItem.directionOfMovement).toBe(176.17091);
     expect(equipmentItem.superiorHandle).toBe("f9e2ec3e-2dcd-11e2-be2b-000c294c9df8");
@@ -114,9 +117,12 @@ describe("MSDL Equipment", () => {
     let gjson = equipmentItem.toGeoJson();
     expect(gjson.id).toBe("f9ee8509-2dcd-11e2-be2b-000c294c9df8");
     expect(gjson.type).toBe("Feature");
-    expect(gjson.geometry.coordinates[1]).toBe(58.538208);
-    expect(gjson.geometry.coordinates[0]).toBe(15.040084);
-    expect(gjson.geometry.coordinates[2]).toBe(137.71353);
+    expect(gjson.geometry).toBeDefined();
+    if (gjson.geometry) {
+      expect(gjson.geometry.coordinates[1]).toBe(58.538208);
+      expect(gjson.geometry.coordinates[0]).toBe(15.040084);
+      expect(gjson.geometry.coordinates[2]).toBe(137.71353);
+    }
     expect(gjson.properties.speed).toBe(0);
     expect(gjson.properties.direction).toBe(176.17091);
   });

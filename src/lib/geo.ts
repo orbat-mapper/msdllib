@@ -1,4 +1,6 @@
+// @ts-ignore
 import * as mgrs from 'mgrs';
+// @ts-ignore
 import * as projector from 'ecef-projector';
 import { toLatLon } from "utm";
 
@@ -8,11 +10,10 @@ export type LngLatTuple = [number, number];
 export type LngLatElevationTuple = [number, number, number];
 
 export class MsdlLocation {
-  location: LngLatTuple | LngLatElevationTuple;
+  location?: LngLatTuple | LngLatElevationTuple;
   coordinateChoice: string;
 
-  constructor(private element) {
-    this.location = [0, 0, 0];
+  constructor(private element?: Element) {
     this.coordinateChoice = getTagValue(this.element, "CoordinateChoice");
     this.parseLocation();
   }

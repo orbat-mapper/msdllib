@@ -1,4 +1,4 @@
-export function parseFromString(xmlString): Element {
+export function parseFromString(xmlString:string): Element {
   let parser = new DOMParser();
   let doc = parser.parseFromString(xmlString, "text/xml");
   return doc.documentElement;

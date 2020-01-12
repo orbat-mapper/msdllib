@@ -35,8 +35,8 @@ export class ForceSide implements ForceSideType {
     return !this.allegianceHandle || this.objectHandle === this.allegianceHandle;
   }
 
-  toGeoJson(): FeatureCollection<Point, TacticalJson> {
-    let features: Feature<Point>[] = [];
+  toGeoJson(): FeatureCollection<Point | null, TacticalJson> {
+    let features: Feature<Point | null, TacticalJson>[] = [];
 
     function addSubordinates(subordinates: Unit[]) {
       for (let unit of subordinates) {

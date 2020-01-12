@@ -1,7 +1,7 @@
 import { parseFromString } from "./testdata";
 import { MsdlLocation } from "../src/lib/geo";
 
-function precisionRound(num, precision) {
+function precisionRound(num: number, precision: number) {
   let factor = Math.pow(10, precision);
   return Math.round(num * factor) / factor;
 }
@@ -121,53 +121,71 @@ describe("MSDL Location", () => {
   it("GDC", () => {
     let element = parseFromString(LOCATION_GDC_TEMPLATE);
     let loc = new MsdlLocation(element);
-    expect(loc.location.length).toBe(3);
-    expect(loc.location[1]).toBeCloseTo(58.5438);
-    expect(loc.location[0]).toBe(15.038887);
-    expect(loc.location[2]).toBe(141.03737);
+    expect(loc.location).toBeDefined();
+    if (loc.location) {
+      expect(loc.location.length).toBe(3);
+      expect(loc.location[1]).toBeCloseTo(58.5438);
+      expect(loc.location[0]).toBe(15.038887);
+      expect(loc.location[2]).toBe(141.03737);
+    }
   });
 
   it("GCC", () => {
     let element = parseFromString(LOCATION_GCC_TEMPLATE);
     let loc = new MsdlLocation(element);
-    expect(loc.location.length).toBe(3);
-    expect(loc.location[1]).toBeCloseTo(58.5438);
-    expect(loc.location[0]).toBeCloseTo(15.038887);
-    expect(loc.location[2]).toBeCloseTo(141.03737);
+    expect(loc.location).toBeDefined();
+    if (loc.location) {
+      expect(loc.location.length).toBe(3);
+      expect(loc.location[1]).toBeCloseTo(58.5438);
+      expect(loc.location[0]).toBeCloseTo(15.038887);
+      expect(loc.location[2]).toBeCloseTo(141.03737);
+    }
   });
 
   it("GDC no height", () => {
     let element = parseFromString(LOCATION_GDC_TEMPLATE2);
     let loc = new MsdlLocation(element);
-    expect(loc.location.length).toBe(2);
-    expect(loc.location[1]).toBe(58.54383);
-    expect(loc.location[0]).toBe(15.038887);
+    expect(loc.location).toBeDefined();
+    if (loc.location) {
+      expect(loc.location.length).toBe(2);
+      expect(loc.location[1]).toBe(58.54383);
+      expect(loc.location[0]).toBe(15.038887);
+    }
   });
 
   it("MGRS", () => {
     let element = parseFromString(LOCATION_MGRS_TEMPLATE);
     let loc = new MsdlLocation(element);
-    expect(loc.location.length).toBe(3);
-    expect(loc.location[1]).toBeCloseTo(58.54383, 5);
-    expect(loc.location[0]).toBeCloseTo(15.038887, 5);
-    expect(loc.location[2]).toBe(10)
+    expect(loc.location).toBeDefined();
+    if (loc.location) {
+      expect(loc.location.length).toBe(3);
+      expect(loc.location[1]).toBeCloseTo(58.54383, 5);
+      expect(loc.location[0]).toBeCloseTo(15.038887, 5);
+      expect(loc.location[2]).toBe(10);
+    }
   });
 
   it("MGRS no height", () => {
     let element = parseFromString(LOCATION_MGRS_TEMPLATE2);
     let loc = new MsdlLocation(element);
-    expect(loc.location.length).toBe(2);
-    expect(loc.location[1]).toBeCloseTo(58.54383, 5);
-    expect(loc.location[0]).toBeCloseTo(15.038887, 5);
+    expect(loc.location).toBeDefined();
+    if (loc.location) {
+      expect(loc.location.length).toBe(2);
+      expect(loc.location[1]).toBeCloseTo(58.54383, 5);
+      expect(loc.location[0]).toBeCloseTo(15.038887, 5);
+    }
   });
 
   it("UTM", () => {
     let element = parseFromString(LOCATION_UTM);
     let loc = new MsdlLocation(element);
-    expect(loc.location.length).toBe(3);
-    expect(loc.location[1]).toBeCloseTo(58.54383, 4);
-    expect(loc.location[0]).toBeCloseTo(15.038887, 4);
-    expect(loc.location[2]).toBe(10)
+    expect(loc.location).toBeDefined();
+    if (loc.location) {
+      expect(loc.location.length).toBe(3);
+      expect(loc.location[1]).toBeCloseTo(58.54383, 4);
+      expect(loc.location[0]).toBeCloseTo(15.038887, 4);
+      expect(loc.location[2]).toBe(10)
+    }
   });
 
   it("Unknown coordinate choice", () => {

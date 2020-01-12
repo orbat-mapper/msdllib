@@ -1,6 +1,7 @@
 import { parseFromString } from "./testdata";
 import { Unit } from "../src/lib/unitequipment";
 import { loadTestScenario } from "./testutils";
+import { Point } from "geojson";
 
 const UNIT_TEMPLATE = ` <Unit>
                 <ObjectHandle>f9e16593-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -102,10 +103,13 @@ describe("MSDL Unit", () => {
     expect(unit.objectHandle).toBe("f9e16593-2dcd-11e2-be2b-000c294c9df8");
     expect(unit.name).toBe("1/OPFOR-ARMOR");
     expect(unit.symbolIdentifier).toBe("S-G-----------G");
-    expect(unit.location.length).toBe(3);
-    expect(unit.location[1]).toBe(58.54383);
-    expect(unit.location[0]).toBe(15.038887);
-    expect(unit.location[2]).toBe(141.03737);
+    expect(unit.location).toBeDefined();
+    if (unit.location) {
+      expect(unit.location.length).toBe(3);
+      expect(unit.location[1]).toBe(58.54383);
+      expect(unit.location[0]).toBe(15.038887);
+      expect(unit.location[2]).toBe(141.03737);
+    }
     expect(unit.speed).toBe(4);
     expect(unit.directionOfMovement).toBe(175.37999);
     expect(unit.isRoot).toBe(false);
@@ -118,10 +122,11 @@ describe("MSDL Unit", () => {
     let gjson = unit.toGeoJson();
     expect(gjson.id).toBe("f9e16593-2dcd-11e2-be2b-000c294c9df8");
     expect(gjson.type).toBe("Feature");
-    expect(gjson.geometry.type).toBe("Point");
-    expect(gjson.geometry.coordinates[1]).toBe(58.54383);
-    expect(gjson.geometry.coordinates[0]).toBe(15.038887);
-    expect(gjson.geometry.coordinates[2]).toBe(141.03737);
+    const geometry = gjson.geometry as Point;
+    expect(geometry.type).toBe("Point");
+    expect(geometry.coordinates[1]).toBe(58.54383);
+    expect(geometry.coordinates[0]).toBe(15.038887);
+    expect(geometry.coordinates[2]).toBe(141.03737);
     expect(gjson.properties.speed).toBe(4);
     expect(gjson.properties.direction).toBe(175.37999);
     expect(gjson.properties.sidc).toBe("SOG-----------G")

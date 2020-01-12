@@ -2,6 +2,7 @@ import { MilitaryScenario, ScenarioId } from "../src/index";
 import { EMPTY_SCENARIO } from "./testdata";
 import * as fs from "fs";
 import { loadTestScenario } from "./testutils";
+import { Unit } from "../src/lib/unitequipment";
 
 describe("MilitaryScenario class", () => {
   it("is defined", () => {
@@ -91,7 +92,8 @@ describe("Simple scenario", () => {
   it("get unit by object handle", () => {
     let scenario = loadTestScenario();
     const unit_id = "7a81590c-febb-11e7-8be5-0ed5f89f718b";
-    let unit = scenario.getUnitByObjectHandle(unit_id);
+    let unit = scenario.getUnitByObjectHandle(unit_id) as Unit;
+    expect(unit).toBeDefined();
     expect(unit.objectHandle).toBe(unit_id);
     expect(unit.name).toBe("HQ");
     let unit2 = scenario.getUnitByObjectHandle("invalid object handle");

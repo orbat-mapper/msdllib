@@ -16,14 +16,14 @@ export interface MilitaryScenarioType {
 }
 
 export class MilitaryScenario implements MilitaryScenarioType {
-  scenarioId: ScenarioId;
+  scenarioId: ScenarioId = new ScenarioId();
   forceSides: ForceSide[] = [];
   equipment: EquipmentItem[] = [];
   units: Unit[] = [];
   rootUnits: Unit[] = [];
   private unitMap: { [id: string]: Unit } = {};
   private forceSideMap: { [id: string]: ForceSide } = {};
-  private _primarySide: ForceSide;
+  private _primarySide: ForceSide | null = null;
 
   constructor(public element?: Element) {
     if (element) {
@@ -107,7 +107,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     // }
   }
 
-  set primarySide(side: ForceSide) {
+  set primarySide(side: ForceSide | null) {
     if (!side) {
       this._primarySide = null;
       return;
@@ -129,7 +129,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     }
   }
 
-  get primarySide() {
+  get primarySide(): ForceSide | null {
     return this._primarySide;
   }
 
