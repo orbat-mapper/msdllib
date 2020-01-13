@@ -2,7 +2,7 @@
   <div class="my-leaflet-map"></div>
 </template>
 
-<script lang="ts">
+<script>
 import * as L from 'leaflet';
 
 export default {

@@ -23,8 +23,7 @@
     </b-collapse>
   </div>
 </template>
-<script lang="ts">
-import { Unit } from "@/lib/unitequipment";
+<script>
 import { scenario } from "../scenario";
 
 function formatXml(xml) {
@@ -61,7 +60,7 @@ export default {
   },
 
   computed: {
-    unit(): Unit {
+    unit() {
       return this.id ? scenario.getUnitByObjectHandle(this.id) : null
     },
 
