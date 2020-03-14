@@ -43,7 +43,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private initializeMetaInfo() {
-    this.scenarioId = new ScenarioId(getTagElement(this.element, 'ScenarioID'));
+    this.scenarioId = new ScenarioId(getTagElement(this.element, "ScenarioID"));
   }
 
   private initializeForceSides() {
@@ -114,7 +114,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     }
     this._primarySide = side;
     for (let rootUnit of side.rootUnits) {
-      this.setAffiliation(rootUnit, StandardIdentities.Friend)
+      this.setAffiliation(rootUnit, StandardIdentities.Friend);
     }
     for (let association of side.associations) {
       let code = rel2code(association.relationship);

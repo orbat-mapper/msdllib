@@ -15,7 +15,6 @@ const SCENARIO_ID_TEMPLATE = `<ScenarioID xmlns="urn:sisostds:scenario:military:
         </modelID:poc>
     </ScenarioID>`;
 
-
 describe("ScenarioId", () => {
   it("defined", () => {
     expect(MilitaryScenario).toBeDefined();
@@ -35,6 +34,4 @@ describe("ScenarioId", () => {
     expect(sid.description).toBe("Description");
     expect(sid.securityClassification).toBe("Unclassified");
   });
-
 });
-

@@ -1,6 +1,6 @@
 <template>
   <ul>
-    <orbat-item v-for="rootUnit in units" :unit="rootUnit" :key="rootUnit.objectHandle"/>
+    <orbat-item v-for="rootUnit in units" :unit="rootUnit" :key="rootUnit.objectHandle" />
   </ul>
 </template>
 
@@ -25,7 +25,7 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
 <style>

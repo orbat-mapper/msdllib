@@ -82,10 +82,12 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     feature = {
       id: this.objectHandle,
       type: "Feature",
-      geometry: this.location ? {
-        type: "Point",
-        coordinates: this.location
-      } : null,
+      geometry: this.location
+        ? {
+            type: "Point",
+            coordinates: this.location
+          }
+        : null,
       properties
     };
     return feature;
@@ -108,17 +110,14 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
       this.forceRelationChoice = ForceOwnerType.ForceSide;
       this.superiorHandle = getTagValue(this.element, "ForceSideHandle");
     } else {
-      console.error("Invalid ForceRelationChoice " + this.forceRelationChoice)
+      console.error("Invalid ForceRelationChoice " + this.forceRelationChoice);
     }
     // Todo: Add support for support and organic relations
-
   }
 
   private initializeSymbol() {
     //
   }
-
-
 }
 
 export class EquipmentItem extends UnitEquipmentBase {
@@ -142,10 +141,12 @@ export class EquipmentItem extends UnitEquipmentBase {
     feature = {
       id: this.objectHandle,
       type: "Feature",
-      geometry: this.location ? {
-        type: "Point",
-        coordinates: this.location
-      } : null,
+      geometry: this.location
+        ? {
+            type: "Point",
+            coordinates: this.location
+          }
+        : null,
       properties
     };
     return feature;

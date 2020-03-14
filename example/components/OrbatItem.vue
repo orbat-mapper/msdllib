@@ -1,15 +1,26 @@
 <template>
   <li>
-    <span @dblclick="toggle" @click="select" class="unit-name"
-          :class="{current: isCurrent, hasPosition}">
-      <span v-if="isParent" @click="toggle"><b-icon size="is-small" :icon="isOpen? 'minus-box-outline' : 'plus-box-outline'"/></span>
+    <span
+      @dblclick="toggle"
+      @click="select"
+      class="unit-name"
+      :class="{ current: isCurrent, hasPosition }"
+    >
+      <span v-if="isParent" @click="toggle"
+        ><b-icon size="is-small" :icon="isOpen ? 'minus-box-outline' : 'plus-box-outline'"
+      /></span>
       &nbsp;
-      <span draggable="true" @dragstart="dragStart" @dragend="dragEnd"><MilSymbol
-        :sidc="sidc"/></span>
-      {{unit.name}}
+      <span draggable="true" @dragstart="dragStart" @dragend="dragEnd"
+        ><MilSymbol :sidc="sidc"
+      /></span>
+      {{ unit.name }}
     </span>
     <ul v-show="isOpen">
-      <orbat-item :unit="subUnit" v-for="subUnit in unit.subordinates" :key="subUnit.objectHandle"/>
+      <orbat-item
+        :unit="subUnit"
+        v-for="subUnit in unit.subordinates"
+        :key="subUnit.objectHandle"
+      />
     </ul>
   </li>
 </template>
@@ -23,13 +34,13 @@ export default {
   props: {
     unit: {
       type: Object,
-      required: true,
+      required: true
     }
   },
-  data: function () {
+  data: function() {
     return {
-      isOpen: false,
-    }
+      isOpen: false
+    };
   },
   computed: {
     isParent() {
@@ -53,14 +64,11 @@ export default {
     toggle() {
       this.isOpen = !this.isOpen;
     },
-    select() {
-    },
+    select() {},
 
-    dragStart(ev) {
-    },
+    dragStart(ev) {},
 
-    dragEnd(ev) {
-    },
+    dragEnd(ev) {},
 
     expandAll() {
       this.isOpen = true;
@@ -78,7 +86,7 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

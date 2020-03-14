@@ -81,7 +81,6 @@ const EQUIPMENT_NO_SPEED_DIRECTION = `<EquipmentItem>
     </Model>
 </EquipmentItem>`;
 
-
 describe("MSDL Equipment", () => {
   it("defined", () => {
     expect(EquipmentItem).toBeDefined();
@@ -137,4 +136,3 @@ describe("MSDL Equipment", () => {
     expect(gjson.properties.direction).toBeUndefined();
   });
 });
-

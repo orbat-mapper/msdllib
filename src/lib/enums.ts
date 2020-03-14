@@ -1,6 +1,6 @@
 export enum ForceOwnerType {
   Unit = "UNIT",
-  ForceSide = "FORCE_SIDE",
+  ForceSide = "FORCE_SIDE"
 }
 
 export enum HostilityStatusCode {
@@ -33,7 +33,6 @@ export function rel2code(relationship: HostilityStatusCode): StandardIdentities 
   // 					"O":"None Specified"};
   // RelationshipCode = "AFR" | "AHO" | "AIV" | "ANT" | "FAKER" | "FR" | "HO" | "IV" | "JOKER" | "NEUTRL" | "PENDING" | "SUSPCT" | "UNK";
   switch (relationship) {
-
     case "AFR":
       return StandardIdentities.AssumedFriend;
     case "AHO":
@@ -64,7 +63,6 @@ export function rel2code(relationship: HostilityStatusCode): StandardIdentities 
       return StandardIdentities.NoneSpecified;
   }
 }
-
 
 export enum StandardIdentities {
   Pending = "P",

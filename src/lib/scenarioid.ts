@@ -19,6 +19,5 @@ export class ScenarioId implements ScenarioIdType {
     this.description = getTagValue(element, "description");
     this.securityClassification = getTagValue(element, "securityClassification");
     // this.modificationDate = getTagValue(element, "modificationDate");
-
   }
 }

@@ -1,8 +1,11 @@
 export const MSDL_NS2 = "urn:sisostds:scenario:military:data:draft:msdl:1";
 export const MSDL_NS = "*";
 
-
-export function getTagValue(element: Element | undefined, tagName: string, noTrim?: boolean): string {
+export function getTagValue(
+  element: Element | undefined,
+  tagName: string,
+  noTrim?: boolean
+): string {
   if (!element) return "";
   let elements = element.getElementsByTagNameNS(MSDL_NS, tagName);
   if (elements.length) {
@@ -11,7 +14,11 @@ export function getTagValue(element: Element | undefined, tagName: string, noTri
   return "";
 }
 
-export function getTagElement(element: Element | undefined, tagName: string, required?: boolean): Element | undefined {
+export function getTagElement(
+  element: Element | undefined,
+  tagName: string,
+  required?: boolean
+): Element | undefined {
   if (!element) return;
   let el = element.getElementsByTagNameNS(MSDL_NS, tagName)[0];
   if (required && !el) {

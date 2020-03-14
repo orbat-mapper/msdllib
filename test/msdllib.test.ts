@@ -16,7 +16,6 @@ describe("MilitaryScenario class", () => {
     let scenario = new MilitaryScenario(element);
     expect(scenario.element).toBeInstanceOf(Element);
     expect(scenario.element).toBe(element);
-
   });
 
   it("create from string", () => {
@@ -40,8 +39,7 @@ describe("MilitaryScenario class", () => {
   });
 
   it("load from file", () => {
-    let data = fs.readFileSync(__dirname + '/data/minimal.xml', { encoding: "utf-8" });
-
+    let data = fs.readFileSync(__dirname + "/data/minimal.xml", { encoding: "utf-8" });
 
     let scenario = MilitaryScenario.createFromString(data.toString());
     expect(scenario.units).toBeInstanceOf(Array);
@@ -54,7 +52,6 @@ describe("MilitaryScenario class", () => {
     expect(scenario.scenarioId.name).toBe("Empty scenario");
   });
 });
-
 
 describe("Simple scenario", () => {
   it("load from file", () => {
@@ -98,8 +95,5 @@ describe("Simple scenario", () => {
     expect(unit.name).toBe("HQ");
     let unit2 = scenario.getUnitByObjectHandle("invalid object handle");
     expect(unit2).toBeUndefined();
-  })
+  });
 });
-
-
-

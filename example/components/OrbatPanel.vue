@@ -5,18 +5,17 @@
         <p class="card-header-title">Units</p>
       </header>
       <div class="card-content">
-        <SidePanel v-for="side in sides" :key="side.objectHandle" :side="side"/>
+        <SidePanel v-for="side in sides" :key="side.objectHandle" :side="side" />
+      </div>
     </div>
-  </div>
   </div>
 </template>
 <script lang="ts">
-
 import { scenario } from "../scenario";
 import SidePanel from "./SidePanel.vue";
 
 export default {
-  name: 'OrbatPanel',
+  name: "OrbatPanel",
   components: { SidePanel },
   props: {
     id: { type: String }
@@ -27,10 +26,9 @@ export default {
       if (scenario) {
         return scenario.sides;
       }
-
     }
   }
-}
+};
 </script>
 
 <style scoped>

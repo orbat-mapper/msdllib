@@ -85,7 +85,6 @@ const UNIT_NO_DISPOSITION = `<Unit>
     </Model>
 </Unit>`;
 
-
 describe("MSDL Unit", () => {
   it("defined", () => {
     expect(Unit).toBeDefined();
@@ -129,8 +128,7 @@ describe("MSDL Unit", () => {
     expect(geometry.coordinates[2]).toBe(141.03737);
     expect(gjson.properties.speed).toBe(4);
     expect(gjson.properties.direction).toBe(175.37999);
-    expect(gjson.properties.sidc).toBe("SOG-----------G")
-
+    expect(gjson.properties.sidc).toBe("SOG-----------G");
   });
 
   it("no disposition", () => {
@@ -157,5 +155,3 @@ describe("Unit relations", () => {
     expect(hq.subordinates[1].name).toBe("2nd");
   });
 });
-
-

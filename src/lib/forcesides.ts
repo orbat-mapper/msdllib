@@ -3,7 +3,6 @@ import { HostilityStatusCode } from "./enums";
 import { TacticalJson, Unit } from "./unitequipment";
 import { getTagElements, getTagValue } from "./utils";
 
-
 export interface ForceSideType {
   objectHandle: string;
   name: string;

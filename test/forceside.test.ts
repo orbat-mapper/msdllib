@@ -65,7 +65,6 @@ describe("ForceSide class", () => {
     expect(forceSide.associations[1].relationship).toBe(HostilityStatusCode.Friend);
     expect(forceSide.forces).toBeInstanceOf(Array);
     expect(forceSide.forces.length).toBe(0);
-
   });
 
   it("detect side if allegiance with itself", () => {
@@ -98,7 +97,7 @@ describe("ForceSide class", () => {
     let gjson = forceSide.toGeoJson();
     expect(gjson.type).toBe("FeatureCollection");
     expect(gjson.features.length).toBe(3);
-  })
+  });
 });
 
 describe("Side relations", () => {
@@ -115,13 +114,13 @@ describe("Side relations", () => {
 
 describe("Force and side relations", () => {
   it("has correct number of ForceSides and Side", () => {
-    let scenario = loadTestScenario('/data/ForceSideMinimal.xml');
+    let scenario = loadTestScenario("/data/ForceSideMinimal.xml");
     expect(scenario.forceSides.length).toBe(6);
     expect(scenario.sides.length).toBe(3);
   });
 
   it("the sides have forces", () => {
-    let scenario = loadTestScenario('/data/ForceSideMinimal.xml');
+    let scenario = loadTestScenario("/data/ForceSideMinimal.xml");
     expect(scenario.sides.length).toBe(3);
     expect(scenario.sides[0].forces.length).toBe(1);
     expect(scenario.sides[1].forces.length).toBe(1);
@@ -138,9 +137,5 @@ describe("Force and side relations", () => {
     const neutralForce = scenario.sides[2].forces[0];
     expect(neutralForce.isSide).toBe(false);
     expect(neutralForce.name).toBe("Neutral Force");
-
   });
-
-
 });
-

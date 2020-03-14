@@ -1,7 +1,7 @@
 // @ts-ignore
-import * as mgrs from 'mgrs';
+import * as mgrs from "mgrs";
 // @ts-ignore
-import * as projector from 'ecef-projector';
+import * as projector from "ecef-projector";
 import { toLatLon } from "utm";
 
 import { getTagElement, getTagValue } from "./utils";
@@ -36,7 +36,6 @@ export class MsdlLocation {
       this.location = this.parseGCCLocation();
     } else if (this.coordinateChoice === "UTM") {
       this.location = this.parseUTMLocation();
-
     } else {
       // console.warn(`Unhandled coordinate choice ${this.coordinateChoice}`);
       this.location = undefined;
@@ -50,12 +49,16 @@ export class MsdlLocation {
     let easting = getTagValue(mgrsElement, "MGRSEasting");
     let northing = getTagValue(mgrsElement, "MGRSNorthing");
     let precision = getTagValue(mgrsElement, "MGRSPrecision");
-    let mgrsString = gridZone + gridSquare + String('00000' + easting).slice(-5) + String('00000' + northing).slice(-5);
+    let mgrsString =
+      gridZone +
+      gridSquare +
+      String("00000" + easting).slice(-5) +
+      String("00000" + northing).slice(-5);
     let elevationValue = getTagValue(mgrsElement, "ElevationAGL");
     let point: LngLatTuple = mgrs.toPoint(mgrsString);
     if (elevationValue.length > 0) {
       let elevation = Number(elevationValue);
-      return [point[0], point[1], elevation]
+      return [point[0], point[1], elevation];
     } else {
       return point;
     }
@@ -64,8 +67,8 @@ export class MsdlLocation {
   private parseGDCLocation(): LngLatTuple | LngLatElevationTuple {
     // Geodetic coordinates in fractional degress of latitude and longitude.
     let gdcElement = getTagElement(this.element, "GDC");
-    let latitude = Number(getTagValue(gdcElement, 'Latitude'));
-    let longitude = Number(getTagValue(gdcElement, 'Longitude'));
+    let latitude = Number(getTagValue(gdcElement, "Latitude"));
+    let longitude = Number(getTagValue(gdcElement, "Longitude"));
     let elevationValue = getTagValue(gdcElement, "ElevationAGL");
     if (elevationValue.length > 0) {
       let elevation = Number(elevationValue);
@@ -75,18 +78,18 @@ export class MsdlLocation {
     }
   }
 
-// private setGDCLocation(latlng: L.LatLng) {
-//     let gdcElement = getTagElement(this.element, "GDC");
-//     setTagValue(gdcElement, 'Latitude', latlng.lat.toString());
-//     setTagValue(gdcElement, 'Longitude', latlng.lng.toString());
-//     setTagValue(gdcElement, "ElevationAGL", latlng.alt ? latlng.alt.toString() : "");
-// }
+  // private setGDCLocation(latlng: L.LatLng) {
+  //     let gdcElement = getTagElement(this.element, "GDC");
+  //     setTagValue(gdcElement, 'Latitude', latlng.lat.toString());
+  //     setTagValue(gdcElement, 'Longitude', latlng.lng.toString());
+  //     setTagValue(gdcElement, "ElevationAGL", latlng.alt ? latlng.alt.toString() : "");
+  // }
 
   private parseGCCLocation(): LngLatElevationTuple {
     let gccElement = getTagElement(this.element, "GCC");
-    let X = Number(getTagValue(gccElement, 'X'));
-    let Y = Number(getTagValue(gccElement, 'Y'));
-    let Z = Number(getTagValue(gccElement, 'Z'));
+    let X = Number(getTagValue(gccElement, "X"));
+    let Y = Number(getTagValue(gccElement, "Y"));
+    let Z = Number(getTagValue(gccElement, "Z"));
     let latLonAlt = projector.unproject(X, Y, Z);
     return [latLonAlt[1], latLonAlt[0], latLonAlt[2]];
   }
@@ -99,11 +102,11 @@ export class MsdlLocation {
     let easting = Number(getTagValue(utmElement, "UTMEasting"));
     let northing = Number(getTagValue(utmElement, "UTMNorthing"));
     let elevationValue = getTagValue(utmElement, "ElevationAGL");
-    const { latitude, longitude } = toLatLon(easting, northing, zoneNum, zoneLetter)
+    const { latitude, longitude } = toLatLon(easting, northing, zoneNum, zoneLetter);
 
     if (elevationValue.length > 0) {
       let elevation = Number(elevationValue);
-      return [longitude, latitude, elevation]
+      return [longitude, latitude, elevation];
     } else {
       return [longitude, latitude];
     }

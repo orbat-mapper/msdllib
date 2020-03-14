@@ -63,6 +63,7 @@
     "leaflet": "^1.6.0",
     "lodash.camelcase": "^4.3.0",
     "milsymbol": "^2.0.0",
+    "prettier": "^1.19.1",
     "rimraf": "^3.0.0",
     "rollup": "^1.27.14",
     "rollup-plugin-commonjs": "^10.1.0",
