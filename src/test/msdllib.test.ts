@@ -1,8 +1,9 @@
-import { MilitaryScenario, ScenarioId } from "../src/index";
-import { EMPTY_SCENARIO } from "./testdata";
-import * as fs from "fs";
-import { loadTestScenario } from "./testutils";
-import { Unit } from "../src/lib/unitequipment";
+import { describe, it, expect } from "vitest";
+import { MilitaryScenario, ScenarioId } from "../index.js";
+import { EMPTY_SCENARIO } from "./testdata.js";
+import fs from "fs/promises";
+import { loadTestScenario } from "./testutils.js";
+import { Unit } from "../lib/unitequipment.js";
 
 describe("MilitaryScenario class", () => {
   it("is defined", () => {
@@ -38,8 +39,10 @@ describe("MilitaryScenario class", () => {
     expect(scenario.forceSides.length).toBe(0);
   });
 
-  it("load from file", () => {
-    let data = fs.readFileSync(__dirname + "/data/minimal.xml", { encoding: "utf-8" });
+  it("load from file", async () => {
+    let data = await fs.readFile(__dirname + "/data/minimal.xml", {
+      encoding: "utf-8",
+    });
 
     let scenario = MilitaryScenario.createFromString(data.toString());
     expect(scenario.units).toBeInstanceOf(Array);
@@ -69,15 +72,15 @@ describe("Simple scenario", () => {
   it("default primary force side ", () => {
     let scenario = loadTestScenario();
     expect(scenario.primarySide).toBe(scenario.forceSides[0]);
-    expect(scenario.forceSides[0].rootUnits[0].sidc[1]).toBe("F");
-    expect(scenario.forceSides[1].rootUnits[0].sidc[1]).toBe("H");
+    expect(scenario.forceSides[0]?.rootUnits[0]?.sidc[1]).toBe("F");
+    expect(scenario.forceSides[1]?.rootUnits[0]?.sidc[1]).toBe("H");
   });
 
   it("set primary force side ", () => {
     let scenario = loadTestScenario();
-    scenario.primarySide = scenario.forceSides[1];
-    expect(scenario.forceSides[0].rootUnits[0].sidc[1]).toBe("H");
-    expect(scenario.forceSides[1].rootUnits[0].sidc[1]).toBe("F");
+    scenario.primarySide = scenario.forceSides[1]!;
+    expect(scenario.forceSides[0]?.rootUnits[0]?.sidc[1]).toBe("H");
+    expect(scenario.forceSides[1]?.rootUnits[0]?.sidc[1]).toBe("F");
   });
 
   it("has sides property", () => {

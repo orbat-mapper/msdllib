@@ -1,7 +1,7 @@
-import { Feature, FeatureCollection, Point } from "geojson";
-import { HostilityStatusCode } from "./enums";
-import { TacticalJson, Unit } from "./unitequipment";
-import { getTagElements, getTagValue } from "./utils";
+import type { Feature, FeatureCollection, Point } from "geojson";
+import { HostilityStatusCode } from "./enums.js";
+import { type TacticalJson, Unit } from "./unitequipment.js";
+import { getTagElements, getTagValue } from "./utils.js";
 
 export interface ForceSideType {
   objectHandle: string;
@@ -31,7 +31,9 @@ export class ForceSide implements ForceSideType {
   }
 
   get isSide(): boolean {
-    return !this.allegianceHandle || this.objectHandle === this.allegianceHandle;
+    return (
+      !this.allegianceHandle || this.objectHandle === this.allegianceHandle
+    );
   }
 
   toGeoJson(): FeatureCollection<Point | null, TacticalJson> {
@@ -59,7 +61,7 @@ export class ForceSide implements ForceSideType {
     for (let e of getTagElements(this.element, "Association")) {
       let association = {
         affiliateHandle: getTagValue(e, "AffiliateHandle"),
-        relationship: getTagValue(e, "Relationship") as HostilityStatusCode
+        relationship: getTagValue(e, "Relationship") as HostilityStatusCode,
       };
       this.associations.push(association);
     }

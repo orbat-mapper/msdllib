@@ -1,7 +1,8 @@
-import { parseFromString } from "./testdata";
-import { ForceSide } from "../src";
-import { loadTestScenario } from "./testutils";
-import { HostilityStatusCode } from "../src/lib/enums";
+import { describe, it, expect } from "vitest";
+import { parseFromString } from "./testdata.js";
+import { ForceSide } from "../index.js";
+import { loadTestScenario } from "./testutils.js";
+import { HostilityStatusCode } from "../lib/enums.js";
 
 const FORCESIDE_TEMPLATE_IS_SIDE = `<ForceSide>
     <ObjectHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -55,14 +56,22 @@ describe("ForceSide class", () => {
     let element = parseFromString(FORCESIDE_TEMPLATE_IS_SIDE);
     let forceSide = new ForceSide(element);
     expect(forceSide.objectHandle).toBe("e7ad0e8d-2dcd-11e2-be2b-000c294c9df8");
-    expect(forceSide.allegianceHandle).toBe("e7ad0e8d-2dcd-11e2-be2b-000c294c9df8");
+    expect(forceSide.allegianceHandle).toBe(
+      "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8",
+    );
     expect(forceSide.name).toBe("Friendly");
     expect(forceSide.isSide).toBe(true);
     expect(forceSide.associations).toBeDefined();
     expect(forceSide.associations.length).toBe(2);
-    expect(forceSide.associations[0].affiliateHandle).toBe("e7ae4710-2dcd-11e2-be2b-000c294c9df8");
-    expect(forceSide.associations[0].relationship).toBe(HostilityStatusCode.Hostile);
-    expect(forceSide.associations[1].relationship).toBe(HostilityStatusCode.Friend);
+    expect(forceSide.associations[0]?.affiliateHandle).toBe(
+      "e7ae4710-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(forceSide.associations[0]?.relationship).toBe(
+      HostilityStatusCode.Hostile,
+    );
+    expect(forceSide.associations[1]?.relationship).toBe(
+      HostilityStatusCode.Friend,
+    );
     expect(forceSide.forces).toBeInstanceOf(Array);
     expect(forceSide.forces.length).toBe(0);
   });
@@ -71,7 +80,9 @@ describe("ForceSide class", () => {
     let element = parseFromString(FORCESIDE_TEMPLATE_IS_SIDE);
     let forceSide = new ForceSide(element);
     expect(forceSide.objectHandle).toBe("e7ad0e8d-2dcd-11e2-be2b-000c294c9df8");
-    expect(forceSide.allegianceHandle).toBe("e7ad0e8d-2dcd-11e2-be2b-000c294c9df8");
+    expect(forceSide.allegianceHandle).toBe(
+      "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8",
+    );
     expect(forceSide.isSide).toBe(true);
   });
 
@@ -85,13 +96,15 @@ describe("ForceSide class", () => {
   it("detect force", () => {
     let element = parseFromString(FORCESIDE_TEMPLATE_IS_FORCE);
     let forceSide = new ForceSide(element);
-    expect(forceSide.allegianceHandle).toBe("e7ad0e8d-2dcd-11e2-be2b-000c294c9df8");
+    expect(forceSide.allegianceHandle).toBe(
+      "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8",
+    );
     expect(forceSide.isSide).toBe(false);
   });
 
   it("has GeoJSON interface", () => {
     let scenario = loadTestScenario();
-    let forceSide = scenario.forceSides[0];
+    let forceSide = scenario.forceSides[0]!;
     expect(forceSide.name).toBe("Friendly");
     expect(forceSide.toGeoJson).toBeDefined();
     let gjson = forceSide.toGeoJson();
@@ -105,10 +118,10 @@ describe("Side relations", () => {
     let scenario = loadTestScenario();
     expect(scenario.forceSides).toBeInstanceOf(Array);
     expect(scenario.forceSides.length).toBe(3);
-    let forceSide = scenario.forceSides[0];
+    let forceSide = scenario.forceSides[0]!;
     expect(forceSide.name).toBe("Friendly");
     expect(forceSide.rootUnits.length).toBe(1);
-    expect(forceSide.rootUnits[0].name).toBe("HQ");
+    expect(forceSide.rootUnits[0]!.name).toBe("HQ");
   });
 });
 
@@ -122,20 +135,20 @@ describe("Force and side relations", () => {
   it("the sides have forces", () => {
     let scenario = loadTestScenario("/data/ForceSideMinimal.xml");
     expect(scenario.sides.length).toBe(3);
-    expect(scenario.sides[0].forces.length).toBe(1);
-    expect(scenario.sides[1].forces.length).toBe(1);
-    expect(scenario.sides[2].forces.length).toBe(1);
+    expect(scenario.sides[0]?.forces.length).toBe(1);
+    expect(scenario.sides[1]?.forces.length).toBe(1);
+    expect(scenario.sides[2]?.forces.length).toBe(1);
 
-    const blueForce = scenario.sides[0].forces[0];
-    expect(blueForce.isSide).toBe(false);
-    expect(blueForce.name).toBe("Blue Force");
+    const blueForce = scenario.sides[0]?.forces[0];
+    expect(blueForce?.isSide).toBe(false);
+    expect(blueForce?.name).toBe("Blue Force");
 
-    const opforForce = scenario.sides[1].forces[0];
-    expect(opforForce.isSide).toBe(false);
-    expect(opforForce.name).toBe("OPFOR Force");
+    const opforForce = scenario.sides[1]?.forces[0];
+    expect(opforForce?.isSide).toBe(false);
+    expect(opforForce?.name).toBe("OPFOR Force");
 
-    const neutralForce = scenario.sides[2].forces[0];
-    expect(neutralForce.isSide).toBe(false);
-    expect(neutralForce.name).toBe("Neutral Force");
+    const neutralForce = scenario.sides[2]?.forces[0];
+    expect(neutralForce?.isSide).toBe(false);
+    expect(neutralForce?.name).toBe("Neutral Force");
   });
 });

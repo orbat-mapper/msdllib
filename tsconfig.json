@@ -1,36 +1,30 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "strict": true,
-    "jsx": "preserve",
-    "allowJs": true,
-    "checkJs": false,
-    "importHelpers": true,
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
+    /* Base Options: */
     "esModuleInterop": true,
-    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+
+    /* If transpiling with TypeScript: */
+    "module": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "src",
     "sourceMap": true,
-    "baseUrl": ".",
-    "types": ["node", "jest"],
-    //"declaration": true,
-    //"declarationDir": "types",
-    "paths": {
-      "@/*": ["src/*"],
-      "msdllib": ["./src/index"]
-    },
-    "lib": ["es2015", "dom", "dom.iterable", "scripthost"]
+
+    /* AND if you're building for a library: */
+    "declaration": true
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "example/**/*.ts",
-    "example/**/*.tsx",
-    "example/**/*.vue",
-    "test/**/*.ts",
-    "test/**/*.tsx"
-  ],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"],
+
+  "exclude": ["vitest.config.ts"]
 }

@@ -1,7 +1,7 @@
-import { parseFromString } from "./testdata";
-import { Unit } from "../src/lib/unitequipment";
-import { loadTestScenario } from "./testutils";
-import { Point } from "geojson";
+import { describe, it, expect } from "vitest";
+import { parseFromString } from "./testdata.js";
+import { Unit } from "../lib/unitequipment.js";
+import { loadTestScenario } from "./testutils.js";
 
 const UNIT_TEMPLATE = ` <Unit>
                 <ObjectHandle>f9e16593-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -121,7 +121,7 @@ describe("MSDL Unit", () => {
     let gjson = unit.toGeoJson();
     expect(gjson.id).toBe("f9e16593-2dcd-11e2-be2b-000c294c9df8");
     expect(gjson.type).toBe("Feature");
-    const geometry = gjson.geometry as Point;
+    const geometry = gjson.geometry!;
     expect(geometry.type).toBe("Point");
     expect(geometry.coordinates[1]).toBe(58.54383);
     expect(geometry.coordinates[0]).toBe(15.038887);
@@ -148,10 +148,10 @@ describe("Unit relations", () => {
   it("subordinates", () => {
     let scenario = loadTestScenario();
     expect(scenario.rootUnits.length).toBe(2);
-    let hq = scenario.rootUnits[0];
+    let hq = scenario.rootUnits[0]!;
     expect(hq.name).toBe("HQ");
     expect(hq.subordinates.length).toBe(2);
-    expect(hq.subordinates[0].name).toBe("1th");
-    expect(hq.subordinates[1].name).toBe("2nd");
+    expect(hq.subordinates[0]?.name).toBe("1th");
+    expect(hq.subordinates[1]?.name).toBe("2nd");
   });
 });

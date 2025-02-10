@@ -4,12 +4,14 @@ export const MSDL_NS = "*";
 export function getTagValue(
   element: Element | undefined,
   tagName: string,
-  noTrim?: boolean
+  noTrim?: boolean,
 ): string {
   if (!element) return "";
   let elements = element.getElementsByTagNameNS(MSDL_NS, tagName);
   if (elements.length) {
-    return noTrim ? elements[0].innerHTML : elements[0].innerHTML.trim();
+    return (
+      (noTrim ? elements[0]?.innerHTML : elements[0]?.innerHTML.trim()) ?? ""
+    );
   }
   return "";
 }
@@ -17,7 +19,7 @@ export function getTagValue(
 export function getTagElement(
   element: Element | undefined,
   tagName: string,
-  required?: boolean
+  required?: boolean,
 ): Element | undefined {
   if (!element) return;
   let el = element.getElementsByTagNameNS(MSDL_NS, tagName)[0];
@@ -27,14 +29,17 @@ export function getTagElement(
   return el;
 }
 
-export function getTagElements(element: Element | undefined, tagName: string): Element[] {
+export function getTagElements(
+  element: Element | undefined,
+  tagName: string,
+): Element[] {
   if (!element) return [];
   let _elements = element.getElementsByTagNameNS(MSDL_NS, tagName);
   let elements = [];
   for (let i = 0; i < _elements.length; i++) {
     elements.push(_elements[i]);
   }
-  return elements;
+  return elements as Element[];
 }
 
 export function setCharAt(str: string, index: number, chr: string) {

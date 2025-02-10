@@ -4,7 +4,7 @@ import * as mgrs from "mgrs";
 import * as projector from "ecef-projector";
 import { toLatLon } from "utm";
 
-import { getTagElement, getTagValue } from "./utils";
+import { getTagElement, getTagValue } from "./utils.js";
 
 export type LngLatTuple = [number, number];
 export type LngLatElevationTuple = [number, number, number];
@@ -97,12 +97,17 @@ export class MsdlLocation {
   private parseUTMLocation(): LngLatTuple | LngLatElevationTuple {
     let utmElement = getTagElement(this.element, "UTM");
     let gridZone = getTagValue(utmElement, "UTMGridZone");
-    const zoneLetter = gridZone[2];
+    const zoneLetter = gridZone[2] ?? "";
     const zoneNum = Number(gridZone.substr(0, 2));
     let easting = Number(getTagValue(utmElement, "UTMEasting"));
     let northing = Number(getTagValue(utmElement, "UTMNorthing"));
     let elevationValue = getTagValue(utmElement, "ElevationAGL");
-    const { latitude, longitude } = toLatLon(easting, northing, zoneNum, zoneLetter);
+    const { latitude, longitude } = toLatLon(
+      easting,
+      northing,
+      zoneNum,
+      zoneLetter,
+    );
 
     if (elevationValue.length > 0) {
       let elevation = Number(elevationValue);

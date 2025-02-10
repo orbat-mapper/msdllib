@@ -1,8 +1,8 @@
-import { ScenarioId } from "./scenarioid";
-import { getTagElement, getTagElements } from "./utils";
-import { EquipmentItem, Unit } from "./unitequipment";
-import { rel2code, StandardIdentities } from "./enums";
-import { ForceSide } from "./forcesides";
+import { ScenarioId } from "./scenarioid.js";
+import { getTagElement, getTagElements } from "./utils.js";
+import { EquipmentItem, Unit } from "./unitequipment.js";
+import { rel2code, StandardIdentities } from "./enums.js";
+import { ForceSide } from "./forcesides.js";
 
 /**
  * MilitaryScenarioType
@@ -23,7 +23,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
   rootUnits: Unit[] = [];
   private unitMap: { [id: string]: Unit } = {};
   private forceSideMap: { [id: string]: ForceSide } = {};
-  private _primarySide: ForceSide | null = null;
+  private _primarySide: ForceSide | null | undefined = null;
 
   constructor(public element?: Element) {
     if (element) {
@@ -32,7 +32,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
       this.initializeUnits();
       this.initializeEquipment();
       this.updateSidesRootUnits();
-      this.primarySide = this.forceSides[0];
+      this.primarySide = this.forceSides[0]!;
     }
   }
 
@@ -55,7 +55,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
       this.forceSideMap[forceSide.objectHandle] = forceSide;
     }
 
-    const forces = this.forceSides.filter(fs => !fs.isSide);
+    const forces = this.forceSides.filter((fs) => !fs.isSide);
     for (let force of forces) {
       let parentSide = this.forceSideMap[force.allegianceHandle];
       if (parentSide) {
@@ -122,19 +122,19 @@ export class MilitaryScenario implements MilitaryScenarioType {
         console.warn(side.name + " has an association with itself");
         continue;
       }
-      let rootUnits = this.forceSideMap[association.affiliateHandle].rootUnits;
-      for (let unit of rootUnits) {
+      let rootUnits = this.forceSideMap[association.affiliateHandle]?.rootUnits;
+      for (let unit of rootUnits ?? []) {
         this.setAffiliation(unit, code);
       }
     }
   }
 
-  get primarySide(): ForceSide | null {
+  get primarySide(): ForceSide | null | undefined {
     return this._primarySide;
   }
 
   get sides() {
-    return this.forceSides.filter(fs => fs.isSide);
+    return this.forceSides.filter((fs) => fs.isSide);
   }
 
   private setAffiliation(unit: Unit, s: StandardIdentities) {

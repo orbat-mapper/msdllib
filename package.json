@@ -1,86 +1,45 @@
 {
-  "name": "msdllib",
+  "name": "@orbat-mapper/msdllib",
   "version": "1.0.0",
   "description": "A library for manipulating Military Scenario Defintion Language (MSDL) data",
   "keywords": [],
-  "main": "cjs/index.js",
-  "module": "es/index.js",
-  "unpkg": "dist/msdllib.min.js",
-  "typings": "cjs/index.d.ts",
   "files": [
-    "cjs/",
     "dist/",
-    "es/",
-    "src/",
-    "LICENSE.md",
-    "package.json",
-    "README.md"
+    "!dist/test"
   ],
-  "author": "Kjell Magne Fauske <kjellmf@gmail.com>",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kjellmf/msdllib.git"
+    "url": "git+https://github.com/orbat-mapper/msdllib.git"
   },
+  "bugs": {
+    "url": "https://github.com/orbat-mapper/msdllib/issues"
+  },
+  "homepage": "https://github.com/orbat-mapper/msdllib",
   "license": "MIT",
-  "engines": {
-    "node": ">=6.0.0"
-  },
+  "type": "module",
   "scripts": {
-    "lint": "",
-    "prebuild": "rimraf dist && rimraf cjs && rimraf es",
-    "obuild": "tsc && rollup -c rollup.config.ts && rimraf compiled && typedoc --out dist/docs --target es6 --theme minimal --mode file src",
-    "build": "npm run build:cjs && npm run build:es && npm run build:umd && npm run build:umd:min",
-    "build:cjs": "tsc  -p ./config/tsconfig_build.json --module commonjs --outDir cjs",
-    "build:es": "tsc -p ./config/tsconfig_build.json --module ES2015 --outDir es",
-    "build:umd": "rollup --config rollup.config.js --file dist/msdllib.js",
-    "build:umd:min": "rollup --config rollup.config.js --file dist/msdllib.min.js --environment MINIFY",
-    "start": "tsc -w & rollup -c rollup.config.ts -w",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:prod": "npm run lint && npm run test -- --coverage --no-cache",
-    "report-coverage": "cat ./coverage/lcov.info | coveralls",
-    "serve": "vue-cli-service serve example/main.ts"
-  },
-  "config": {},
-  "devDependencies": {
-    "@types/geojson": "^7946.0.7",
-    "@types/jest": "^24.0.25",
-    "@types/leaflet": "^1.5.7",
-    "@types/node": "^13.1.2",
-    "@types/utm": "^1.1.1",
-    "@types/uuid": "^3.4.6",
-    "@vue/cli-plugin-babel": "^4.1.0",
-    "@vue/cli-plugin-eslint": "^4.1.0",
-    "@vue/cli-plugin-typescript": "^4.1.0",
-    "@vue/cli-service": "^4.1.0",
-    "@vue/eslint-config-typescript": "^4.0.0",
-    "buefy": "^0.8.9",
-    "core-js": "^3.4.4",
-    "cross-env": "^6.0.3",
-    "eslint": "^5.16.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "jest": "^24.9.0",
-    "leaflet": "^1.6.0",
-    "lodash.camelcase": "^4.3.0",
-    "milsymbol": "^2.0.0",
-    "prettier": "^1.19.1",
-    "rimraf": "^3.0.0",
-    "rollup": "^1.27.14",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-json": "latest",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-sourcemaps": "^0.4.2",
-    "rollup-plugin-terser": "latest",
-    "ts-jest": "^24.2.0",
-    "typedoc": "^0.15.6",
-    "typescript": "^3.7.4",
-    "uuid": "^3.3.3",
-    "vue": "^2.6.10",
-    "vue-template-compiler": "^2.6.10"
+    "build": "tsc",
+    "ci": "npm run build && npm run check-format && npm run check-exports && npm run lint && npm run test",
+    "format": "prettier --write .",
+    "check-format": "prettier --check .",
+    "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
+    "test": "vitest run",
+    "dev": "vitest"
   },
   "dependencies": {
+    "@types/geojson": "^7946.0.16",
     "ecef-projector": "^1.0.1",
-    "mgrs": "^1.0.0",
+    "mgrs": "^2.1.0",
     "utm": "^1.1.1"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.3",
+    "@types/node": "^22.13.1",
+    "@types/utm": "^1.1.4",
+    "jsdom": "^26.0.0",
+    "prettier": "^3.5.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
   }
 }

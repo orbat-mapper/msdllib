@@ -1,5 +1,6 @@
-import { MilitaryScenario, ScenarioId } from "../src/index";
-import { parseFromString } from "./testdata";
+import { describe, it, expect } from "vitest";
+import { MilitaryScenario, ScenarioId } from "../index.js";
+import { parseFromString } from "./testdata.js";
 
 const SCENARIO_ID_TEMPLATE = `<ScenarioID xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
                   xmlns:modelID="http://www.sisostds.org/schemas/modelID">

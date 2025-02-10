@@ -1,5 +1,5 @@
-export * from "./lib/militaryscenario";
-export { ScenarioId } from "./lib/scenarioid";
-export { ForceSide } from "./lib/forcesides";
-export { AssociationType } from "./lib/forcesides";
-export { ForceSideType } from "./lib/forcesides";
+export * from "./lib/militaryscenario.js";
+export { ScenarioId } from "./lib/scenarioid.js";
+export { ForceSide } from "./lib/forcesides.js";
+export { type AssociationType } from "./lib/forcesides.js";
+export { type ForceSideType } from "./lib/forcesides.js";

@@ -1,7 +1,16 @@
-import { getTagElement, getTagElements, getTagValue, setCharAt } from "./utils";
-import { Feature, Point } from "geojson";
-import { LngLatElevationTuple, LngLatTuple, MsdlLocation } from "./geo";
-import { ForceOwnerType, StandardIdentities } from "./enums";
+import {
+  getTagElement,
+  getTagElements,
+  getTagValue,
+  setCharAt,
+} from "./utils.js";
+import type { Feature, Point } from "geojson";
+import {
+  type LngLatElevationTuple,
+  type LngLatTuple,
+  MsdlLocation,
+} from "./geo.js";
+import { ForceOwnerType, StandardIdentities } from "./enums.js";
 
 export interface TacticalJson {
   sidc?: string;
@@ -38,15 +47,24 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
     this.symbolIdentifier = getTagValue(this.element, "SymbolIdentifier");
     this.name = getTagValue(element, "Name");
     this.getDisposition();
-    this.sidc = setCharAt(this.symbolIdentifier, 1, StandardIdentities.NoneSpecified);
+    this.sidc = setCharAt(
+      this.symbolIdentifier,
+      1,
+      StandardIdentities.NoneSpecified,
+    );
   }
 
   private getDisposition() {
     let dispositionElement = getTagElement(this.element, "Disposition");
     let speed = getTagValue(dispositionElement, "Speed");
-    let directionOfMovement = getTagValue(dispositionElement, "DirectionOfMovement");
+    let directionOfMovement = getTagValue(
+      dispositionElement,
+      "DirectionOfMovement",
+    );
     this.speed = speed ? +speed : undefined;
-    this.directionOfMovement = directionOfMovement ? +directionOfMovement : undefined;
+    this.directionOfMovement = directionOfMovement
+      ? +directionOfMovement
+      : undefined;
     this._msdlLocation = new MsdlLocation(dispositionElement);
     this.location = this._msdlLocation.location;
   }
@@ -57,7 +75,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   subordinates: Unit[] = [];
   private forceRelationChoice: ForceOwnerType | undefined;
 
-  constructor(readonly element: Element) {
+  constructor(override readonly element: Element) {
     super(element);
     this.initializeRelations();
     this.initializeSymbol();
@@ -85,10 +103,10 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
       geometry: this.location
         ? {
             type: "Point",
-            coordinates: this.location
+            coordinates: this.location,
           }
         : null,
-      properties
+      properties,
     };
     return feature;
   }
@@ -105,7 +123,10 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
 
     if (forceRelationChoice === ForceOwnerType.Unit) {
       this.forceRelationChoice = ForceOwnerType.Unit;
-      this.superiorHandle = getTagValue(this.element, "CommandingSuperiorHandle");
+      this.superiorHandle = getTagValue(
+        this.element,
+        "CommandingSuperiorHandle",
+      );
     } else if (forceRelationChoice === ForceOwnerType.ForceSide) {
       this.forceRelationChoice = ForceOwnerType.ForceSide;
       this.superiorHandle = getTagValue(this.element, "ForceSideHandle");
@@ -121,7 +142,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
 }
 
 export class EquipmentItem extends UnitEquipmentBase {
-  constructor(readonly element: Element) {
+  constructor(override readonly element: Element) {
     super(element);
     // Todo: OrganicSuperiorHandle not necessarily set.
     this.superiorHandle = getTagValue(element, "OrganicSuperiorHandle");
@@ -144,10 +165,10 @@ export class EquipmentItem extends UnitEquipmentBase {
       geometry: this.location
         ? {
             type: "Point",
-            coordinates: this.location
+            coordinates: this.location,
           }
         : null,
-      properties
+      properties,
     };
     return feature;
   }

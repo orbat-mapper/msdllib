@@ -1,6 +1,6 @@
 export enum ForceOwnerType {
   Unit = "UNIT",
-  ForceSide = "FORCE_SIDE"
+  ForceSide = "FORCE_SIDE",
 }
 
 export enum HostilityStatusCode {
@@ -16,10 +16,12 @@ export enum HostilityStatusCode {
   Neutral = "NEUTRL",
   Pending = "PENDNG",
   Suspect = "SUSPCT",
-  Unknown = "UNK"
+  Unknown = "UNK",
 }
 
-export function rel2code(relationship: HostilityStatusCode): StandardIdentities {
+export function rel2code(
+  relationship: HostilityStatusCode,
+): StandardIdentities {
   //     if(standardVersion == 'NATO'){
   // 		values = {	"P":"Pending",
   // 					"U":"Unknown",
@@ -79,5 +81,5 @@ export enum StandardIdentities {
   ExerciseAssumedFriend = "M",
   Joker = "J",
   Faker = "K",
-  NoneSpecified = "O"
+  NoneSpecified = "O",
 }

@@ -1,5 +1,7 @@
-import { parseFromString } from "./testdata";
-import { MsdlLocation } from "../src/lib/geo";
+import { describe, it, expect } from "vitest";
+import { parseFromString } from "./testdata.js";
+import { MsdlLocation } from "../lib/geo.js";
+import type { Point } from "geojson";
 
 function precisionRound(num: number, precision: number) {
   let factor = Math.pow(10, precision);
@@ -29,7 +31,6 @@ const LOCATION_GCC_TEMPLATE = `
             </GCC>
         </CoordinateData>
     </Location>`;
-
 
 const LOCATION_GDC_TEMPLATE2 = `
     <Location>
@@ -105,7 +106,6 @@ const UNKNOWN_TEMPLATE = `
             </XXX>
         </CoordinateData>
     </Location>`;
-
 
 describe("MSDL Location", () => {
   it("defined", () => {
@@ -184,7 +184,7 @@ describe("MSDL Location", () => {
       expect(loc.location.length).toBe(3);
       expect(loc.location[1]).toBeCloseTo(58.54383, 4);
       expect(loc.location[0]).toBeCloseTo(15.038887, 4);
-      expect(loc.location[2]).toBe(10)
+      expect(loc.location[2]).toBe(10);
     }
   });
 
@@ -193,6 +193,4 @@ describe("MSDL Location", () => {
     let loc = new MsdlLocation(element);
     expect(loc.location).toBeUndefined();
   });
-
 });
-

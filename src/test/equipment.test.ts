@@ -1,5 +1,6 @@
-import { parseFromString } from "./testdata";
-import { EquipmentItem } from "../src/lib/unitequipment";
+import { describe, it, expect } from "vitest";
+import { parseFromString } from "./testdata.js";
+import { EquipmentItem } from "../lib/unitequipment.js";
 
 const EQUIPMENT_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -95,7 +96,9 @@ describe("MSDL Equipment", () => {
   it("read data", () => {
     let element = parseFromString(EQUIPMENT_TEMPLATE);
     let equipmentItem = new EquipmentItem(element);
-    expect(equipmentItem.objectHandle).toBe("f9ee8509-2dcd-11e2-be2b-000c294c9df8");
+    expect(equipmentItem.objectHandle).toBe(
+      "f9ee8509-2dcd-11e2-be2b-000c294c9df8",
+    );
     expect(equipmentItem.name).toBe("111");
     expect(equipmentItem.symbolIdentifier).toBe("S-G-EVAT------G");
     expect(equipmentItem.location).toBeDefined();
@@ -107,7 +110,9 @@ describe("MSDL Equipment", () => {
     }
     expect(equipmentItem.speed).toBe(0);
     expect(equipmentItem.directionOfMovement).toBe(176.17091);
-    expect(equipmentItem.superiorHandle).toBe("f9e2ec3e-2dcd-11e2-be2b-000c294c9df8");
+    expect(equipmentItem.superiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
   });
 
   it("GeoJson interface", () => {
