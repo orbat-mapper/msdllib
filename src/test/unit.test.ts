@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseFromString } from "./testdata.js";
+import { parseFromString, UNIT_MGRS } from "./testdata.js";
 import { Unit } from "../lib/unitequipment.js";
 import { loadTestScenario } from "./testutils.js";
 
@@ -86,17 +86,17 @@ const UNIT_NO_DISPOSITION = `<Unit>
 </Unit>`;
 
 describe("MSDL Unit", () => {
-  it("defined", () => {
+  it("should be defined", () => {
     expect(Unit).toBeDefined();
   });
 
-  it("create from Element", () => {
+  it("should be created from Element", () => {
     let element = parseFromString(UNIT_TEMPLATE);
     let unit = new Unit(element);
     expect(unit).toBeInstanceOf(Unit);
   });
 
-  it("read data", () => {
+  it("should be able to read unit data", () => {
     let element = parseFromString(UNIT_TEMPLATE);
     let unit = new Unit(element);
     expect(unit.objectHandle).toBe("f9e16593-2dcd-11e2-be2b-000c294c9df8");
@@ -115,7 +115,7 @@ describe("MSDL Unit", () => {
     expect(unit.superiorHandle).toBe("f9c2b9f6-2dcd-11e2-be2b-000c294c9df8");
   });
 
-  it("GeoJson interface", () => {
+  it("should be able to create a GeoJson representation", () => {
     let element = parseFromString(UNIT_TEMPLATE);
     let unit = new Unit(element);
     let gjson = unit.toGeoJson();
@@ -131,7 +131,7 @@ describe("MSDL Unit", () => {
     expect(gjson.properties.sidc).toBe("SOG-----------G");
   });
 
-  it("no disposition", () => {
+  it("should handle a unit with no disposition", () => {
     let element = parseFromString(UNIT_NO_DISPOSITION);
     let unit = new Unit(element);
     expect(unit.location).toBeUndefined();
@@ -153,5 +153,28 @@ describe("Unit relations", () => {
     expect(hq.subordinates.length).toBe(2);
     expect(hq.subordinates[0]?.name).toBe("1th");
     expect(hq.subordinates[1]?.name).toBe("2nd");
+  });
+});
+
+describe("Unit class", () => {
+  describe("when parsing a unit element with UnitSymbolModifiers", () => {
+    const unit = new Unit(parseFromString(UNIT_MGRS));
+    it("should have an objectHandle", () => {
+      expect(unit.objectHandle).toBe("8747aebb-6b76-45d2-8bab-b78450453649");
+    });
+    it("should have a SymbolIdentifier", () => {
+      expect(unit.symbolIdentifier).toBe("S-G-UH-----E---");
+    });
+    it("should have a UnitSymbolModifiers element", () => {
+      expect(unit.symbolModifiers).toBeDefined();
+    });
+    it("should have a UniqueDesignation", () => {
+      expect(unit.symbolModifiers?.uniqueDesignation).toBe("BN HQs-HHC");
+    });
+    it("should use uniqueDesignation as label if name is not set", () => {
+      expect(unit.name).toBe("");
+      expect(unit.symbolModifiers?.uniqueDesignation).toBe("BN HQs-HHC");
+      expect(unit.label).toBe("BN HQs-HHC");
+    });
   });
 });

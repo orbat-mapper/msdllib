@@ -1,97 +1,96 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <MilitaryScenario xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
                   xmlns:modelID="http://www.sisostds.org/schemas/modelID">
-  <ScenarioID>
-    <modelID:name>Empty scenario</modelID:name>
-    <modelID:type></modelID:type>
-    <modelID:version>0</modelID:version>
-    <modelID:modificationDate>2012-11-13-05:00</modelID:modificationDate>
-    <modelID:securityClassification>Unclassified</modelID:securityClassification>
-    <modelID:description>Description</modelID:description>
-    <modelID:poc>
-      <modelID:pocType>e-mail</modelID:pocType>
-      <modelID:pocEmail>test@test.com</modelID:pocEmail>
-    </modelID:poc>
-  </ScenarioID>
-  <Options>
-    <MSDLVersion>MSDL Standard Nov 2008</MSDLVersion>
-  </Options>
-  <Environment>
-  </Environment>
-  <ForceSides>
+    <ScenarioID>
+        <modelID:name>Empty scenario</modelID:name>
+        <modelID:type></modelID:type>
+        <modelID:version>0</modelID:version>
+        <modelID:modificationDate>2012-11-13-05:00</modelID:modificationDate>
+        <modelID:securityClassification>Unclassified</modelID:securityClassification>
+        <modelID:description>Description</modelID:description>
+        <modelID:poc>
+            <modelID:pocType>e-mail</modelID:pocType>
+            <modelID:pocEmail>test@test.com</modelID:pocEmail>
+        </modelID:poc>
+    </ScenarioID>
+    <Options>
+        <MSDLVersion>MSDL Standard Nov 2008</MSDLVersion>
+    </Options>
+    <Environment>
+    </Environment>
     <ForceSides>
-      <ForceSide>
-        <ObjectHandle>0f1fe688-ed89-4433-9f9e-aa66cb1a11a6</ObjectHandle>
-        <ForceSideName>BLUFOR SIDE</ForceSideName>
-        <AllegianceHandle>0f1fe688-ed89-4433-9f9e-aa66cb1a11a6</AllegianceHandle>
-        <Associations>
-          <Association>
-            <AffiliateHandle>a5fa954c-a0fe-41c9-bb7f-a3588a4b3cda</AffiliateHandle>
-            <Relationship>HO</Relationship>
-          </Association>
-          <Association>
-            <AffiliateHandle>025ef250-6ca5-47bc-b7c1-e5e9f834031c</AffiliateHandle>
-            <Relationship>NEUTRL</Relationship>
-          </Association>
-        </Associations>
-      </ForceSide>
-      <ForceSide>
-        <ObjectHandle>a5fa954c-a0fe-41c9-bb7f-a3588a4b3cda</ObjectHandle>
-        <ForceSideName>OPFOR SIDE</ForceSideName>
-        <AllegianceHandle>a5fa954c-a0fe-41c9-bb7f-a3588a4b3cda</AllegianceHandle>
-        <Associations>
-          <Association>
-            <AffiliateHandle>0f1fe688-ed89-4433-9f9e-aa66cb1a11a6</AffiliateHandle>
-            <Relationship>HO</Relationship>
-          </Association>
-          <Association>
-            <AffiliateHandle>025ef250-6ca5-47bc-b7c1-e5e9f834031c</AffiliateHandle>
-            <Relationship>NEUTRL</Relationship>
-          </Association>
-        </Associations>
-      </ForceSide>
-      <ForceSide>
-        <ObjectHandle>025ef250-6ca5-47bc-b7c1-e5e9f834031c</ObjectHandle>
-        <ForceSideName>NEUTRAL SIDE</ForceSideName>
-        <AllegianceHandle>025ef250-6ca5-47bc-b7c1-e5e9f834031c</AllegianceHandle>
-        <Associations>
-          <Association>
-            <AffiliateHandle>0f1fe688-ed89-4433-9f9e-aa66cb1a11a6</AffiliateHandle>
-            <Relationship>NEUTRL</Relationship>
-          </Association>
-          <Association>
-            <AffiliateHandle>a5fa954c-a0fe-41c9-bb7f-a3588a4b3cda</AffiliateHandle>
-            <Relationship>NEUTRL</Relationship>
-          </Association>
-        </Associations>
-      </ForceSide>
-      <ForceSide>
-        <ObjectHandle>0b700b86-10e0-46b4-a054-856cc84eddd4</ObjectHandle>
-        <ForceSideName>Neutral Force</ForceSideName>
-        <AllegianceHandle>025ef250-6ca5-47bc-b7c1-e5e9f834031c</AllegianceHandle>
-        <MilitaryService>ARMY</MilitaryService>
-      </ForceSide>
-      <ForceSide>
-        <ObjectHandle>fbde006d-2b85-489d-a511-892e67650eb9</ObjectHandle>
-        <ForceSideName>Blue Force</ForceSideName>
-        <AllegianceHandle>0f1fe688-ed89-4433-9f9e-aa66cb1a11a6</AllegianceHandle>
-        <MilitaryService>ARMY</MilitaryService>
-        <CountryCode>USA</CountryCode>
-      </ForceSide>
-      <ForceSide>
-        <ObjectHandle>70d5aabc-20d5-4560-84e6-7498fb382c58</ObjectHandle>
-        <ForceSideName>OPFOR Force</ForceSideName>
-        <AllegianceHandle>a5fa954c-a0fe-41c9-bb7f-a3588a4b3cda</AllegianceHandle>
-        <MilitaryService>ARMY</MilitaryService>
-      </ForceSide>
+
+        <ForceSide>
+            <ObjectHandle>0f1fe688-ed89-4433-9f9e-aa66cb1a11a6</ObjectHandle>
+            <ForceSideName>BLUFOR SIDE</ForceSideName>
+            <AllegianceHandle>0f1fe688-ed89-4433-9f9e-aa66cb1a11a6</AllegianceHandle>
+            <Associations>
+                <Association>
+                    <AffiliateHandle>a5fa954c-a0fe-41c9-bb7f-a3588a4b3cda</AffiliateHandle>
+                    <Relationship>HO</Relationship>
+                </Association>
+                <Association>
+                    <AffiliateHandle>025ef250-6ca5-47bc-b7c1-e5e9f834031c</AffiliateHandle>
+                    <Relationship>NEUTRL</Relationship>
+                </Association>
+            </Associations>
+        </ForceSide>
+        <ForceSide>
+            <ObjectHandle>a5fa954c-a0fe-41c9-bb7f-a3588a4b3cda</ObjectHandle>
+            <ForceSideName>OPFOR SIDE</ForceSideName>
+            <AllegianceHandle>a5fa954c-a0fe-41c9-bb7f-a3588a4b3cda</AllegianceHandle>
+            <Associations>
+                <Association>
+                    <AffiliateHandle>0f1fe688-ed89-4433-9f9e-aa66cb1a11a6</AffiliateHandle>
+                    <Relationship>HO</Relationship>
+                </Association>
+                <Association>
+                    <AffiliateHandle>025ef250-6ca5-47bc-b7c1-e5e9f834031c</AffiliateHandle>
+                    <Relationship>NEUTRL</Relationship>
+                </Association>
+            </Associations>
+        </ForceSide>
+        <ForceSide>
+            <ObjectHandle>025ef250-6ca5-47bc-b7c1-e5e9f834031c</ObjectHandle>
+            <ForceSideName>NEUTRAL SIDE</ForceSideName>
+            <AllegianceHandle>025ef250-6ca5-47bc-b7c1-e5e9f834031c</AllegianceHandle>
+            <Associations>
+                <Association>
+                    <AffiliateHandle>0f1fe688-ed89-4433-9f9e-aa66cb1a11a6</AffiliateHandle>
+                    <Relationship>NEUTRL</Relationship>
+                </Association>
+                <Association>
+                    <AffiliateHandle>a5fa954c-a0fe-41c9-bb7f-a3588a4b3cda</AffiliateHandle>
+                    <Relationship>NEUTRL</Relationship>
+                </Association>
+            </Associations>
+        </ForceSide>
+        <ForceSide>
+            <ObjectHandle>0b700b86-10e0-46b4-a054-856cc84eddd4</ObjectHandle>
+            <ForceSideName>Neutral Force</ForceSideName>
+            <AllegianceHandle>025ef250-6ca5-47bc-b7c1-e5e9f834031c</AllegianceHandle>
+            <MilitaryService>ARMY</MilitaryService>
+        </ForceSide>
+        <ForceSide>
+            <ObjectHandle>fbde006d-2b85-489d-a511-892e67650eb9</ObjectHandle>
+            <ForceSideName>Blue Force</ForceSideName>
+            <AllegianceHandle>0f1fe688-ed89-4433-9f9e-aa66cb1a11a6</AllegianceHandle>
+            <MilitaryService>ARMY</MilitaryService>
+            <CountryCode>USA</CountryCode>
+        </ForceSide>
+        <ForceSide>
+            <ObjectHandle>70d5aabc-20d5-4560-84e6-7498fb382c58</ObjectHandle>
+            <ForceSideName>OPFOR Force</ForceSideName>
+            <AllegianceHandle>a5fa954c-a0fe-41c9-bb7f-a3588a4b3cda</AllegianceHandle>
+            <MilitaryService>ARMY</MilitaryService>
+        </ForceSide>
     </ForceSides>
-  </ForceSides>
-  <Organizations>
-    <Units></Units>
-    <Equipment></Equipment>
-  </Organizations>
-  <Overlays></Overlays>
-  <Installations></Installations>
-  <TacticalGraphics></TacticalGraphics>
-  <MOOTWGraphics></MOOTWGraphics>
+    <Organizations>
+        <Units></Units>
+        <Equipment></Equipment>
+    </Organizations>
+    <Overlays></Overlays>
+    <Installations></Installations>
+    <TacticalGraphics></TacticalGraphics>
+    <MOOTWGraphics></MOOTWGraphics>
 </MilitaryScenario>

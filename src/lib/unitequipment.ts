@@ -1,9 +1,4 @@
-import {
-  getTagElement,
-  getTagElements,
-  getTagValue,
-  setCharAt,
-} from "./utils.js";
+import { getTagElement, getTagValue, setCharAt } from "./utils.js";
 import type { Feature, Point } from "geojson";
 import {
   type LngLatElevationTuple,
@@ -12,13 +7,13 @@ import {
 } from "./geo.js";
 import { ForceOwnerType, StandardIdentities } from "./enums.js";
 
-export interface TacticalJson {
+export type TacticalJson = {
   sidc?: string;
   speed?: number;
   direction?: number;
-}
+};
 
-export interface UnitEquipmentInterface {
+export type UnitEquipmentInterface = {
   objectHandle: string;
   symbolIdentifier: string;
   name: string;
@@ -29,7 +24,7 @@ export interface UnitEquipmentInterface {
   directionOfMovement?: number;
   superiorHandle: string;
   sidc: string;
-}
+};
 
 export class UnitEquipmentBase implements UnitEquipmentInterface {
   sidc: string;
@@ -40,6 +35,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   name: string;
   objectHandle: string;
   superiorHandle = "";
+  symbolModifiers?: UnitSymbolModifiers;
   protected _msdlLocation?: MsdlLocation;
 
   constructor(readonly element: Element) {
@@ -52,6 +48,15 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
       1,
       StandardIdentities.NoneSpecified,
     );
+    const unitSymbolModifiersElement = getTagElement(
+      this.element,
+      "UnitSymbolModifiers",
+    );
+    if (unitSymbolModifiersElement) {
+      this.symbolModifiers = new UnitSymbolModifiers(
+        unitSymbolModifiersElement,
+      );
+    }
   }
 
   private getDisposition() {
@@ -85,6 +90,12 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     return this.forceRelationChoice === ForceOwnerType.ForceSide;
   }
 
+  get label(): string {
+    return (
+      this.name || this.symbolModifiers?.uniqueDesignation || this.objectHandle
+    );
+  }
+
   toGeoJson(): Feature<Point | null, TacticalJson> {
     let feature: Feature<Point | null, TacticalJson>;
     let properties: TacticalJson = {};
@@ -114,7 +125,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   setAffiliation(s: StandardIdentities) {
     this.sidc = setCharAt(this.sidc, 1, s);
     for (let equipment of this.equipment) {
-      equipment.setAffilitation(s);
+      equipment.setAffiliation(s);
     }
   }
 
@@ -173,7 +184,31 @@ export class EquipmentItem extends UnitEquipmentBase {
     return feature;
   }
 
-  public setAffilitation(s: string) {
+  public setAffiliation(s: string) {
     this.sidc = setCharAt(this.symbolIdentifier, 1, s);
+  }
+}
+
+export class UnitSymbolModifiers {
+  echelon?: string;
+  reinforcedReduced?: string;
+  staffComments?: string;
+  additionalInfo?: string;
+  combatEffectiveness?: string;
+  higherFormation?: string;
+  iff?: string;
+  uniqueDesignation: string;
+  specialC2HQ?: string;
+
+  constructor(element: Element) {
+    this.echelon = getTagValue(element, "Echelon");
+    this.reinforcedReduced = getTagValue(element, "ReinforcedReduced");
+    this.staffComments = getTagValue(element, "StaffComments");
+    this.additionalInfo = getTagValue(element, "AdditionalInfo");
+    this.combatEffectiveness = getTagValue(element, "CombatEffectiveness");
+    this.higherFormation = getTagValue(element, "HigherFormation");
+    this.iff = getTagValue(element, "IFF");
+    this.uniqueDesignation = getTagValue(element, "UniqueDesignation") || "";
+    this.specialC2HQ = getTagValue(element, "SpecialC2HQ");
   }
 }

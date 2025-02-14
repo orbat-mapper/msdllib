@@ -5,7 +5,7 @@ export function parseFromString(xmlString: string): Element {
 }
 
 export const EMPTY_SCENARIO = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<MilitaryScenario xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
+<MilitaryScenario xmlns="urn:sisostds:scenario:military:data:draft:1"
                   xmlns:modelID="http://www.sisostds.org/schemas/modelID">
     <ScenarioID>
         <modelID:name>Empty scenario</modelID:name>
@@ -49,4 +49,57 @@ export const UNIT_TEMPLATE = `<Unit>
         </ForceRelation>
     </Relations>
 </Unit>
+`;
+
+export const UNIT_MGRS = `<Unit>
+    <ObjectHandle>8747aebb-6b76-45d2-8bab-b78450453649</ObjectHandle>
+    <SymbolIdentifier>S-G-UH-----E---</SymbolIdentifier>
+    <UnitSymbolModifiers>
+        <UniqueDesignation>BN HQs-HHC</UniqueDesignation>
+        <HigherFormation>4</HigherFormation>
+        <Echelon>COMPANY</Echelon>
+        <CombatEffectiveness>GREEN</CombatEffectiveness>
+    </UnitSymbolModifiers>
+    <Disposition>
+        <Location>
+            <CoordinateChoice>MGRS</CoordinateChoice>
+            <CoordinateData>
+                <MGRS>
+                    <MGRSGridZone>11S</MGRSGridZone>
+                    <MGRSGridSquare>NV</MGRSGridSquare>
+                    <MGRSPrecision>5</MGRSPrecision>
+                    <MGRSEasting>31919</MGRSEasting>
+                    <MGRSNorthing>10790</MGRSNorthing>
+                    <ElevationAGL>0</ElevationAGL>
+                </MGRS>
+            </CoordinateData>
+        </Location>
+        <DirectionOfMovement>0</DirectionOfMovement>
+        <Speed>0</Speed>
+        <FormationPosition>
+            <FormationOrder>1</FormationOrder>
+        </FormationPosition>
+        <OwnFormation>
+            <FormationSpacing>171</FormationSpacing>
+            <FormationOrientation>85</FormationOrientation>
+            <FormationChoice>GROUND</FormationChoice>
+            <FormationLocationType>LEAD_ELEMENT</FormationLocationType>
+            <FormationData>
+                <GroundFormationType>WEDGE</GroundFormationType>
+            </FormationData>
+        </OwnFormation>
+    </Disposition>
+    <Relations>
+        <ForceRelation>
+            <ForceRelationChoice>UNIT</ForceRelationChoice>
+            <ForceRelationData>
+                <CommandRelation>
+                    <CommandingSuperiorHandle>dfc963b8-2079-40e3-ac2d-dcda64001f09</CommandingSuperiorHandle>
+                    <CommandRelationshipType>ORGANIC</CommandRelationshipType>
+                </CommandRelation>
+            </ForceRelationData>
+        </ForceRelation>
+    </Relations>
+</Unit>
+
 `;
