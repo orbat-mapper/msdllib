@@ -25,8 +25,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
   private forceSideMap: { [id: string]: ForceSide } = {};
   private _primarySide: ForceSide | null | undefined = null;
 
-  constructor(public element?: Element) {
-    if (element) {
+  constructor(public rootElement?: Element) {
+    if (rootElement) {
       this.initializeMetaInfo();
       this.initializeForceSides();
       this.initializeUnits();
@@ -43,12 +43,16 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private initializeMetaInfo() {
-    this.scenarioId = new ScenarioId(getTagElement(this.element, "ScenarioID"));
+    this.scenarioId = new ScenarioId(
+      getTagElement(this.rootElement, "ScenarioID"),
+    );
   }
 
   private initializeForceSides() {
-    let forceSideElements = getTagElements(this.element, "ForceSide");
     this.forceSides = [];
+    const forceSideEl = getTagElement(this.rootElement, "ForceSides");
+    if (!forceSideEl) return;
+    let forceSideElements = getTagElements(forceSideEl, "ForceSide");
     for (let e of forceSideElements) {
       let forceSide = new ForceSide(e);
       this.forceSides.push(forceSide);
@@ -65,7 +69,9 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private initializeUnits() {
-    let unitElements = getTagElements(this.element, "Unit");
+    const organizationsEl = getTagElement(this.rootElement, "Organizations");
+    const unitsEl = getTagElement(organizationsEl, "Units");
+    let unitElements = getTagElements(unitsEl, "Unit");
     for (let unitElement of unitElements) {
       let unit = new Unit(unitElement);
       this.units.push(unit);
@@ -93,7 +99,9 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private initializeEquipment() {
-    let equipmentItemElements = getTagElements(this.element, "EquipmentItem");
+    const organizationsEl = getTagElement(this.rootElement, "Organizations");
+    const equipmentEl = getTagElement(organizationsEl, "Equipment");
+    let equipmentItemElements = getTagElements(equipmentEl, "EquipmentItem");
     for (let equipmentItemElement of equipmentItemElements) {
       this.equipment.push(new EquipmentItem(equipmentItemElement));
     }

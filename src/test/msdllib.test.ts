@@ -15,14 +15,14 @@ describe("MilitaryScenario class", () => {
     let doc = parser.parseFromString(EMPTY_SCENARIO, "text/xml");
     let element = doc.documentElement;
     let scenario = new MilitaryScenario(element);
-    expect(scenario.element).toBeInstanceOf(Element);
-    expect(scenario.element).toBe(element);
+    expect(scenario.rootElement).toBeInstanceOf(Element);
+    expect(scenario.rootElement).toBe(element);
   });
 
   it("create from string", () => {
     let scenario = MilitaryScenario.createFromString(EMPTY_SCENARIO);
     expect(scenario).toBeInstanceOf(MilitaryScenario);
-    expect(scenario.element).toBeInstanceOf(Element);
+    expect(scenario.rootElement).toBeInstanceOf(Element);
     expect(scenario.units).toBeInstanceOf(Array);
     expect(scenario.units.length).toBe(0);
     expect(scenario.equipment).toBeInstanceOf(Array);
