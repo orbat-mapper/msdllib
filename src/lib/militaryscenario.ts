@@ -10,9 +10,9 @@ import { ForceSide } from "./forcesides.js";
  */
 export interface MilitaryScenarioType {
   scenarioId: ScenarioId;
-  forceSides: any[];
-  units: any[];
-  equipment: any[];
+  forceSides: ForceSide[];
+  units: Unit[];
+  equipment: EquipmentItem[];
 }
 
 export class MilitaryScenario implements MilitaryScenarioType {
