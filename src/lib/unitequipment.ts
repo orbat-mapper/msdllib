@@ -39,7 +39,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   symbolIdentifier: string;
   name: string;
   objectHandle: string;
-  superiorHandle: string = "";
+  superiorHandle = "";
   protected _msdlLocation?: MsdlLocation;
 
   constructor(readonly element: Element) {

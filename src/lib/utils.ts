@@ -8,12 +8,10 @@ export function getTagValue(
 ): string {
   if (!element) return "";
   let elements = element.getElementsByTagNameNS(MSDL_NS, tagName);
-  if (elements.length) {
-    return (
-      (noTrim ? elements[0]?.innerHTML : elements[0]?.innerHTML.trim()) ?? ""
-    );
-  }
-  return "";
+  if (elements.length === 0) return "";
+  return (
+    (noTrim ? elements[0]?.innerHTML : elements[0]?.innerHTML.trim()) ?? ""
+  );
 }
 
 export function getTagElement(
@@ -44,5 +42,5 @@ export function getTagElements(
 
 export function setCharAt(str: string, index: number, chr: string) {
   if (index > str.length - 1) return str;
-  return str.substr(0, index) + chr + str.substr(index + 1);
+  return str.substring(0, index) + chr + str.substring(index + 1);
 }
