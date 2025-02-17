@@ -11,6 +11,7 @@ export type TacticalJson = {
   sidc?: string;
   speed?: number;
   direction?: number;
+  label?: string;
 };
 
 export type UnitEquipmentInterface = {
@@ -107,6 +108,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
       properties.direction = this.directionOfMovement;
     }
     properties.sidc = this.sidc;
+    properties.label = this.label;
 
     feature = {
       id: this.objectHandle,
