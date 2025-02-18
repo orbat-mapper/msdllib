@@ -38,11 +38,11 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.3",
     "@changesets/cli": "^2.28.0",
-    "@types/node": "^22.13.1",
+    "@types/node": "^22.13.4",
     "@types/utm": "^1.1.4",
     "jsdom": "^26.0.0",
-    "prettier": "^3.5.0",
+    "prettier": "^3.5.1",
     "typescript": "^5.7.3",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.6"
   }
 }
