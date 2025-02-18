@@ -3,7 +3,7 @@
 **Experimental**
 
 A JavaScript library for parsing Military Scenario Definition Language (MSDL) data.
-Currently MSDLlib only supports the most commonly used MSDL data structures.
+Currently, MSDLlib only supports the most commonly used MSDL data structures.
 
 The Military Scenario Definition Language is an XML-based language designed to support military
 scenario development. MSDL, also known as [SISO-STD-007-2008](https://www.sisostds.org/DesktopModules/Bring2mind/DMX/Download.aspx?Command=Core_Download&EntryId=45690&PortalId=0&TabId=105), is a standard developed by the [Simulation Interoperability Standards
@@ -21,6 +21,52 @@ is copyright © 2015 by the Simulation Interoperability Standards Organization, 
 
 ## Usage
 
+To use MSDLlib in your project, follow these steps:
+
+1. Install the library using npm:
+
+   ```sh
+   npm install @orbat-mapper/msdllib
+   ```
+
+2. Import and use the library in your TypeScript or JavaScript code:
+
+   ```typescript
+   import { Unit, EquipmentItem } from "@orbat-mapper/msdllib";
+
+   // Example usage
+   const unit = new Unit(unitElement);
+   console.log(unit.toGeoJson());
+   ```
+
 ## Development
 
-MSDLlib is developed in TypeScript.
+MSDLlib is developed in TypeScript. To contribute or modify the library, follow these steps:
+
+1. Clone the repository:
+
+   ```sh
+   git clone https://github.com/orbat-mapper/msdllib.git
+   cd msdllib
+   ```
+
+2. Install dependencies:
+
+   ```sh
+   npm install
+   ```
+
+3. Build the project:
+
+   ```sh
+   npm run build
+   ```
+
+4. Run tests:
+   ```sh
+   npm run test
+   ```
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
