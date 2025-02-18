@@ -25,7 +25,9 @@
     "check-format": "prettier --check .",
     "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
     "test": "vitest run",
-    "dev": "vitest"
+    "dev": "vitest",
+    "local-release": "changeset version && changeset publish",
+    "prepublishOnly": "npm run ci"
   },
   "dependencies": {
     "@types/geojson": "^7946.0.16",
@@ -35,6 +37,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.3",
+    "@changesets/cli": "^2.28.0",
     "@types/node": "^22.13.1",
     "@types/utm": "^1.1.4",
     "jsdom": "^26.0.0",
