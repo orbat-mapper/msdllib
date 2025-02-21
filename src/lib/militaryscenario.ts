@@ -39,7 +39,20 @@ export class MilitaryScenario implements MilitaryScenarioType {
   static createFromString(xmlString: string) {
     let parser = new DOMParser();
     let doc = parser.parseFromString(xmlString, "text/xml");
-    return new MilitaryScenario(doc.documentElement);
+    const errorNode = doc.querySelector("parsererror");
+    if (errorNode) {
+      throw new TypeError("Error parsing XML string: " + errorNode.textContent);
+    }
+    const militaryScenario = new MilitaryScenario(doc.documentElement);
+    // is it valid?
+    if (
+      militaryScenario.units.length === 0 &&
+      militaryScenario.forceSides.length === 0 &&
+      !militaryScenario.scenarioId.element
+    ) {
+      throw new TypeError("Invalid MSDL");
+    }
+    return militaryScenario;
   }
 
   private initializeMetaInfo() {
