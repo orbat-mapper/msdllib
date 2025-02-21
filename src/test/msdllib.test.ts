@@ -100,3 +100,28 @@ describe("Simple scenario", () => {
     expect(unit2).toBeUndefined();
   });
 });
+
+describe("MilitaryScenario.createFromString", () => {
+  describe("when parsing invalid XML", () => {
+    it("should throw an error", () => {
+      expect(() => MilitaryScenario.createFromString("invalid xml")).toThrow();
+    });
+    it("should throw a TypeException", () => {
+      expect(() => MilitaryScenario.createFromString("invalid xml")).toThrow(
+        TypeError,
+      );
+    });
+  });
+  describe("when parsing XML that is not MSDL", () => {
+    it("should throw an error", () => {
+      expect(() =>
+        MilitaryScenario.createFromString("<html></html>"),
+      ).toThrow();
+    });
+    it("should throw a TypeException", () => {
+      expect(() => MilitaryScenario.createFromString("<html></html>")).toThrow(
+        TypeError,
+      );
+    });
+  });
+});
