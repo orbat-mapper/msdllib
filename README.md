@@ -14,6 +14,8 @@ and [SISO Product data files page](https://www.sisostds.org/Schemas.aspx).
 Please note that MSDL will be superseded by C2SIM-Initialize. You can read more about this on the
 [C2SIM PDG/PSG page](https://www.sisostds.org/StandardsActivities/DevelopmentGroups/C2SIMPDGPSG-CommandandControlSystems.aspx).
 
+See [msdl-viewer](https://github.com/orbat-mapper/msdl-viewer) for an example project that uses MSDLlib.
+
 ## Copyright notice
 
 The MSDL schema [SISO-STD-007-2008](https://www.sisostds.org/DesktopModules/Bring2mind/DMX/Download.aspx?Command=Core_Download&EntryId=45690&PortalId=0&TabId=105)
@@ -32,11 +34,22 @@ To use MSDLlib in your project, follow these steps:
 2. Import and use the library in your TypeScript or JavaScript code:
 
    ```typescript
-   import { Unit, EquipmentItem } from "@orbat-mapper/msdllib";
-
    // Example usage
-   const unit = new Unit(unitElement);
-   console.log(unit.toGeoJson());
+   import { MilitaryScenario } from "@orbat-mapper/msdllib";
+
+   async function loadMsdlFile(url: string) {
+     try {
+       const response = await fetch(url);
+       const msdlAsText = await response.text();
+       const msdlScenario = MilitaryScenario.createFromString(msdlString);
+       return msdlScenario;
+     } catch (error) {
+       console.error("Failed to load MSDL file", error);
+     }
+   }
+
+   const msdl = loadMsdlFile("https://example.com/msdl-file.xml");
+   console.log(msdl.forceSides[0].toGeoJson());
    ```
 
 ## Development
