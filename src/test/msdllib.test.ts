@@ -23,18 +23,16 @@ describe("MilitaryScenario class", () => {
     let scenario = MilitaryScenario.createFromString(EMPTY_SCENARIO);
     expect(scenario).toBeInstanceOf(MilitaryScenario);
     expect(scenario.rootElement).toBeInstanceOf(Element);
-    expect(scenario.units).toBeInstanceOf(Array);
-    expect(scenario.units.length).toBe(0);
-    expect(scenario.equipment).toBeInstanceOf(Array);
-    expect(scenario.equipment.length).toBe(0);
+    expect(scenario.unitCount).toBe(0);
+    expect(scenario._equipment).toBeInstanceOf(Array);
+    expect(scenario._equipment.length).toBe(0);
   });
 
   it("create empty scenario", () => {
     let scenario = new MilitaryScenario();
-    expect(scenario.units).toBeInstanceOf(Array);
-    expect(scenario.units.length).toBe(0);
-    expect(scenario.equipment).toBeInstanceOf(Array);
-    expect(scenario.equipment.length).toBe(0);
+    expect(scenario.unitCount).toBe(0);
+    expect(scenario._equipment).toBeInstanceOf(Array);
+    expect(scenario._equipment.length).toBe(0);
     expect(scenario.forceSides).toBeInstanceOf(Array);
     expect(scenario.forceSides.length).toBe(0);
   });
@@ -45,10 +43,9 @@ describe("MilitaryScenario class", () => {
     });
 
     let scenario = MilitaryScenario.createFromString(data.toString());
-    expect(scenario.units).toBeInstanceOf(Array);
-    expect(scenario.units.length).toBe(0);
-    expect(scenario.equipment).toBeInstanceOf(Array);
-    expect(scenario.equipment.length).toBe(0);
+    expect(scenario.unitCount).toBe(0);
+    expect(scenario._equipment).toBeInstanceOf(Array);
+    expect(scenario._equipment.length).toBe(0);
     expect(scenario.forceSides).toBeInstanceOf(Array);
     expect(scenario.forceSides.length).toBe(0);
     expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
@@ -59,10 +56,9 @@ describe("MilitaryScenario class", () => {
 describe("Simple scenario", () => {
   it("load from file", () => {
     let scenario = loadTestScenario();
-    expect(scenario.units).toBeInstanceOf(Array);
-    expect(scenario.units.length).toBe(6);
-    expect(scenario.equipment).toBeInstanceOf(Array);
-    expect(scenario.equipment.length).toBe(1);
+    expect(scenario.unitCount).toBe(6);
+    expect(scenario._equipment).toBeInstanceOf(Array);
+    expect(scenario._equipment.length).toBe(1);
     expect(scenario.forceSides).toBeInstanceOf(Array);
     expect(scenario.forceSides.length).toBe(3);
     expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);

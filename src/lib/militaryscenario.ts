@@ -11,18 +11,18 @@ import { ForceSide } from "./forcesides.js";
 export interface MilitaryScenarioType {
   scenarioId: ScenarioId;
   forceSides: ForceSide[];
-  units: Unit[];
-  equipment: EquipmentItem[];
+  unitMap: Record<string, Unit>;
+  forceSideMap: Record<string, ForceSide>;
+  unitCount: number;
 }
 
 export class MilitaryScenario implements MilitaryScenarioType {
   scenarioId: ScenarioId = new ScenarioId();
   forceSides: ForceSide[] = [];
-  equipment: EquipmentItem[] = [];
-  units: Unit[] = [];
+  _equipment: EquipmentItem[] = [];
   rootUnits: Unit[] = [];
-  private unitMap: { [id: string]: Unit } = {};
-  private forceSideMap: { [id: string]: ForceSide } = {};
+  unitMap: Record<string, Unit> = {};
+  forceSideMap: Record<string, ForceSide> = {};
   private _primarySide: ForceSide | null | undefined = null;
 
   constructor(public rootElement?: Element) {
@@ -36,6 +36,10 @@ export class MilitaryScenario implements MilitaryScenarioType {
     }
   }
 
+  get unitCount() {
+    return Object.keys(this.unitMap).length;
+  }
+
   static createFromString(xmlString: string) {
     let parser = new DOMParser();
     let doc = parser.parseFromString(xmlString, "text/xml");
@@ -46,8 +50,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
     const militaryScenario = new MilitaryScenario(doc.documentElement);
     // is it valid?
     if (
-      militaryScenario.units.length === 0 &&
-      militaryScenario.forceSides.length === 0 &&
+      Object.keys(militaryScenario.unitMap).length === 0 &&
+      Object.keys(militaryScenario.forceSides).length === 0 &&
       !militaryScenario.scenarioId.element
     ) {
       throw new TypeError("Invalid MSDL");
@@ -85,12 +89,13 @@ export class MilitaryScenario implements MilitaryScenarioType {
     const organizationsEl = getTagElement(this.rootElement, "Organizations");
     const unitsEl = getTagElement(organizationsEl, "Units");
     let unitElements = getTagElements(unitsEl, "Unit");
+    const _units = [];
     for (let unitElement of unitElements) {
       let unit = new Unit(unitElement);
-      this.units.push(unit);
+      _units.push(unit);
       this.unitMap[unit.objectHandle] = unit;
     }
-    this.buildHierarchy(this.units);
+    this.buildHierarchy(_units);
   }
 
   private buildHierarchy(units: Unit[]) {
@@ -116,7 +121,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     const equipmentEl = getTagElement(organizationsEl, "Equipment");
     let equipmentItemElements = getTagElements(equipmentEl, "EquipmentItem");
     for (let equipmentItemElement of equipmentItemElements) {
-      this.equipment.push(new EquipmentItem(equipmentItemElement));
+      this._equipment.push(new EquipmentItem(equipmentItemElement));
     }
 
     // for (let equip of this.equipment) {
