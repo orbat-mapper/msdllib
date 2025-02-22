@@ -1,23 +1,29 @@
-export enum ForceOwnerType {
-  Unit = "UNIT",
-  ForceSide = "FORCE_SIDE",
-}
+export const ForceOwnerType = {
+  Unit: "UNIT",
+  ForceSide: "FORCE_SIDE",
+} as const;
 
-export enum HostilityStatusCode {
-  AssumedFriend = "AFR",
-  AssumedHostile = "AHO",
-  AssumedInvolved = "AIV",
-  AssumedNeutral = "ANT",
-  Faker = "FAKER",
-  Friend = "FR",
-  Hostile = "HO",
-  Involved = "IV",
-  Joker = "JOKER",
-  Neutral = "NEUTRL",
-  Pending = "PENDNG",
-  Suspect = "SUSPCT",
-  Unknown = "UNK",
-}
+export type ForceOwnerType =
+  (typeof ForceOwnerType)[keyof typeof ForceOwnerType];
+
+export const HostilityStatusCode = {
+  AssumedFriend: "AFR",
+  AssumedHostile: "AHO",
+  AssumedInvolved: "AIV",
+  AssumedNeutral: "ANT",
+  Faker: "FAKER",
+  Friend: "FR",
+  Hostile: "HO",
+  Involved: "IV",
+  Joker: "JOKER",
+  Neutral: "NEUTRL",
+  Pending: "PENDNG",
+  Suspect: "SUSPCT",
+  Unknown: "UNK",
+} as const;
+
+export type HostilityStatusCode =
+  (typeof HostilityStatusCode)[keyof typeof HostilityStatusCode];
 
 export function rel2code(
   relationship: HostilityStatusCode,
@@ -66,20 +72,23 @@ export function rel2code(
   }
 }
 
-export enum StandardIdentities {
-  Pending = "P",
-  Unknown = "U",
-  AssumedFriend = "A",
-  Friend = "F",
-  Neutral = "N",
-  Suspect = "S",
-  Hostile = "H",
-  ExercisePending = "G",
-  ExerciseUnknown = "W",
-  ExerciseFriend = "D",
-  ExerciseNeutral = "L",
-  ExerciseAssumedFriend = "M",
-  Joker = "J",
-  Faker = "K",
-  NoneSpecified = "O",
-}
+export const StandardIdentities = {
+  Pending: "P",
+  Unknown: "U",
+  AssumedFriend: "A",
+  Friend: "F",
+  Neutral: "N",
+  Suspect: "S",
+  Hostile: "H",
+  ExercisePending: "G",
+  ExerciseUnknown: "W",
+  ExerciseFriend: "D",
+  ExerciseNeutral: "L",
+  ExerciseAssumedFriend: "M",
+  Joker: "J",
+  Faker: "K",
+  NoneSpecified: "O",
+} as const;
+
+export type StandardIdentities =
+  (typeof StandardIdentities)[keyof typeof StandardIdentities];
