@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { parseFromString } from "./testdata.js";
 import { ForceSide } from "../index.js";
 import { loadTestScenario } from "./testutils.js";
-import { HostilityStatusCode } from "../lib/enums.js";
+import { HostilityStatusCode, StandardIdentities } from "../lib/enums.js";
 
 const FORCESIDE_TEMPLATE_IS_SIDE = `<ForceSide>
     <ObjectHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -152,5 +152,38 @@ describe("Force and side relations", () => {
     const neutralForce = scenario.sides[2]?.forces[0];
     expect(neutralForce?.isSide).toBe(false);
     expect(neutralForce?.name).toBe("Neutral Force");
+  });
+});
+
+describe("ForceSide methods", () => {
+  describe("when using getAffiliation", () => {
+    let scenario = loadTestScenario("/data/SimpleScenario.xml");
+    const side = scenario.sides[0]!;
+    it("should have a getAffiliation method", () => {
+      expect(side.getAffiliation).toBeDefined();
+    });
+
+    // it("should return NoneSpecified if not set", () => {
+    //   expect(side.getAffiliation()).toBe(StandardIdentities.NoneSpecified);
+    // });
+    it("should return the affiliation of the first unit", () => {
+      side.rootUnits[0]?.setAffiliation(StandardIdentities.Hostile);
+      expect(side.getAffiliation()).toBe(StandardIdentities.Hostile);
+    });
+  });
+
+  describe("when using setAffiliation", () => {
+    let scenario = loadTestScenario("/data/SimpleScenario.xml");
+    const side = scenario.sides[0]!;
+    it("should should have a setAffiliation method", () => {
+      expect(side.setAffiliation).toBeDefined();
+    });
+
+    it("should set the affiliation of all units", () => {
+      side.setAffiliation(StandardIdentities.Joker);
+      for (let unit of side.getAllUnits()) {
+        expect(unit.getAffiliation()).toBe(StandardIdentities.Joker);
+      }
+    });
   });
 });

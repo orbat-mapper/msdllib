@@ -25,6 +25,8 @@ export type UnitEquipmentInterface = {
   directionOfMovement?: number;
   superiorHandle: string;
   sidc: string;
+  setAffiliation(s: StandardIdentities): void;
+  getAffiliation(): StandardIdentities;
 };
 
 export class UnitEquipmentBase implements UnitEquipmentInterface {
@@ -58,6 +60,14 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
         unitSymbolModifiersElement,
       );
     }
+  }
+
+  setAffiliation(s: StandardIdentities) {
+    this.sidc = setCharAt(this.sidc, 1, s);
+  }
+
+  getAffiliation(): StandardIdentities {
+    return this.sidc[1] as StandardIdentities;
   }
 
   private getDisposition() {
@@ -124,7 +134,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     return feature;
   }
 
-  setAffiliation(s: StandardIdentities) {
+  override setAffiliation(s: StandardIdentities) {
     this.sidc = setCharAt(this.sidc, 1, s);
     for (let equipment of this.equipment) {
       equipment.setAffiliation(s);
@@ -184,10 +194,6 @@ export class EquipmentItem extends UnitEquipmentBase {
       properties,
     };
     return feature;
-  }
-
-  public setAffiliation(s: string) {
-    this.sidc = setCharAt(this.symbolIdentifier, 1, s);
   }
 }
 
