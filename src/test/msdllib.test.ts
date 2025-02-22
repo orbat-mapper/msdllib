@@ -88,11 +88,11 @@ describe("Simple scenario", () => {
   it("get unit by object handle", () => {
     let scenario = loadTestScenario();
     const unit_id = "7a81590c-febb-11e7-8be5-0ed5f89f718b";
-    let unit = scenario.getUnitByObjectHandle(unit_id) as Unit;
+    let unit = scenario.getUnitById(unit_id) as Unit;
     expect(unit).toBeDefined();
     expect(unit.objectHandle).toBe(unit_id);
     expect(unit.name).toBe("HQ");
-    let unit2 = scenario.getUnitByObjectHandle("invalid object handle");
+    let unit2 = scenario.getUnitById("invalid object handle");
     expect(unit2).toBeUndefined();
   });
 });

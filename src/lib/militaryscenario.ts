@@ -14,6 +14,7 @@ export interface MilitaryScenarioType {
   unitMap: Record<string, Unit>;
   forceSideMap: Record<string, ForceSide>;
   unitCount: number;
+  getUnitById(objectHandle: string): Unit | undefined;
 }
 
 export class MilitaryScenario implements MilitaryScenarioType {
@@ -170,7 +171,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     }
   }
 
-  getUnitByObjectHandle(objectHandle: string): Unit | undefined {
+  getUnitById(objectHandle: string): Unit | undefined {
     return this.unitMap[objectHandle];
   }
 
