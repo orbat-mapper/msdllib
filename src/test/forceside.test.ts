@@ -109,7 +109,9 @@ describe("ForceSide class", () => {
     expect(forceSide.toGeoJson).toBeDefined();
     let gjson = forceSide.toGeoJson();
     expect(gjson.type).toBe("FeatureCollection");
-    expect(gjson.features.length).toBe(3);
+    expect(gjson.features.length).toBe(2);
+    let geojsonWithEmpty = forceSide.toGeoJson({ includeEmptyLocations: true });
+    expect(geojsonWithEmpty.features.length).toBe(3);
   });
 });
 

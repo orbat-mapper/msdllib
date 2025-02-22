@@ -36,12 +36,17 @@ export class ForceSide implements ForceSideType {
     );
   }
 
-  toGeoJson(): FeatureCollection<Point | null, TacticalJson> {
+  toGeoJson({ includeEmptyLocations = false } = {}): FeatureCollection<
+    Point | null,
+    TacticalJson
+  > {
     let features: Feature<Point | null, TacticalJson>[] = [];
 
     function addSubordinates(subordinates: Unit[]) {
       for (let unit of subordinates) {
-        features.push(unit.toGeoJson());
+        if (includeEmptyLocations || unit.location) {
+          features.push(unit.toGeoJson());
+        }
         if (unit.subordinates) {
           addSubordinates(unit.subordinates);
         }
@@ -49,7 +54,9 @@ export class ForceSide implements ForceSideType {
     }
 
     for (let rootUnit of this.rootUnits) {
-      features.push(rootUnit.toGeoJson());
+      if (includeEmptyLocations || rootUnit.location) {
+        features.push(rootUnit.toGeoJson());
+      }
       if (rootUnit.subordinates) {
         addSubordinates(rootUnit.subordinates);
       }
