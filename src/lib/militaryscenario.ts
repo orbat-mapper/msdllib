@@ -1,8 +1,9 @@
 import { ScenarioId } from "./scenarioid.js";
 import { getTagElement, getTagElements } from "./utils.js";
-import { EquipmentItem, Unit } from "./unitequipment.js";
+import { Unit } from "./units.js";
 import { rel2code, StandardIdentity } from "./enums.js";
 import { ForceSide } from "./forcesides.js";
+import { EquipmentItem } from "./equipment.js";
 
 /**
  * MilitaryScenarioType

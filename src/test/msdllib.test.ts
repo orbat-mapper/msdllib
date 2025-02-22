@@ -3,7 +3,7 @@ import { MilitaryScenario, ScenarioId } from "../index.js";
 import { EMPTY_SCENARIO } from "./testdata.js";
 import fs from "fs/promises";
 import { loadTestScenario } from "./testutils.js";
-import { Unit } from "../lib/unitequipment.js";
+import { Unit } from "../lib/units.js";
 
 describe("MilitaryScenario class", () => {
   it("is defined", () => {

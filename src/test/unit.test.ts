@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parseFromString, UNIT_MGRS } from "./testdata.js";
-import { Unit } from "../lib/unitequipment.js";
+import { Unit } from "../lib/units.js";
 import { loadTestScenario } from "./testutils.js";
 import { StandardIdentity } from "../lib/enums.js";
 

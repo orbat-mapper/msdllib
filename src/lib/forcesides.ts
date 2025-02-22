@@ -1,7 +1,8 @@
 import type { Feature, FeatureCollection, Point } from "geojson";
 import { HostilityStatusCode, StandardIdentity } from "./enums.js";
-import { type TacticalJson, Unit } from "./unitequipment.js";
+import { Unit } from "./units.js";
 import { getTagElements, getTagValue } from "./utils.js";
+import type { TacticalJson } from "./common.js";
 
 export interface ForceSideType {
   objectHandle: string;

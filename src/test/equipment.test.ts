@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { parseFromString } from "./testdata.js";
-import { EquipmentItem } from "../lib/unitequipment.js";
+
+import { EquipmentItem } from "../lib/equipment.js";
 
 const EQUIPMENT_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
