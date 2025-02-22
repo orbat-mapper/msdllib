@@ -15,7 +15,10 @@ export interface MilitaryScenarioType {
   unitMap: Record<string, Unit>;
   forceSideMap: Record<string, ForceSide>;
   unitCount: number;
+
   getUnitById(objectHandle: string): Unit | undefined;
+  getForceSideById(objectHandle: string): ForceSide | undefined;
+  getUnitOrForceSideById(objectHandle: string): Unit | ForceSide | undefined;
 }
 
 export class MilitaryScenario implements MilitaryScenarioType {
@@ -174,6 +177,14 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
   getUnitById(objectHandle: string): Unit | undefined {
     return this.unitMap[objectHandle];
+  }
+
+  getForceSideById(objectHandle: string): ForceSide | undefined {
+    return this.forceSideMap[objectHandle];
+  }
+
+  getUnitOrForceSideById(objectHandle: string): Unit | ForceSide | undefined {
+    return this.unitMap[objectHandle] ?? this.forceSideMap[objectHandle];
   }
 
   private updateSidesRootUnits() {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { MilitaryScenario, ScenarioId } from "../index.js";
+import { ForceSide, MilitaryScenario, ScenarioId } from "../index.js";
 import { EMPTY_SCENARIO } from "./testdata.js";
 import fs from "fs/promises";
 import { loadTestScenario } from "./testutils.js";
@@ -118,6 +118,53 @@ describe("MilitaryScenario.createFromString", () => {
       expect(() => MilitaryScenario.createFromString("<html></html>")).toThrow(
         TypeError,
       );
+    });
+  });
+});
+
+describe("MilitaryScenario methods", () => {
+  let scenario = loadTestScenario();
+  describe("when querying items by id", () => {
+    it("should have a getUnitById method", () => {
+      expect(scenario.getUnitById).toBeDefined();
+    });
+
+    it("getUnitById should return a Unit", () => {
+      const unitId = "7a81590c-febb-11e7-8be5-0ed5f89f718b";
+      let unit = scenario.getUnitById(unitId) as Unit;
+      expect(unit).toBeDefined();
+      expect(unit.objectHandle).toBe(unitId);
+    });
+
+    it("should have a getForceSideById method", () => {
+      expect(scenario.getForceSideById).toBeDefined();
+    });
+
+    it("getForceSideById should return a ForceSide", () => {
+      const forceSideId = "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8";
+      let forceSide = scenario.getForceSideById(forceSideId)!;
+      expect(forceSide).toBeDefined();
+      expect(forceSide.objectHandle).toBe(forceSideId);
+    });
+
+    it("should have a getUnitOrForceSideById method", () => {
+      expect(scenario.getUnitOrForceSideById).toBeDefined();
+    });
+
+    it("getUnitOrForceSideById should return a Unit for unit ids", () => {
+      const unitId = "7a81590c-febb-11e7-8be5-0ed5f89f718b";
+      let unit = scenario.getUnitOrForceSideById(unitId)!;
+      expect(unit).toBeDefined();
+      expect(unit).toBeInstanceOf(Unit);
+      expect(unit.objectHandle).toBe(unitId);
+    });
+
+    it("getUnitOrForceSideById should return a ForceSide for force side ids", () => {
+      const forceSideId = "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8";
+      let forceSide = scenario.getUnitOrForceSideById(forceSideId)!;
+      expect(forceSide).toBeDefined();
+      expect(forceSide).toBeInstanceOf(ForceSide);
+      expect(forceSide.objectHandle).toBe(forceSideId);
     });
   });
 });
