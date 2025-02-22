@@ -5,7 +5,7 @@ import {
   type LngLatTuple,
   MsdlLocation,
 } from "./geo.js";
-import { ForceOwnerType, StandardIdentities } from "./enums.js";
+import { ForceOwnerType, StandardIdentity } from "./enums.js";
 
 export type TacticalJson = {
   sidc?: string;
@@ -25,8 +25,8 @@ export type UnitEquipmentInterface = {
   directionOfMovement?: number;
   superiorHandle: string;
   sidc: string;
-  setAffiliation(s: StandardIdentities): void;
-  getAffiliation(): StandardIdentities;
+  setAffiliation(s: StandardIdentity): void;
+  getAffiliation(): StandardIdentity;
 };
 
 export class UnitEquipmentBase implements UnitEquipmentInterface {
@@ -49,7 +49,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
     this.sidc = setCharAt(
       this.symbolIdentifier,
       1,
-      StandardIdentities.NoneSpecified,
+      StandardIdentity.NoneSpecified,
     );
     const unitSymbolModifiersElement = getTagElement(
       this.element,
@@ -62,12 +62,12 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
     }
   }
 
-  setAffiliation(s: StandardIdentities) {
+  setAffiliation(s: StandardIdentity) {
     this.sidc = setCharAt(this.sidc, 1, s);
   }
 
-  getAffiliation(): StandardIdentities {
-    return this.sidc[1] as StandardIdentities;
+  getAffiliation(): StandardIdentity {
+    return this.sidc[1] as StandardIdentity;
   }
 
   private getDisposition() {
@@ -134,7 +134,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     return feature;
   }
 
-  override setAffiliation(s: StandardIdentities) {
+  override setAffiliation(s: StandardIdentity) {
     this.sidc = setCharAt(this.sidc, 1, s);
     for (let equipment of this.equipment) {
       equipment.setAffiliation(s);

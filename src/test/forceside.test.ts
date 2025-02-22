@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { parseFromString } from "./testdata.js";
 import { ForceSide } from "../index.js";
 import { loadTestScenario } from "./testutils.js";
-import { HostilityStatusCode, StandardIdentities } from "../lib/enums.js";
+import { HostilityStatusCode, StandardIdentity } from "../lib/enums.js";
 
 const FORCESIDE_TEMPLATE_IS_SIDE = `<ForceSide>
     <ObjectHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -167,8 +167,8 @@ describe("ForceSide methods", () => {
     //   expect(side.getAffiliation()).toBe(StandardIdentities.NoneSpecified);
     // });
     it("should return the affiliation of the first unit", () => {
-      side.rootUnits[0]?.setAffiliation(StandardIdentities.Hostile);
-      expect(side.getAffiliation()).toBe(StandardIdentities.Hostile);
+      side.rootUnits[0]?.setAffiliation(StandardIdentity.Hostile);
+      expect(side.getAffiliation()).toBe(StandardIdentity.Hostile);
     });
   });
 
@@ -180,9 +180,9 @@ describe("ForceSide methods", () => {
     });
 
     it("should set the affiliation of all units", () => {
-      side.setAffiliation(StandardIdentities.Joker);
+      side.setAffiliation(StandardIdentity.Joker);
       for (let unit of side.getAllUnits()) {
-        expect(unit.getAffiliation()).toBe(StandardIdentities.Joker);
+        expect(unit.getAffiliation()).toBe(StandardIdentity.Joker);
       }
     });
   });

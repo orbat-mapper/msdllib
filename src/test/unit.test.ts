@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { parseFromString, UNIT_MGRS } from "./testdata.js";
 import { Unit } from "../lib/unitequipment.js";
 import { loadTestScenario } from "./testutils.js";
-import { StandardIdentities } from "../lib/enums.js";
+import { StandardIdentity } from "../lib/enums.js";
 
 const UNIT_TEMPLATE = ` <Unit>
                 <ObjectHandle>f9e16593-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -182,7 +182,7 @@ describe("Unit class", () => {
   describe("when manipulating unit affiliation", () => {
     it("should be NoneSpecified by default", () => {
       const unit = new Unit(parseFromString(UNIT_MGRS));
-      expect(unit.getAffiliation()).toBe(StandardIdentities.NoneSpecified);
+      expect(unit.getAffiliation()).toBe(StandardIdentity.NoneSpecified);
     });
   });
 });

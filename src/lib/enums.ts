@@ -25,9 +25,7 @@ export const HostilityStatusCode = {
 export type HostilityStatusCode =
   (typeof HostilityStatusCode)[keyof typeof HostilityStatusCode];
 
-export function rel2code(
-  relationship: HostilityStatusCode,
-): StandardIdentities {
+export function rel2code(relationship: HostilityStatusCode): StandardIdentity {
   //     if(standardVersion == 'NATO'){
   // 		values = {	"P":"Pending",
   // 					"U":"Unknown",
@@ -42,37 +40,37 @@ export function rel2code(
   // RelationshipCode = "AFR" | "AHO" | "AIV" | "ANT" | "FAKER" | "FR" | "HO" | "IV" | "JOKER" | "NEUTRL" | "PENDING" | "SUSPCT" | "UNK";
   switch (relationship) {
     case "AFR":
-      return StandardIdentities.AssumedFriend;
+      return StandardIdentity.AssumedFriend;
     case "AHO":
-      return StandardIdentities.Hostile;
+      return StandardIdentity.Hostile;
     case "AIV":
-      return StandardIdentities.NoneSpecified;
+      return StandardIdentity.NoneSpecified;
     case "ANT":
-      return StandardIdentities.Neutral;
+      return StandardIdentity.Neutral;
     case "FAKER":
-      return StandardIdentities.Faker;
+      return StandardIdentity.Faker;
     case "FR":
-      return StandardIdentities.Friend;
+      return StandardIdentity.Friend;
     case "HO":
-      return StandardIdentities.Hostile;
+      return StandardIdentity.Hostile;
     case "IV":
-      return StandardIdentities.NoneSpecified;
+      return StandardIdentity.NoneSpecified;
     case "JOKER":
-      return StandardIdentities.Joker;
+      return StandardIdentity.Joker;
     case "NEUTRL":
-      return StandardIdentities.Neutral;
+      return StandardIdentity.Neutral;
     case "PENDNG":
-      return StandardIdentities.Pending;
+      return StandardIdentity.Pending;
     case "SUSPCT":
-      return StandardIdentities.Suspect;
+      return StandardIdentity.Suspect;
     case "UNK":
-      return StandardIdentities.Unknown;
+      return StandardIdentity.Unknown;
     default:
-      return StandardIdentities.NoneSpecified;
+      return StandardIdentity.NoneSpecified;
   }
 }
 
-export const StandardIdentities = {
+export const StandardIdentity = {
   Pending: "P",
   Unknown: "U",
   AssumedFriend: "A",
@@ -90,5 +88,5 @@ export const StandardIdentities = {
   NoneSpecified: "O",
 } as const;
 
-export type StandardIdentities =
-  (typeof StandardIdentities)[keyof typeof StandardIdentities];
+export type StandardIdentity =
+  (typeof StandardIdentity)[keyof typeof StandardIdentity];

@@ -1,7 +1,7 @@
 import { ScenarioId } from "./scenarioid.js";
 import { getTagElement, getTagElements } from "./utils.js";
 import { EquipmentItem, Unit } from "./unitequipment.js";
-import { rel2code, StandardIdentities } from "./enums.js";
+import { rel2code, StandardIdentity } from "./enums.js";
 import { ForceSide } from "./forcesides.js";
 
 /**
@@ -141,7 +141,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     }
     this._primarySide = side;
     for (let rootUnit of side.rootUnits) {
-      this.setAffiliation(rootUnit, StandardIdentities.Friend);
+      this.setAffiliation(rootUnit, StandardIdentity.Friend);
     }
     for (let association of side.associations) {
       let code = rel2code(association.relationship);
@@ -164,7 +164,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     return this.forceSides.filter((fs) => fs.isSide);
   }
 
-  private setAffiliation(unit: Unit, s: StandardIdentities) {
+  private setAffiliation(unit: Unit, s: StandardIdentity) {
     unit.setAffiliation(s);
     for (let subordinate of unit.subordinates) {
       this.setAffiliation(subordinate, s);

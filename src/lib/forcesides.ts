@@ -1,5 +1,5 @@
 import type { Feature, FeatureCollection, Point } from "geojson";
-import { HostilityStatusCode, StandardIdentities } from "./enums.js";
+import { HostilityStatusCode, StandardIdentity } from "./enums.js";
 import { type TacticalJson, Unit } from "./unitequipment.js";
 import { getTagElements, getTagValue } from "./utils.js";
 
@@ -36,7 +36,7 @@ export class ForceSide implements ForceSideType {
     );
   }
 
-  setAffiliation(s: StandardIdentities) {
+  setAffiliation(s: StandardIdentity) {
     function helper(unit: Unit) {
       unit.setAffiliation(s);
       for (let subordinate of unit.subordinates) {
@@ -48,10 +48,10 @@ export class ForceSide implements ForceSideType {
     }
   }
 
-  getAffiliation(): StandardIdentities {
+  getAffiliation(): StandardIdentity {
     const firstUnit = this.rootUnits[0];
     if (!firstUnit) {
-      return StandardIdentities.NoneSpecified;
+      return StandardIdentity.NoneSpecified;
     }
     return firstUnit.getAffiliation();
   }
