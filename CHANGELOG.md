@@ -1,5 +1,18 @@
 # @orbat-mapper/msdllib
 
+## 0.5.0 - 2025-02-24
+
+### Added
+
+- f58ea14: Export constants
+- Add a `getAllUnits()` method to ForceSide class to return all units in the force side as a flat array
+- Add a `setAffiliation()` and `getAffiltiation()` method to ForceSide, Unit and EquipmentItem classes
+- Add `getForceSideById(.)` and `getUnitOrForceSideById(.)` methods to `MilitaryScenario` class
+
+### Changed
+
+- Rename StandardIdentities to StandardIdentity for consistency
+
 ## 0.4.0 - 2025-02-22
 
 ### Added
