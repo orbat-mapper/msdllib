@@ -12,7 +12,7 @@ visit the [SISO standards page](https://www.sisostds.org/productspublications/st
 and [SISO Product data files page](https://www.sisostds.org/Schemas.aspx).
 
 Please note that MSDL will be superseded by C2SIM-Initialize. You can read more about this on the
-[C2SIM PDG/PSG page](https://www.sisostds.org/StandardsActivities/DevelopmentGroups/C2SIMPDGPSG-CommandandControlSystems.aspx).
+[C2SIM project page](https://openc2sim.github.io/).
 
 See [msdl-viewer](https://github.com/orbat-mapper/msdl-viewer) for an example project that uses MSDLlib.
 
