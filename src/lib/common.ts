@@ -21,7 +21,6 @@ export type UnitEquipmentInterface = {
   speed?: number;
   /** The direction of movement, in compass degrees */
   directionOfMovement?: number;
-  superiorHandle: string;
   sidc: string;
   setAffiliation(s: StandardIdentity): void;
   getAffiliation(): StandardIdentity;
@@ -35,7 +34,6 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   symbolIdentifier: string;
   name: string;
   objectHandle: string;
-  superiorHandle = "";
   symbolModifiers?: UnitSymbolModifiers;
   protected _msdlLocation?: MsdlLocation;
 

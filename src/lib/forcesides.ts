@@ -3,12 +3,14 @@ import { HostilityStatusCode, StandardIdentity } from "./enums.js";
 import { Unit } from "./units.js";
 import { getTagElements, getTagValue } from "./utils.js";
 import type { TacticalJson } from "./common.js";
+import type { EquipmentItem } from "./equipment.js";
 
 export interface ForceSideType {
   objectHandle: string;
   name: string;
   allegianceHandle?: string;
   rootUnits: Unit[];
+  equipment: EquipmentItem[];
 }
 
 export interface AssociationType {
@@ -23,6 +25,7 @@ export class ForceSide implements ForceSideType {
   rootUnits: Unit[] = [];
   associations: AssociationType[] = [];
   forces: ForceSide[] = [];
+  equipment: EquipmentItem[] = [];
 
   constructor(public element: Element) {
     this.name = getTagValue(element, "ForceSideName");
@@ -76,16 +79,23 @@ export class ForceSide implements ForceSideType {
     return units;
   }
 
-  toGeoJson({ includeEmptyLocations = false } = {}): FeatureCollection<
-    Point | null,
-    TacticalJson
-  > {
+  toGeoJson({
+    includeEmptyLocations = false,
+    includeEquipment = true,
+  } = {}): FeatureCollection<Point | null, TacticalJson> {
     let features: Feature<Point | null, TacticalJson>[] = [];
 
     function addSubordinates(subordinates: Unit[]) {
       for (let unit of subordinates) {
         if (includeEmptyLocations || unit.location) {
           features.push(unit.toGeoJson());
+        }
+        if (includeEquipment) {
+          for (let equipment of unit.equipment) {
+            if (includeEmptyLocations || equipment.location) {
+              features.push(equipment.toGeoJson());
+            }
+          }
         }
         if (unit.subordinates) {
           addSubordinates(unit.subordinates);
@@ -96,6 +106,13 @@ export class ForceSide implements ForceSideType {
     for (let rootUnit of this.rootUnits) {
       if (includeEmptyLocations || rootUnit.location) {
         features.push(rootUnit.toGeoJson());
+      }
+      if (includeEquipment) {
+        for (let equipment of rootUnit.equipment) {
+          if (includeEmptyLocations || equipment.location) {
+            features.push(equipment.toGeoJson());
+          }
+        }
       }
       if (rootUnit.subordinates) {
         addSubordinates(rootUnit.subordinates);

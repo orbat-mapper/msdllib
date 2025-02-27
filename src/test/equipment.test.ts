@@ -101,6 +101,7 @@ describe("MSDL Equipment", () => {
       "f9ee8509-2dcd-11e2-be2b-000c294c9df8",
     );
     expect(equipmentItem.name).toBe("111");
+    expect(equipmentItem.label).toBe("111");
     expect(equipmentItem.symbolIdentifier).toBe("S-G-EVAT------G");
     expect(equipmentItem.location).toBeDefined();
     if (equipmentItem.location) {
@@ -140,5 +141,22 @@ describe("MSDL Equipment", () => {
     let gjson = equipmentItem.toGeoJson();
     expect(gjson.properties.speed).toBeUndefined();
     expect(gjson.properties.direction).toBeUndefined();
+  });
+
+  it("reads relations", () => {
+    let element = parseFromString(EQUIPMENT_TEMPLATE);
+    let equipmentItem = new EquipmentItem(element);
+
+    expect(equipmentItem.relations).toBeDefined();
+    expect(equipmentItem.relations.organicSuperiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(equipmentItem.relations.ownerChoice).toBe("UNIT");
+    expect(equipmentItem.relations.ownerHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(equipmentItem.superiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
   });
 });

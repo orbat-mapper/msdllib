@@ -11,6 +11,7 @@ import {
 export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   equipment: EquipmentItem[] = [];
   subordinates: Unit[] = [];
+  superiorHandle = "";
   private forceRelationChoice: ForceOwnerType | undefined;
 
   constructor(override readonly element: Element) {

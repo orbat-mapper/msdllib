@@ -24,15 +24,15 @@ describe("MilitaryScenario class", () => {
     expect(scenario).toBeInstanceOf(MilitaryScenario);
     expect(scenario.rootElement).toBeInstanceOf(Element);
     expect(scenario.unitCount).toBe(0);
-    expect(scenario._equipment).toBeInstanceOf(Array);
-    expect(scenario._equipment.length).toBe(0);
+    expect(scenario.equipment).toBeInstanceOf(Array);
+    expect(scenario.equipment.length).toBe(0);
   });
 
   it("create empty scenario", () => {
     let scenario = new MilitaryScenario();
     expect(scenario.unitCount).toBe(0);
-    expect(scenario._equipment).toBeInstanceOf(Array);
-    expect(scenario._equipment.length).toBe(0);
+    expect(scenario.equipment).toBeInstanceOf(Array);
+    expect(scenario.equipment.length).toBe(0);
     expect(scenario.forceSides).toBeInstanceOf(Array);
     expect(scenario.forceSides.length).toBe(0);
   });
@@ -44,8 +44,7 @@ describe("MilitaryScenario class", () => {
 
     let scenario = MilitaryScenario.createFromString(data.toString());
     expect(scenario.unitCount).toBe(0);
-    expect(scenario._equipment).toBeInstanceOf(Array);
-    expect(scenario._equipment.length).toBe(0);
+    expect(scenario.equipmentCount).toBe(0);
     expect(scenario.forceSides).toBeInstanceOf(Array);
     expect(scenario.forceSides.length).toBe(0);
     expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
@@ -57,8 +56,7 @@ describe("Simple scenario", () => {
   it("load from file", () => {
     let scenario = loadTestScenario();
     expect(scenario.unitCount).toBe(6);
-    expect(scenario._equipment).toBeInstanceOf(Array);
-    expect(scenario._equipment.length).toBe(1);
+    expect(scenario.equipmentCount).toBe(2);
     expect(scenario.forceSides).toBeInstanceOf(Array);
     expect(scenario.forceSides.length).toBe(3);
     expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
@@ -165,6 +163,45 @@ describe("MilitaryScenario methods", () => {
       expect(forceSide).toBeDefined();
       expect(forceSide).toBeInstanceOf(ForceSide);
       expect(forceSide.objectHandle).toBe(forceSideId);
+    });
+  });
+});
+
+describe("MilitaryScenario equipment", () => {
+  let scenario = loadTestScenario();
+  describe("when querying equipment by id", () => {
+    it("should have a getEquipmentById method", () => {
+      expect(scenario.getEquipmentById).toBeDefined();
+    });
+
+    it("getEquipmentById should return an EquipmentItem", () => {
+      const equipmentId = "f811c987-eb6a-11df-8ea2-001d099dde6d";
+      let equipment = scenario.getEquipmentById(equipmentId);
+      expect(equipment).toBeDefined();
+      expect(equipment?.objectHandle).toBe(equipmentId);
+      expect(equipment?.name).toBe("2nd SQD IFV/3/1/1/A");
+    });
+  });
+  describe("when a side has assigned equipment", () => {
+    it("should have a getEquipmentById method", () => {
+      let forceSide = scenario.getForceSideById(
+        "e7ae4710-2dcd-11e2-be2b-000c294c9df8",
+      )!;
+      expect(forceSide).toBeDefined();
+      expect(forceSide.equipment).toBeDefined();
+      expect(forceSide.equipment.length).toBe(1);
+      expect(forceSide.equipment[0]?.relations).toBeDefined();
+      expect(forceSide.equipment[0]?.relations.ownerChoice).toBe("FORCE_SIDE");
+    });
+  });
+  describe("when a unit has assigned equipment", () => {
+    it("should have a getEquipmentById method", () => {
+      let unit = scenario.getUnitById("f9e16593-2dcd-11e2-be2b-000c294c9df8")!;
+      expect(unit).toBeDefined();
+      expect(unit.equipment).toBeDefined();
+      expect(unit.equipment.length).toBe(1);
+      expect(unit.equipment[0]?.relations).toBeDefined();
+      expect(unit.equipment[0]?.relations.ownerChoice).toBe("UNIT");
     });
   });
 });

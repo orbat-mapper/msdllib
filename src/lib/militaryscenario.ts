@@ -14,20 +14,24 @@ export interface MilitaryScenarioType {
   forceSides: ForceSide[];
   unitMap: Record<string, Unit>;
   forceSideMap: Record<string, ForceSide>;
+  equipmentMap: Record<string, EquipmentItem>;
   unitCount: number;
+  equipmentCount: number;
 
   getUnitById(objectHandle: string): Unit | undefined;
   getForceSideById(objectHandle: string): ForceSide | undefined;
   getUnitOrForceSideById(objectHandle: string): Unit | ForceSide | undefined;
+  getEquipmentById(objectHandle: string): EquipmentItem | undefined;
 }
 
 export class MilitaryScenario implements MilitaryScenarioType {
   scenarioId: ScenarioId = new ScenarioId();
   forceSides: ForceSide[] = [];
-  _equipment: EquipmentItem[] = [];
+  equipment: EquipmentItem[] = [];
   rootUnits: Unit[] = [];
   unitMap: Record<string, Unit> = {};
   forceSideMap: Record<string, ForceSide> = {};
+  equipmentMap: Record<string, EquipmentItem> = {};
   private _primarySide: ForceSide | null | undefined = null;
 
   constructor(public rootElement?: Element) {
@@ -43,6 +47,10 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
   get unitCount() {
     return Object.keys(this.unitMap).length;
+  }
+
+  get equipmentCount() {
+    return Object.keys(this.equipmentMap).length;
   }
 
   static createFromString(xmlString: string) {
@@ -100,10 +108,10 @@ export class MilitaryScenario implements MilitaryScenarioType {
       _units.push(unit);
       this.unitMap[unit.objectHandle] = unit;
     }
-    this.buildHierarchy(_units);
+    this.buildUnitHierarchy(_units);
   }
 
-  private buildHierarchy(units: Unit[]) {
+  private buildUnitHierarchy(units: Unit[]) {
     for (let unit of units) {
       if (!unit.superiorHandle) continue;
       if (unit.isRoot) {
@@ -126,16 +134,23 @@ export class MilitaryScenario implements MilitaryScenarioType {
     const equipmentEl = getTagElement(organizationsEl, "Equipment");
     let equipmentItemElements = getTagElements(equipmentEl, "EquipmentItem");
     for (let equipmentItemElement of equipmentItemElements) {
-      this._equipment.push(new EquipmentItem(equipmentItemElement));
+      const eq = new EquipmentItem(equipmentItemElement);
+      if (
+        eq.relations.organicSuperiorHandle ||
+        eq.relations.ownerChoice === "UNIT"
+      ) {
+        let unit = this.unitMap[eq.superiorHandle];
+        if (unit) {
+          unit.equipment.push(eq);
+        }
+      } else if (eq.relations.ownerChoice === "FORCE_SIDE") {
+        const side = this.forceSideMap[eq.relations.ownerHandle];
+        if (side) {
+          side.equipment.push(eq);
+        }
+      }
+      this.equipmentMap[eq.objectHandle] = eq;
     }
-
-    // for (let equip of this.equipment) {
-    //     if (!equip.organicSuperiorHandle) continue;
-    //     let unit = this.unitMap[equip.organicSuperiorHandle];
-    //     if (unit) {
-    //         unit.equipment.push(equip);
-    //     }
-    // }
   }
 
   set primarySide(side: ForceSide | null) {
@@ -177,6 +192,10 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
   getUnitById(objectHandle: string): Unit | undefined {
     return this.unitMap[objectHandle];
+  }
+
+  getEquipmentById(objectHandle: string): EquipmentItem | undefined {
+    return this.equipmentMap[objectHandle];
   }
 
   getForceSideById(objectHandle: string): ForceSide | undefined {
