@@ -1,5 +1,18 @@
 # @orbat-mapper/msdllib
 
+## 0.6.0 - 2025-02-27
+
+### Added
+
+- Add equipment to `Unit` and `ForceSide` classes. Available through the `equipment` attribute
+- Add `getEquipmentById` method to MilitaryScenario class
+- Add option `includeEquipment` to `ForceSide.toGeoJson(.)` to include equipment in the output. Default is `true`
+
+### Fixed
+
+- Add missing `sidc` and `label` properties to `EquipmentItem.toGeoJson(.)` output
+- Add missing `label` property to `EquipmentItem` class
+
 ## 0.5.0 - 2025-02-24
 
 ### Added
