@@ -82,12 +82,13 @@ export class ForceSide implements ForceSideType {
   toGeoJson({
     includeEmptyLocations = false,
     includeEquipment = true,
+    includeUnits = true,
   } = {}): FeatureCollection<Point | null, TacticalJson> {
     let features: Feature<Point | null, TacticalJson>[] = [];
 
     function addSubordinates(subordinates: Unit[]) {
       for (let unit of subordinates) {
-        if (includeEmptyLocations || unit.location) {
+        if (includeUnits && (includeEmptyLocations || unit.location)) {
           features.push(unit.toGeoJson());
         }
         if (includeEquipment) {
@@ -104,7 +105,7 @@ export class ForceSide implements ForceSideType {
     }
 
     for (let rootUnit of this.rootUnits) {
-      if (includeEmptyLocations || rootUnit.location) {
+      if (includeUnits && (includeEmptyLocations || rootUnit.location)) {
         features.push(rootUnit.toGeoJson());
       }
       if (includeEquipment) {

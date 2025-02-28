@@ -116,6 +116,19 @@ describe("ForceSide class", () => {
     });
     expect(geojsonWithEmpty.features.length).toBe(3);
   });
+
+  it("has GeoJSON interface with includeUnits", () => {
+    let scenario = loadTestScenario();
+    let forceSide = scenario.forceSides[0]!;
+    expect(forceSide.name).toBe("Friendly");
+    expect(forceSide.toGeoJson).toBeDefined();
+    let gjson = forceSide.toGeoJson({
+      includeEquipment: false,
+      includeUnits: false,
+    });
+    expect(gjson.type).toBe("FeatureCollection");
+    expect(gjson.features.length).toBe(0);
+  });
 });
 
 describe("Side relations", () => {
