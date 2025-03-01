@@ -1,5 +1,16 @@
 # @orbat-mapper/msdllib
 
+## 0.7.0 - 2025-03-01
+
+### Added
+
+- Add `symbolModifiers` attribute to `EquipmentItem` class
+- Add an `includeUnits` option with default value `true` to ForceSide.toGeoJson(.)
+
+### Fixed
+
+- Add missing Unit and EquipmentItem exports
+
 ## 0.6.0 - 2025-02-27
 
 ### Added
@@ -17,7 +28,7 @@
 
 ### Added
 
-- f58ea14: Export constants
+- Export constants
 - Add a `getAllUnits()` method to ForceSide class to return all units in the force side as a flat array
 - Add a `setAffiliation()` and `getAffiltiation()` method to ForceSide, Unit and EquipmentItem classes
 - Add `getForceSideById(.)` and `getUnitOrForceSideById(.)` methods to `MilitaryScenario` class
@@ -44,12 +55,10 @@
 
 ## 0.3.0
 
-### Minor Changes
+### Changed
 
-- 8a197ee: Throw a TypeError exception when calling `MilitaryScenario.createFromString` with invalid MSDL.
+- Throw a TypeError exception when calling `MilitaryScenario.createFromString` with invalid MSDL.
 
 ## 0.2.0
 
-### Minor Changes
-
-- b159372: First npm release of msdllib
+- First npm release of msdllib
