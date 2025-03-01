@@ -34,7 +34,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   symbolIdentifier: string;
   name: string;
   objectHandle: string;
-  symbolModifiers?: UnitSymbolModifiers;
+
   protected _msdlLocation?: MsdlLocation;
 
   constructor(readonly element: Element) {
@@ -47,15 +47,6 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
       1,
       StandardIdentity.NoneSpecified,
     );
-    const unitSymbolModifiersElement = getTagElement(
-      this.element,
-      "UnitSymbolModifiers",
-    );
-    if (unitSymbolModifiersElement) {
-      this.symbolModifiers = new UnitSymbolModifiers(
-        unitSymbolModifiersElement,
-      );
-    }
   }
 
   setAffiliation(s: StandardIdentity) {
@@ -79,29 +70,5 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
       : undefined;
     this._msdlLocation = new MsdlLocation(dispositionElement);
     this.location = this._msdlLocation.location;
-  }
-}
-
-export class UnitSymbolModifiers {
-  echelon?: string;
-  reinforcedReduced?: string;
-  staffComments?: string;
-  additionalInfo?: string;
-  combatEffectiveness?: string;
-  higherFormation?: string;
-  iff?: string;
-  uniqueDesignation: string;
-  specialC2HQ?: string;
-
-  constructor(element: Element) {
-    this.echelon = getTagValue(element, "Echelon");
-    this.reinforcedReduced = getTagValue(element, "ReinforcedReduced");
-    this.staffComments = getTagValue(element, "StaffComments");
-    this.additionalInfo = getTagValue(element, "AdditionalInfo");
-    this.combatEffectiveness = getTagValue(element, "CombatEffectiveness");
-    this.higherFormation = getTagValue(element, "HigherFormation");
-    this.iff = getTagValue(element, "IFF");
-    this.uniqueDesignation = getTagValue(element, "UniqueDesignation") || "";
-    this.specialC2HQ = getTagValue(element, "SpecialC2HQ");
   }
 }

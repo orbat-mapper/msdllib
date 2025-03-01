@@ -1,6 +1,17 @@
-import { getTagValue, setCharAt } from "./utils.js";
+import {
+  getTagElement,
+  getTagValue,
+  getValueOrUndefined,
+  setCharAt,
+} from "./utils.js";
 import type { Feature, Point } from "geojson";
-import { ForceOwnerType, StandardIdentity } from "./enums.js";
+import {
+  type EnumCombatEffectivenessType,
+  type EnumEchelon,
+  type EnumReinforcedReducedType,
+  ForceOwnerType,
+  StandardIdentity,
+} from "./enums.js";
 import { EquipmentItem } from "./equipment.js";
 import {
   type TacticalJson,
@@ -9,6 +20,7 @@ import {
 } from "./common.js";
 
 export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
+  symbolModifiers?: UnitSymbolModifiers;
   equipment: EquipmentItem[] = [];
   subordinates: Unit[] = [];
   superiorHandle = "";
@@ -16,8 +28,16 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
 
   constructor(override readonly element: Element) {
     super(element);
+    const unitSymbolModifiersElement = getTagElement(
+      this.element,
+      "UnitSymbolModifiers",
+    );
+    if (unitSymbolModifiersElement) {
+      this.symbolModifiers = new UnitSymbolModifiers(
+        unitSymbolModifiersElement,
+      );
+    }
     this.initializeRelations();
-    this.initializeSymbol();
   }
 
   get isRoot(): boolean {
@@ -81,8 +101,44 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     }
     // Todo: Add support for support and organic relations
   }
+}
 
-  private initializeSymbol() {
-    //
+export type UnitSymbolModifiersType = {
+  echelon?: EnumEchelon | string;
+  reinforcedReduced?: EnumReinforcedReducedType | string;
+  staffComments?: string;
+  additionalInfo?: string;
+  combatEffectiveness?: EnumCombatEffectivenessType | string;
+  higherFormation?: string;
+  iff?: string;
+  uniqueDesignation: string;
+  specialC2HQ?: string;
+};
+
+export class UnitSymbolModifiers implements UnitSymbolModifiersType {
+  echelon?: EnumEchelon | string;
+  reinforcedReduced?: EnumReinforcedReducedType | string;
+  staffComments?: string;
+  additionalInfo?: string;
+  combatEffectiveness?: EnumCombatEffectivenessType | string;
+  higherFormation?: string;
+  iff?: string;
+  uniqueDesignation: string;
+  specialC2HQ?: string;
+
+  constructor(readonly element: Element) {
+    this.echelon = getValueOrUndefined(element, "Echelon");
+    this.reinforcedReduced = getValueOrUndefined(element, "ReinforcedReduced");
+    this.staffComments = getValueOrUndefined(element, "StaffComments");
+    this.additionalInfo = getValueOrUndefined(element, "AdditionalInfo");
+    this.combatEffectiveness = getValueOrUndefined(
+      element,
+      "CombatEffectiveness",
+    );
+    this.higherFormation = getValueOrUndefined(element, "HigherFormation");
+    this.iff = getValueOrUndefined(element, "Iff");
+    this.uniqueDesignation =
+      getValueOrUndefined(element, "UniqueDesignation") ?? "";
+    this.specialC2HQ = getTagValue(element, "SpecialC2HQ");
   }
 }

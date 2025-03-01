@@ -90,3 +90,49 @@ export const StandardIdentity = {
 
 export type StandardIdentity =
   (typeof StandardIdentity)[keyof typeof StandardIdentity];
+
+export const EnumEchelon = {
+  None: "NONE",
+  Team: "TEAM",
+  Crew: "CREW",
+  Squad: "SQUAD",
+  Section: "SECTION",
+  Platoon: "PLATOON",
+  Detachment: "DETACHMENT",
+  Company: "COMPANY",
+  Battery: "BATTERY",
+  Troop: "TROOP",
+  Battalion: "BATTALION",
+  Squadron: "SQUADRON",
+  Regiment: "REGIMENT",
+  Group: "GROUP",
+  Brigade: "BRIGADE",
+  Division: "DIVISION",
+  Corps: "CORPS",
+  Army: "ARMY",
+  ArmyGroup: "ARMYGROUP",
+  Front: "FRONT",
+  Region: "REGION",
+} as const;
+
+export type EnumEchelon = (typeof EnumEchelon)[keyof typeof EnumEchelon];
+
+export const EnumReinforcedReducedType = {
+  Reinforced: "R",
+  Reduced: "D",
+  ReinforcedReduced: "RD",
+};
+
+export type EnumReinforcedReducedType =
+  (typeof EnumReinforcedReducedType)[keyof typeof EnumReinforcedReducedType];
+
+export const EnumCombatEffectivenessType = {
+  Green: "GREEN",
+  Amber: "AMBER",
+  Red: "RED",
+  Black: "BLACK",
+  White: "WHITE",
+} as const;
+
+export type EnumCombatEffectivenessType =
+  (typeof EnumCombatEffectivenessType)[keyof typeof EnumCombatEffectivenessType];

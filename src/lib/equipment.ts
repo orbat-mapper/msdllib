@@ -1,14 +1,29 @@
-import { getTagValue } from "./utils.js";
+import {
+  getNumberValue,
+  getTagElement,
+  getTagValue,
+  getValueOrUndefined,
+} from "./utils.js";
 import type { Feature, Point } from "geojson";
 
 import { type TacticalJson, UnitEquipmentBase } from "./common.js";
 import { ForceOwnerType } from "./enums.js";
 
 export class EquipmentItem extends UnitEquipmentBase {
+  symbolModifiers?: EquipmentSymbolModifiers;
   relations: EquipmentRelationsType;
 
   constructor(override readonly element: Element) {
     super(element);
+    const equipmentSymbolModifiersElement = getTagElement(
+      element,
+      "EquipmentSymbolModifiers",
+    );
+    if (equipmentSymbolModifiersElement) {
+      this.symbolModifiers = new EquipmentSymbolModifiers(
+        equipmentSymbolModifiersElement,
+      );
+    }
     this.relations = this.initializeRelations();
   }
 
@@ -77,3 +92,42 @@ export type EquipmentRelationsType = {
   ownerChoice: ForceOwnerType;
   ownerHandle: string;
 };
+
+export type EquipmentSymbolModifiersType = {
+  quantity?: number;
+  staffComments?: string;
+  additionalInfo?: string;
+  combatEffectiveness?: string;
+  iff?: string;
+  uniqueDesignation: string;
+  equipmentType?: string;
+  towedSonarArray?: boolean;
+};
+
+export class EquipmentSymbolModifiers implements EquipmentSymbolModifiersType {
+  quantity?: number;
+  staffComments?: string;
+  additionalInfo?: string;
+  combatEffectiveness?: string;
+  iff?: string;
+  uniqueDesignation: string;
+  equipmentType?: string;
+  towedSonarArray?: boolean;
+
+  constructor(element: Element) {
+    this.quantity = getNumberValue(element, "Quantity");
+    this.staffComments = getValueOrUndefined(element, "StaffComments");
+    this.additionalInfo = getValueOrUndefined(element, "AdditionalInfo");
+    this.combatEffectiveness = getValueOrUndefined(
+      element,
+      "CombatEffectiveness",
+    );
+    this.iff = getValueOrUndefined(element, "IFF");
+    this.uniqueDesignation =
+      getValueOrUndefined(element, "UniqueDesignation") ?? "";
+    this.equipmentType = getValueOrUndefined(element, "EquipmentType");
+    const towedSonarArray = getValueOrUndefined(element, "TowedSonarArray");
+    this.towedSonarArray =
+      towedSonarArray !== undefined ? towedSonarArray === "true" : undefined;
+  }
+}

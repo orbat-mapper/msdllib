@@ -1,16 +1,56 @@
 import { describe, it, expect } from "vitest";
 import { parseFromString } from "./testdata.js";
 
-import { EquipmentItem } from "../lib/equipment.js";
+import { EquipmentItem, EquipmentSymbolModifiers } from "../lib/equipment.js";
 
 const EQUIPMENT_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
     <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
     <Name>111</Name>
     <EquipmentSymbolModifiers>
-        <Quantity>1</Quantity>
+        <Quantity>10</Quantity>
         <CombatEffectiveness>GREEN</CombatEffectiveness>
         <UniqueDesignation>111</UniqueDesignation>
+        <EquipmentType>T-80B</EquipmentType>
+    </EquipmentSymbolModifiers>
+    <Disposition>
+        <Location>
+            <CoordinateChoice>GDC</CoordinateChoice>
+            <CoordinateData>
+                <GDC>
+                    <Latitude>58.538208</Latitude>
+                    <Longitude>15.040084</Longitude>
+                    <ElevationAGL>137.71353</ElevationAGL>
+                </GDC>
+            </CoordinateData>
+        </Location>
+        <DirectionOfMovement>176.17091</DirectionOfMovement>
+        <Speed>0.0</Speed>
+        <FormationPosition>
+            <FormationOrder>1</FormationOrder>
+        </FormationPosition>
+    </Disposition>
+    <Relations>
+        <OrganicSuperiorHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</OrganicSuperiorHandle>
+        <HoldingOrganization>
+            <OwnerChoice>UNIT</OwnerChoice>
+            <OwnerData>
+                <UnitOwnerHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</UnitOwnerHandle>
+            </OwnerData>
+        </HoldingOrganization>
+    </Relations>
+    <Model>
+        <Resolution>HIGH</Resolution>
+    </Model>
+</EquipmentItem>`;
+
+const EQUIPMENT_NO_NAME_TEMPLATE = `<EquipmentItem>
+    <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
+    <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
+    <EquipmentSymbolModifiers>
+        <Quantity>10</Quantity>
+        <CombatEffectiveness>GREEN</CombatEffectiveness>
+        <UniqueDesignation>1-1-1</UniqueDesignation>
         <EquipmentType>T-80B</EquipmentType>
     </EquipmentSymbolModifiers>
     <Disposition>
@@ -158,5 +198,32 @@ describe("MSDL Equipment", () => {
     expect(equipmentItem.superiorHandle).toBe(
       "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
     );
+  });
+});
+
+describe("EquipmentItem class", () => {
+  describe("when parsing an equipment element with EquipmentSymbolModifiers", () => {
+    const equipment = new EquipmentItem(
+      parseFromString(EQUIPMENT_NO_NAME_TEMPLATE),
+    );
+    it("should have a symbolModifiers attribute", () => {
+      expect(equipment.symbolModifiers).toBeDefined();
+      expect(equipment.symbolModifiers).toBeInstanceOf(
+        EquipmentSymbolModifiers,
+      );
+    });
+    it("should have a quantity attribute", () => {
+      expect(equipment.symbolModifiers?.quantity).toBe(10);
+    });
+    it("should have a combatEffectiveness attribute", () => {
+      expect(equipment.symbolModifiers?.combatEffectiveness).toBe("GREEN");
+    });
+    it("should have a uniqueDesignation attribute", () => {
+      expect(equipment.symbolModifiers?.uniqueDesignation).toBe("1-1-1");
+    });
+    it("should use uniqueDesignation for label if name is not defined", () => {
+      expect(equipment.name).toBe("");
+      expect(equipment.label).toBe("1-1-1");
+    });
   });
 });
