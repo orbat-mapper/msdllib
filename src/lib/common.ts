@@ -7,11 +7,13 @@ import {
 import { StandardIdentity } from "./enums.js";
 
 export type TacticalJson = {
+  id?: string;
   sidc?: string;
   speed?: number;
   direction?: number;
   label?: string;
 };
+
 export type UnitEquipmentInterface = {
   objectHandle: string;
   symbolIdentifier: string;
@@ -72,3 +74,8 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
     this.location = this._msdlLocation.location;
   }
 }
+
+export type IdGeoJsonOptions = {
+  includeId?: boolean;
+  includeIdInProperties?: boolean;
+};

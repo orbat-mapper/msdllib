@@ -226,4 +226,27 @@ describe("EquipmentItem class", () => {
       expect(equipment.label).toBe("1-1-1");
     });
   });
+
+  describe("when calling toGeoJson", () => {
+    const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+    it("should be defined", () => {
+      expect(equipment.toGeoJson).toBeDefined();
+    });
+    it("should by default include the id", () => {
+      expect(equipment.toGeoJson().id).toBe(
+        "f9ee8509-2dcd-11e2-be2b-000c294c9df8",
+      );
+    });
+    it("should by default not include the id in properties", () => {
+      expect(equipment.toGeoJson().properties.id).toBeUndefined();
+    });
+    it("should include the id in properties if requested", () => {
+      expect(
+        equipment.toGeoJson({ includeIdInProperties: true }).properties.id,
+      ).toBe("f9ee8509-2dcd-11e2-be2b-000c294c9df8");
+    });
+    it("should not include the id if requested", () => {
+      expect(equipment.toGeoJson({ includeId: false }).id).toBeUndefined();
+    });
+  });
 });

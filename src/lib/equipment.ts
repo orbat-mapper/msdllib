@@ -6,8 +6,14 @@ import {
 } from "./utils.js";
 import type { Feature, Point } from "geojson";
 
-import { type TacticalJson, UnitEquipmentBase } from "./common.js";
+import {
+  type IdGeoJsonOptions,
+  type TacticalJson,
+  UnitEquipmentBase,
+} from "./common.js";
 import { ForceOwnerType } from "./enums.js";
+
+export type EquipmentItemGeoJsonOptions = IdGeoJsonOptions;
 
 export class EquipmentItem extends UnitEquipmentBase {
   symbolModifiers?: EquipmentSymbolModifiers;
@@ -59,7 +65,10 @@ export class EquipmentItem extends UnitEquipmentBase {
     return this.relations.ownerHandle;
   }
 
-  toGeoJson(): Feature<Point | null, TacticalJson> {
+  toGeoJson(
+    options: EquipmentItemGeoJsonOptions = {},
+  ): Feature<Point | null, TacticalJson> {
+    const { includeId = true, includeIdInProperties = false } = options;
     let feature: Feature<Point | null, TacticalJson>;
     let properties: TacticalJson = {};
 
@@ -71,9 +80,12 @@ export class EquipmentItem extends UnitEquipmentBase {
     }
     properties.sidc = this.sidc;
     properties.label = this.label;
+    if (includeIdInProperties) {
+      properties.id = this.objectHandle;
+    }
 
     feature = {
-      id: this.objectHandle,
+      ...(includeId ? { id: this.objectHandle } : {}),
       type: "Feature",
       geometry: this.location
         ? {

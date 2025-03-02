@@ -14,10 +14,13 @@ import {
 } from "./enums.js";
 import { EquipmentItem } from "./equipment.js";
 import {
+  type IdGeoJsonOptions,
   type TacticalJson,
   UnitEquipmentBase,
   type UnitEquipmentInterface,
 } from "./common.js";
+
+type UnitGeoJsonOptions = IdGeoJsonOptions;
 
 export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   symbolModifiers?: UnitSymbolModifiers;
@@ -50,7 +53,10 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     );
   }
 
-  toGeoJson(): Feature<Point | null, TacticalJson> {
+  toGeoJson(
+    options: UnitGeoJsonOptions = {},
+  ): Feature<Point | null, TacticalJson> {
+    const { includeId = true, includeIdInProperties = false } = options;
     let feature: Feature<Point | null, TacticalJson>;
     let properties: TacticalJson = {};
 
@@ -62,9 +68,12 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     }
     properties.sidc = this.sidc;
     properties.label = this.label;
+    if (includeIdInProperties) {
+      properties.id = this.objectHandle;
+    }
 
     feature = {
-      id: this.objectHandle,
+      ...(includeId ? { id: this.objectHandle } : {}),
       type: "Feature",
       geometry: this.location
         ? {

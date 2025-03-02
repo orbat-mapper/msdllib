@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { parseFromString, UNIT_MGRS } from "./testdata.js";
 import { Unit } from "../lib/units.js";
 import { loadTestScenario } from "./testutils.js";
@@ -183,6 +183,27 @@ describe("Unit class", () => {
     it("should be NoneSpecified by default", () => {
       const unit = new Unit(parseFromString(UNIT_MGRS));
       expect(unit.getAffiliation()).toBe(StandardIdentity.NoneSpecified);
+    });
+  });
+
+  describe("when calling toGeoJson", () => {
+    const unit = new Unit(parseFromString(UNIT_TEMPLATE));
+    it("should be defined", () => {
+      expect(unit.toGeoJson).toBeDefined();
+    });
+    it("should by default include the id", () => {
+      expect(unit.toGeoJson().id).toBe("f9e16593-2dcd-11e2-be2b-000c294c9df8");
+    });
+    it("should by default not include the id in properties", () => {
+      expect(unit.toGeoJson().properties.id).toBeUndefined();
+    });
+    it("should include the id in properties if requested", () => {
+      expect(
+        unit.toGeoJson({ includeIdInProperties: true }).properties.id,
+      ).toBe("f9e16593-2dcd-11e2-be2b-000c294c9df8");
+    });
+    it("should not include the id if requested", () => {
+      expect(unit.toGeoJson({ includeId: false }).id).toBeUndefined();
     });
   });
 });

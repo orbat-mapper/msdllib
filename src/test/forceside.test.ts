@@ -202,4 +202,30 @@ describe("ForceSide methods", () => {
       }
     });
   });
+
+  describe("when using toGeoJson", () => {
+    const scenario = loadTestScenario("/data/SimpleScenario.xml");
+    const side = scenario.sides[0]!;
+    it("should have a toGeoJson method", () => {
+      expect(side.toGeoJson).toBeDefined();
+    });
+    it("should not return equipment by default", () => {
+      expect(side.toGeoJson().features.length).toBe(2);
+    });
+    it("should return equipment if requested", () => {
+      expect(side.toGeoJson({ includeEquipment: true }).features.length).toBe(
+        3,
+      );
+    });
+    it("should pass through idGeoJsonOptions", () => {
+      expect(
+        side.toGeoJson({ includeId: false }).features[0]!.id,
+      ).toBeUndefined();
+      expect(side.toGeoJson().features[0]!.properties.id).toBeUndefined();
+      expect(
+        side.toGeoJson({ includeIdInProperties: true }).features[0]!.properties
+          .id,
+      ).toBeDefined();
+    });
+  });
 });
