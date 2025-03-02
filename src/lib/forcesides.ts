@@ -2,7 +2,7 @@ import type { Feature, FeatureCollection, Point } from "geojson";
 import { HostilityStatusCode, StandardIdentity } from "./enums.js";
 import { Unit } from "./units.js";
 import { getTagElements, getTagValue } from "./utils.js";
-import type { TacticalJson } from "./common.js";
+import type { IdGeoJsonOptions, TacticalJson } from "./common.js";
 import type { EquipmentItem } from "./equipment.js";
 
 export interface ForceSideType {
@@ -17,6 +17,12 @@ export interface AssociationType {
   affiliateHandle: string;
   relationship: HostilityStatusCode;
 }
+
+type SideGeoJsonOptions = {
+  includeEmptyLocations?: boolean;
+  includeEquipment?: boolean;
+  includeUnits?: boolean;
+};
 
 export class ForceSide implements ForceSideType {
   objectHandle: string;
@@ -79,17 +85,20 @@ export class ForceSide implements ForceSideType {
     return units;
   }
 
-  toGeoJson({
-    includeEmptyLocations = false,
-    includeEquipment = true,
-    includeUnits = true,
-  } = {}): FeatureCollection<Point | null, TacticalJson> {
+  toGeoJson(
+    options: SideGeoJsonOptions & IdGeoJsonOptions = {},
+  ): FeatureCollection<Point | null, TacticalJson> {
+    const {
+      includeEmptyLocations = false,
+      includeEquipment = false,
+      includeUnits = true,
+    } = options;
     let features: Feature<Point | null, TacticalJson>[] = [];
 
     function addSubordinates(subordinates: Unit[]) {
       for (let unit of subordinates) {
         if (includeUnits && (includeEmptyLocations || unit.location)) {
-          features.push(unit.toGeoJson());
+          features.push(unit.toGeoJson(options));
         }
         if (includeEquipment) {
           for (let equipment of unit.equipment) {
