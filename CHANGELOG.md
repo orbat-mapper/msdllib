@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.8.1 - 2025-03-02
+
+### Fixes
+
+- Fix missing `includeId` options in `toGeoJson` for equipment
+
 ## 0.8.0 - 2025-03-02
 
 ### Added

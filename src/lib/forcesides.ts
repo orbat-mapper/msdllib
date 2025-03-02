@@ -103,7 +103,7 @@ export class ForceSide implements ForceSideType {
         if (includeEquipment) {
           for (let equipment of unit.equipment) {
             if (includeEmptyLocations || equipment.location) {
-              features.push(equipment.toGeoJson());
+              features.push(equipment.toGeoJson(options));
             }
           }
         }

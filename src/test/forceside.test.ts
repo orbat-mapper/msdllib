@@ -226,6 +226,13 @@ describe("ForceSide methods", () => {
         side.toGeoJson({ includeIdInProperties: true }).features[0]!.properties
           .id,
       ).toBeDefined();
+      expect(
+        side.toGeoJson({
+          includeUnits: false,
+          includeEquipment: true,
+          includeIdInProperties: true,
+        }).features[0]!.properties.id,
+      ).toBeDefined();
     });
   });
 });
