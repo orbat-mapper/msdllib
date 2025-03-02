@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.8.0 - 2025-03-02
+
+### Added
+
+- Add `includeId` (default `true`) and `includeIdInProperties` (default `false`) options to `toGeoJson({...})` methods
+
 ## 0.7.0 - 2025-03-01
 
 ### Added
