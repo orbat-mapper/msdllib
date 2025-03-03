@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.8.2
+
+### Fixes
+
+- Add missing toGeoJson options for root units and equipment
+
 ## 0.8.1 - 2025-03-02
 
 ### Fixes
