@@ -115,12 +115,12 @@ export class ForceSide implements ForceSideType {
 
     for (let rootUnit of this.rootUnits) {
       if (includeUnits && (includeEmptyLocations || rootUnit.location)) {
-        features.push(rootUnit.toGeoJson());
+        features.push(rootUnit.toGeoJson(options));
       }
       if (includeEquipment) {
         for (let equipment of rootUnit.equipment) {
           if (includeEmptyLocations || equipment.location) {
-            features.push(equipment.toGeoJson());
+            features.push(equipment.toGeoJson(options));
           }
         }
       }
