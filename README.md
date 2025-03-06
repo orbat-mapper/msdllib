@@ -14,7 +14,7 @@ and [SISO Product data files page](https://www.sisostds.org/Schemas.aspx).
 Please note that MSDL will be superseded by C2SIM-Initialize. You can read more about this on the
 [C2SIM project page](https://openc2sim.github.io/).
 
-See [msdl-viewer](https://github.com/orbat-mapper/msdl-viewer) for an example project that uses MSDLlib.
+See [msdl-editor](https://github.com/orbat-mapper/msdl-editor) for an example project that uses MSDLlib.
 
 ## Copyright notice
 
