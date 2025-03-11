@@ -22,6 +22,8 @@ export interface MilitaryScenarioType {
   getForceSideById(objectHandle: string): ForceSide | undefined;
   getUnitOrForceSideById(objectHandle: string): Unit | ForceSide | undefined;
   getEquipmentById(objectHandle: string): EquipmentItem | undefined;
+
+  toString(): string;
 }
 
 export class MilitaryScenario implements MilitaryScenarioType {
@@ -214,5 +216,11 @@ export class MilitaryScenario implements MilitaryScenarioType {
         }
       }
     }
+  }
+
+  toString() {
+    if (!this.rootElement) return "";
+    const oSerializer = new XMLSerializer();
+    return oSerializer.serializeToString(this.rootElement);
   }
 }

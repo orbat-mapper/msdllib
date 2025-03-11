@@ -1,5 +1,4 @@
-﻿<MilitaryScenario xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
-                  xmlns:modelID="http://www.sisostds.org/schemas/modelID">
+﻿<MilitaryScenario xmlns="urn:sisostds:scenario:military:data:draft:msdl:1" xmlns:modelID="http://www.sisostds.org/schemas/modelID">
     <ScenarioID>
         <modelID:name>Simple scenario</modelID:name>
         <modelID:type/>

@@ -8,3 +8,10 @@ export function loadTestScenario(
   let scenario = MilitaryScenario.createFromString(data.toString());
   return scenario;
 }
+
+export function loadTestScenarioAsString(
+  fileName = "/data/SimpleScenario.xml",
+): string {
+  let data = fs.readFileSync(__dirname + fileName, { encoding: "utf-8" });
+  return data.toString();
+}

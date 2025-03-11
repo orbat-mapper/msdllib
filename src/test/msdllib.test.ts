@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { ForceSide, MilitaryScenario, ScenarioId } from "../index.js";
 import { EMPTY_SCENARIO } from "./testdata.js";
 import fs from "fs/promises";
-import { loadTestScenario } from "./testutils.js";
+import { loadTestScenario, loadTestScenarioAsString } from "./testutils.js";
 import { Unit } from "../lib/units.js";
 
 describe("MilitaryScenario class", () => {
@@ -203,5 +203,30 @@ describe("MilitaryScenario equipment", () => {
       expect(unit.equipment[0]?.relations).toBeDefined();
       expect(unit.equipment[0]?.relations.ownerChoice).toBe("UNIT");
     });
+  });
+});
+
+describe("MilitaryScenario serialization", () => {
+  let scenario = loadTestScenario();
+  it("should should have a toString method", () => {
+    expect(scenario.toString).toBeDefined();
+  });
+  it("should return a string", () => {
+    let str = scenario.toString();
+    expect(str).toBeDefined();
+    expect(typeof str).toBe("string");
+  });
+
+  it("should return a valid XML string", () => {
+    let str = scenario.toString();
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(str, "text/xml");
+    expect(doc.documentElement.nodeName).toBe("MilitaryScenario");
+  });
+
+  it("should create the same output as input if unmodified", () => {
+    const str = scenario.toString();
+    const originalScenario = loadTestScenarioAsString();
+    expect(str.trim()).toBe(originalScenario.trim());
   });
 });
