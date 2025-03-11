@@ -36,8 +36,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
   equipmentMap: Record<string, EquipmentItem> = {};
   private _primarySide: ForceSide | null | undefined = null;
 
-  constructor(public rootElement?: Element) {
-    if (rootElement) {
+  constructor(readonly element?: Element) {
+    if (element) {
       this.initializeMetaInfo();
       this.initializeForceSides();
       this.initializeUnits();
@@ -75,14 +75,12 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private initializeMetaInfo() {
-    this.scenarioId = new ScenarioId(
-      getTagElement(this.rootElement, "ScenarioID"),
-    );
+    this.scenarioId = new ScenarioId(getTagElement(this.element, "ScenarioID"));
   }
 
   private initializeForceSides() {
     this.forceSides = [];
-    const forceSideEl = getTagElement(this.rootElement, "ForceSides");
+    const forceSideEl = getTagElement(this.element, "ForceSides");
     if (!forceSideEl) return;
     let forceSideElements = getTagElements(forceSideEl, "ForceSide");
     for (let e of forceSideElements) {
@@ -101,7 +99,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private initializeUnits() {
-    const organizationsEl = getTagElement(this.rootElement, "Organizations");
+    const organizationsEl = getTagElement(this.element, "Organizations");
     const unitsEl = getTagElement(organizationsEl, "Units");
     let unitElements = getTagElements(unitsEl, "Unit");
     const _units = [];
@@ -132,7 +130,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private initializeEquipment() {
-    const organizationsEl = getTagElement(this.rootElement, "Organizations");
+    const organizationsEl = getTagElement(this.element, "Organizations");
     const equipmentEl = getTagElement(organizationsEl, "Equipment");
     let equipmentItemElements = getTagElements(equipmentEl, "EquipmentItem");
     for (let equipmentItemElement of equipmentItemElements) {
@@ -219,8 +217,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   toString() {
-    if (!this.rootElement) return "";
+    if (!this.element) return "";
     const oSerializer = new XMLSerializer();
-    return oSerializer.serializeToString(this.rootElement);
+    return oSerializer.serializeToString(this.element);
   }
 }
