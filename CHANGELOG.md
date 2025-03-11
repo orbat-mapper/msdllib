@@ -1,5 +1,15 @@
 # @orbat-mapper/msdllib
 
+## 0.9.0 - 2025-03-11
+
+### Added
+
+- Add a `toString()` method to `MilitaryScenario` for serializing a scenario to an XML string
+
+### Changed
+
+- Rename `MilitaryScenario.rootElement` attribute to `element` for consistency
+
 ## 0.8.2
 
 ### Fixes
