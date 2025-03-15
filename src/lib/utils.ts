@@ -71,12 +71,7 @@ export function getTagElements(
   tagName: string,
 ): Element[] {
   if (!element) return [];
-  let _elements = element.getElementsByTagNameNS(MSDL_NS, tagName);
-  let elements = [];
-  for (let i = 0; i < _elements.length; i++) {
-    elements.push(_elements[i]);
-  }
-  return elements as Element[];
+  return Array.from(element.getElementsByTagNameNS(MSDL_NS, tagName));
 }
 
 export function setCharAt(str: string, index: number, chr: string) {
