@@ -36,10 +36,12 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   symbolIdentifier: string;
   name: string;
   objectHandle: string;
+  element: Element;
 
   protected _msdlLocation?: MsdlLocation;
 
-  constructor(readonly element: Element) {
+  constructor(element: Element) {
+    this.element = element;
     this.objectHandle = getTagValue(element, "ObjectHandle");
     this.symbolIdentifier = getTagValue(this.element, "SymbolIdentifier");
     this.name = getTagValue(element, "Name");
@@ -70,8 +72,10 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
     this.directionOfMovement = directionOfMovement
       ? +directionOfMovement
       : undefined;
-    this._msdlLocation = new MsdlLocation(dispositionElement);
-    this.location = this._msdlLocation.location;
+    if (dispositionElement) {
+      this._msdlLocation = new MsdlLocation(dispositionElement);
+      this.location = this._msdlLocation.location;
+    }
   }
 }
 

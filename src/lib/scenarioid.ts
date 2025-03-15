@@ -10,8 +10,10 @@ export class ScenarioId implements ScenarioIdType {
   name = "";
   description = "";
   securityClassification = "";
+  element?: Element;
 
-  constructor(readonly element?: Element) {
+  constructor(element?: Element) {
+    this.element = element;
     if (!element) return;
     this.name = getTagValue(element, "name");
     this.description = getTagValue(element, "description");

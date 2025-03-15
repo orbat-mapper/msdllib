@@ -32,11 +32,13 @@ export class MilitaryScenario implements MilitaryScenarioType {
   equipment: EquipmentItem[] = [];
   rootUnits: Unit[] = [];
   unitMap: Record<string, Unit> = {};
+  element?: Element;
   forceSideMap: Record<string, ForceSide> = {};
   equipmentMap: Record<string, EquipmentItem> = {};
   private _primarySide: ForceSide | null | undefined = null;
 
-  constructor(readonly element?: Element) {
+  constructor(element?: Element) {
+    this.element = element;
     if (element) {
       this.initializeMetaInfo();
       this.initializeForceSides();
@@ -67,7 +69,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     if (
       Object.keys(militaryScenario.unitMap).length === 0 &&
       Object.keys(militaryScenario.forceSides).length === 0 &&
-      !militaryScenario.scenarioId.element
+      !militaryScenario.scenarioId?.element
     ) {
       throw new TypeError("Invalid MSDL");
     }
@@ -75,9 +77,13 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private initializeMetaInfo() {
-    this.scenarioId = new ScenarioId(getTagElement(this.element, "ScenarioID"));
+    const scenarioIdElement = getTagElement(this.element, "ScenarioID");
+    if (!scenarioIdElement) {
+      // throw new Error("ScenarioID element is required but not found");
+      return;
+    }
+    this.scenarioId = new ScenarioId(scenarioIdElement);
   }
-
   private initializeForceSides() {
     this.forceSides = [];
     const forceSideEl = getTagElement(this.element, "ForceSides");

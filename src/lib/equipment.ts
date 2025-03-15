@@ -19,7 +19,7 @@ export class EquipmentItem extends UnitEquipmentBase {
   symbolModifiers?: EquipmentSymbolModifiers;
   relations: EquipmentRelationsType;
 
-  constructor(override readonly element: Element) {
+  constructor(element: Element) {
     super(element);
     const equipmentSymbolModifiersElement = getTagElement(
       element,

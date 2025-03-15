@@ -29,7 +29,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   superiorHandle = "";
   private forceRelationChoice: ForceOwnerType | undefined;
 
-  constructor(override readonly element: Element) {
+  constructor(element: Element) {
     super(element);
     const unitSymbolModifiersElement = getTagElement(
       this.element,
@@ -134,8 +134,10 @@ export class UnitSymbolModifiers implements UnitSymbolModifiersType {
   iff?: string;
   uniqueDesignation: string;
   specialC2HQ?: string;
+  element: Element;
 
-  constructor(readonly element: Element) {
+  constructor(element: Element) {
+    this.element = element;
     this.echelon = getValueOrUndefined(element, "Echelon");
     this.reinforcedReduced = getValueOrUndefined(element, "ReinforcedReduced");
     this.staffComments = getValueOrUndefined(element, "StaffComments");

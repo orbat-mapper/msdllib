@@ -12,20 +12,13 @@ export type LngLatElevationTuple = [number, number, number];
 export class MsdlLocation {
   location?: LngLatTuple | LngLatElevationTuple;
   coordinateChoice: string;
+  element: Element;
 
-  constructor(private element?: Element) {
+  constructor(element: Element) {
+    this.element = element;
     this.coordinateChoice = getTagValue(this.element, "CoordinateChoice");
     this.parseLocation();
   }
-
-  // setLocation(latlng: L.LatLng) {
-  //     this.location = [latlng.lat, latlng.lng, latlng.alt];
-  //     if (this.coordinateChoice === "GDC") {
-  //         this.setGDCLocation(latlng);
-  //     } else {
-  //         console.warn(`Coordinate choice ${this.coordinateChoice} not implemented yet`);
-  //     }
-  // }
 
   private parseLocation() {
     if (this.coordinateChoice === "MGRS") {
