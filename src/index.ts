@@ -6,3 +6,4 @@ export { EquipmentItem } from "./lib/equipment.js";
 export { type AssociationType } from "./lib/forcesides.js";
 export { type ForceSideType } from "./lib/forcesides.js";
 export * from "./lib/enums.js";
+export * from "./lib/types.js";

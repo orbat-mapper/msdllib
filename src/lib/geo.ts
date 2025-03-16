@@ -5,18 +5,23 @@ import * as projector from "ecef-projector";
 import { toLatLon } from "utm";
 
 import { getTagElement, getTagValue } from "./utils.js";
-
-export type LngLatTuple = [number, number];
-export type LngLatElevationTuple = [number, number, number];
+import type {
+  CoordinateChoice,
+  LngLatElevationTuple,
+  LngLatTuple,
+} from "./types.js";
 
 export class MsdlLocation {
   location?: LngLatTuple | LngLatElevationTuple;
-  coordinateChoice: string;
+  coordinateChoice: CoordinateChoice;
   element: Element;
 
   constructor(element: Element) {
     this.element = element;
-    this.coordinateChoice = getTagValue(this.element, "CoordinateChoice");
+    this.coordinateChoice = getTagValue(
+      this.element,
+      "CoordinateChoice",
+    ) as CoordinateChoice;
     this.parseLocation();
   }
 
