@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { parseFromString } from "./testdata.js";
 
 import { EquipmentItem, EquipmentSymbolModifiers } from "../lib/equipment.js";
+import { getTagValue } from "../lib/domutils.js";
 
 const EQUIPMENT_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -247,6 +248,22 @@ describe("EquipmentItem class", () => {
     });
     it("should not include the id if requested", () => {
       expect(equipment.toGeoJson({ includeId: false }).id).toBeUndefined();
+    });
+  });
+
+  describe("when setting the name", () => {
+    it("should set the name", () => {
+      const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+      equipment.name = "New Name";
+      expect(equipment.name).toBe("New Name");
+    });
+    it("should set the name in the XML element", () => {
+      const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+      expect(getTagValue(equipment.element, "Name")).toBe("111");
+      equipment.name = "New Name";
+      expect(equipment.element.querySelector("Name")?.textContent).toBe(
+        "New Name",
+      );
     });
   });
 });

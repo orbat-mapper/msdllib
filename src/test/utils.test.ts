@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { getBooleanValue, getNumberValue } from "../lib/domutils.js";
+import {
+  getBooleanValue,
+  getNumberValue,
+  setOrCreateTagValue,
+  setTagValue,
+} from "../lib/domutils.js";
 import { parseFromString } from "./testdata.js";
 
 const TEST = `<SymbolModifiers>
@@ -62,5 +67,56 @@ describe("getNumbverValue", () => {
 
   it("should return undefined for alphabetic string", () => {
     expect(getNumberValue(element, "CombatEffectiveness")).toBeUndefined();
+  });
+});
+
+describe("setTagValue", () => {
+  it("should set the value of the tag", () => {
+    const element = parseFromString(TEST);
+    const tagName = "UniqueDesignation";
+    const newValue = "NewValue";
+    setTagValue(element, tagName, newValue);
+    expect(element.getElementsByTagName(tagName)[0]?.textContent).toBe(
+      newValue,
+    );
+  });
+});
+
+describe("setOrCreateTagValue", () => {
+  it("should set the value of the tag if it exists", () => {
+    const element = parseFromString(TEST);
+    const tagName = "UniqueDesignation";
+    const newValue = "NewValue";
+    setOrCreateTagValue(element, tagName, newValue);
+    expect(element.getElementsByTagName(tagName)[0]?.textContent).toBe(
+      newValue,
+    );
+  });
+
+  it("should create the tag if it does not exist", () => {
+    const element = parseFromString(TEST);
+    const tagName = "NewTag";
+    const newValue = "NewValue";
+    setOrCreateTagValue(element, tagName, newValue);
+    expect(element.getElementsByTagName(tagName)[0]?.textContent).toBe(
+      newValue,
+    );
+  });
+
+  it("should remove the tag if deleteIfNull is true and value is null", () => {
+    const element = parseFromString(TEST);
+    const tagName = "UniqueDesignation";
+    setOrCreateTagValue(element, tagName, null, { deleteIfNull: true });
+    expect(element.getElementsByTagName(tagName).length).toBe(0);
+  });
+
+  it("should allow setting a different namespace", () => {
+    const element = parseFromString(TEST);
+    const tagName = "UniqueDesignation";
+    const newValue = "NewValue";
+    setOrCreateTagValue(element, tagName, newValue, { namespace: "ttt" });
+    expect(element.getElementsByTagNameNS("ttt", tagName)[0]?.textContent).toBe(
+      newValue,
+    );
   });
 });

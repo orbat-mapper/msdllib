@@ -3,6 +3,7 @@ import { parseFromString, UNIT_MGRS } from "./testdata.js";
 import { Unit } from "../lib/units.js";
 import { loadTestScenario } from "./testutils.js";
 import { StandardIdentity } from "../lib/enums.js";
+import { getTagValue } from "../lib/domutils.js";
 
 const UNIT_TEMPLATE = ` <Unit>
                 <ObjectHandle>f9e16593-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -204,6 +205,20 @@ describe("Unit class", () => {
     });
     it("should not include the id if requested", () => {
       expect(unit.toGeoJson({ includeId: false }).id).toBeUndefined();
+    });
+  });
+
+  describe("when writing a unit name", () => {
+    it("should set the name", () => {
+      const unit = new Unit(parseFromString(UNIT_TEMPLATE));
+      unit.name = "New Name";
+      expect(unit.name).toBe("New Name");
+    });
+    it("should set the name in the XML element", () => {
+      const unit = new Unit(parseFromString(UNIT_TEMPLATE));
+      expect(getTagValue(unit.element, "Name")).toBe("1/OPFOR-ARMOR");
+      unit.name = "New Name";
+      expect(unit.element.querySelector("Name")?.textContent).toBe("New Name");
     });
   });
 });

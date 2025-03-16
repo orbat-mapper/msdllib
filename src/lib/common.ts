@@ -1,4 +1,4 @@
-import { getTagElement, getTagValue } from "./domutils.js";
+import { getTagElement, getTagValue, setOrCreateTagValue } from "./domutils.js";
 import { MsdlLocation } from "./geo.js";
 import { StandardIdentity } from "./enums.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
@@ -15,7 +15,7 @@ export type TacticalJson = {
 export type UnitEquipmentInterface = {
   objectHandle: string;
   symbolIdentifier: string;
-  name: string;
+  name?: string;
   location?: LngLatTuple | LngLatElevationTuple;
   /** The field speed in meters per second */
   speed?: number;
@@ -32,7 +32,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   speed?: number;
   directionOfMovement?: number;
   symbolIdentifier: string;
-  name: string;
+  #name: string;
   objectHandle: string;
   element: Element;
 
@@ -42,13 +42,22 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
     this.element = element;
     this.objectHandle = getTagValue(element, "ObjectHandle");
     this.symbolIdentifier = getTagValue(this.element, "SymbolIdentifier");
-    this.name = getTagValue(element, "Name");
+    this.#name = getTagValue(element, "Name");
     this.getDisposition();
     this.sidc = setCharAt(
       this.symbolIdentifier,
       1,
       StandardIdentity.NoneSpecified,
     );
+  }
+
+  get name(): string {
+    return this.#name ?? getTagValue(this.element, "Name");
+  }
+
+  set name(name: string) {
+    this.#name = name;
+    setOrCreateTagValue(this.element, "Name", name);
   }
 
   setAffiliation(s: StandardIdentity) {

@@ -14,6 +14,37 @@ export function getTagValue(
   );
 }
 
+export function setTagValue(
+  parent: Element | undefined,
+  tagName: string,
+  value: string,
+): void {
+  if (!parent) return;
+  let el = parent.getElementsByTagNameNS(MSDL_NS, tagName).item(0);
+  if (!el) return;
+  el.textContent = value;
+}
+
+export function setOrCreateTagValue(
+  parent: Element,
+  tagName: string,
+  value: string | null,
+  { deleteIfNull = true, namespace = "*" } = {},
+): void {
+  let el = parent.getElementsByTagNameNS(namespace, tagName).item(0);
+  if (el) {
+    if (deleteIfNull && value == null) {
+      el.parentNode?.removeChild(el);
+    } else {
+      el.textContent = value;
+    }
+  } else {
+    let newElem = parent.ownerDocument.createElementNS(namespace, tagName);
+    newElem.textContent = value;
+    parent.appendChild(newElem);
+  }
+}
+
 export type GetValueOptions = {
   noTrim?: boolean;
 };
