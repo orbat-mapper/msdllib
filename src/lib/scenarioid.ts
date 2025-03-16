@@ -1,4 +1,4 @@
-import { getTagValue } from "./utils.js";
+import { getTagValue } from "./domutils.js";
 
 export interface ScenarioIdType {
   name: string;

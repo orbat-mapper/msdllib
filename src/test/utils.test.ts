@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getBooleanValue, getNumberValue } from "../lib/utils.js";
+import { getBooleanValue, getNumberValue } from "../lib/domutils.js";
 import { parseFromString } from "./testdata.js";
 
 const TEST = `<SymbolModifiers>

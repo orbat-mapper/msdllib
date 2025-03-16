@@ -1,5 +1,5 @@
 import { ScenarioId } from "./scenarioid.js";
-import { getTagElement, getTagElements } from "./utils.js";
+import { getTagElement, getTagElements } from "./domutils.js";
 import { Unit } from "./units.js";
 import { rel2code, StandardIdentity } from "./enums.js";
 import { ForceSide } from "./forcesides.js";

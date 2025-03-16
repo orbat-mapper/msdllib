@@ -1,7 +1,8 @@
-import { getTagElement, getTagValue, setCharAt } from "./utils.js";
+import { getTagElement, getTagValue } from "./domutils.js";
 import { MsdlLocation } from "./geo.js";
 import { StandardIdentity } from "./enums.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
+import { setCharAt } from "./symbology.js";
 
 export type TacticalJson = {
   id?: string;

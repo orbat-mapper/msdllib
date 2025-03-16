@@ -3,7 +3,7 @@ import {
   getTagElement,
   getTagValue,
   getValueOrUndefined,
-} from "./utils.js";
+} from "./domutils.js";
 import type { Feature, Point } from "geojson";
 
 import {

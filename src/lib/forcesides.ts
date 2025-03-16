@@ -1,7 +1,7 @@
 import type { Feature, FeatureCollection, Point } from "geojson";
 import { HostilityStatusCode, StandardIdentity } from "./enums.js";
 import { Unit } from "./units.js";
-import { getTagElements, getTagValue } from "./utils.js";
+import { getTagElements, getTagValue } from "./domutils.js";
 import type { IdGeoJsonOptions, TacticalJson } from "./common.js";
 import type { EquipmentItem } from "./equipment.js";
 

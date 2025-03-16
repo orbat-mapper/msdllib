@@ -4,7 +4,7 @@ import * as mgrs from "mgrs";
 import * as projector from "ecef-projector";
 import { toLatLon } from "utm";
 
-import { getTagElement, getTagValue } from "./utils.js";
+import { getTagElement, getTagValue } from "./domutils.js";
 import type {
   CoordinateChoice,
   LngLatElevationTuple,

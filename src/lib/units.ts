@@ -1,9 +1,4 @@
-import {
-  getTagElement,
-  getTagValue,
-  getValueOrUndefined,
-  setCharAt,
-} from "./utils.js";
+import { getTagElement, getTagValue, getValueOrUndefined } from "./domutils.js";
 import type { Feature, Point } from "geojson";
 import {
   type EnumCombatEffectivenessType,
@@ -19,6 +14,7 @@ import {
   UnitEquipmentBase,
   type UnitEquipmentInterface,
 } from "./common.js";
+import { setCharAt } from "./symbology.js";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 
