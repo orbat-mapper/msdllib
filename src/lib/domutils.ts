@@ -10,7 +10,7 @@ export function getTagValue(
   let elements = element.getElementsByTagNameNS(MSDL_NS, tagName);
   if (elements.length === 0) return "";
   return (
-    (noTrim ? elements[0]?.innerHTML : elements[0]?.innerHTML.trim()) ?? ""
+    (noTrim ? elements[0]?.textContent : elements[0]?.textContent?.trim()) ?? ""
   );
 }
 
@@ -27,7 +27,7 @@ export function getValueOrUndefined(
   let elements = element.getElementsByTagNameNS(MSDL_NS, tagName);
   if (elements.length === 0) return;
   return (
-    (noTrim ? elements[0]?.innerHTML : elements[0]?.innerHTML.trim()) ?? ""
+    (noTrim ? elements[0]?.textContent : elements[0]?.textContent?.trim()) ?? ""
   );
 }
 
