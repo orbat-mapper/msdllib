@@ -2,6 +2,7 @@ import { getTagElement, getTagValue, getValueOrUndefined } from "./domutils.js";
 import type { Feature, Point } from "geojson";
 import {
   type EnumCombatEffectivenessType,
+  EnumCommandRelationshipType,
   type EnumEchelon,
   type EnumReinforcedReducedType,
   ForceOwnerType,
@@ -23,7 +24,8 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   equipment: EquipmentItem[] = [];
   subordinates: Unit[] = [];
   superiorHandle = "";
-  private forceRelationChoice: ForceOwnerType | undefined;
+  forceRelationChoice: ForceOwnerType | undefined;
+  commandRelationshipType: EnumCommandRelationshipType | undefined;
 
   constructor(element: Element) {
     super(element);
@@ -98,6 +100,9 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
         this.element,
         "CommandingSuperiorHandle",
       );
+      this.commandRelationshipType =
+        getTagValue(this.element, "CommandRelationshipType") ||
+        EnumCommandRelationshipType.None;
     } else if (forceRelationChoice === ForceOwnerType.ForceSide) {
       this.forceRelationChoice = ForceOwnerType.ForceSide;
       this.superiorHandle = getTagValue(this.element, "ForceSideHandle");

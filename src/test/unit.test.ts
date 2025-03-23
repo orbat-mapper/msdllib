@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import { parseFromString, UNIT_MGRS } from "./testdata.js";
 import { Unit } from "../lib/units.js";
 import { loadTestScenario } from "./testutils.js";
-import { StandardIdentity } from "../lib/enums.js";
+import {
+  EnumCommandRelationshipType,
+  ForceOwnerType,
+  StandardIdentity,
+} from "../lib/enums.js";
 import { getTagValue } from "../lib/domutils.js";
 
 const UNIT_TEMPLATE = ` <Unit>
@@ -87,6 +91,57 @@ const UNIT_NO_DISPOSITION = `<Unit>
     </Model>
 </Unit>`;
 
+const UNIT_ROOT_UNIT = `<Unit>
+    <ObjectHandle>1d8fbb85-1980-431f-aaaa-f4479e41c4a1</ObjectHandle>
+    <SymbolIdentifier>S-G-UCA----F---</SymbolIdentifier>
+    <UnitSymbolModifiers>
+        <UniqueDesignation>4</UniqueDesignation>
+        <HigherFormation>2-33 AR</HigherFormation>
+        <Echelon>BATTALION</Echelon>
+        <CombatEffectiveness>GREEN</CombatEffectiveness>
+    </UnitSymbolModifiers>
+    <Disposition>
+        <Location>
+            <CoordinateChoice>MGRS</CoordinateChoice>
+            <CoordinateData>
+                <MGRS>
+                    <MGRSGridZone>11S</MGRSGridZone>
+                    <MGRSGridSquare>NV</MGRSGridSquare>
+                    <MGRSPrecision>5</MGRSPrecision>
+                    <MGRSEasting>31919</MGRSEasting>
+                    <MGRSNorthing>10790</MGRSNorthing>
+                    <ElevationAGL>0</ElevationAGL>
+                </MGRS>
+            </CoordinateData>
+        </Location>
+        <DirectionOfMovement>0</DirectionOfMovement>
+        <Speed>0</Speed>
+        <FormationPosition>
+            <OutOfFormation>false</OutOfFormation>
+            <FormationOrder>1</FormationOrder>
+            <SensorOrientation>0</SensorOrientation>
+        </FormationPosition>
+        <OwnFormation>
+            <FormationSpacing>1200</FormationSpacing>
+            <FormationOrientation>85</FormationOrientation>
+            <FormationChoice>GROUND</FormationChoice>
+            <FormationLocationType>LEAD_ELEMENT</FormationLocationType>
+            <FormationData>
+                <GroundFormationType>WEDGE</GroundFormationType>
+            </FormationData>
+        </OwnFormation>
+    </Disposition>
+    <Relations>
+        <ForceRelation>
+            <ForceRelationChoice>FORCE_SIDE</ForceRelationChoice>
+            <ForceRelationData>
+                <ForceSideHandle>fbde006d-ffff-aaaa-cccc-892e67650eb9</ForceSideHandle>
+            </ForceRelationData>
+        </ForceRelation>
+    </Relations>
+</Unit>
+`;
+
 describe("MSDL Unit", () => {
   it("should be defined", () => {
     expect(Unit).toBeDefined();
@@ -155,6 +210,23 @@ describe("Unit relations", () => {
     expect(hq.subordinates.length).toBe(2);
     expect(hq.subordinates[0]?.name).toBe("1th");
     expect(hq.subordinates[1]?.name).toBe("2nd");
+  });
+
+  describe("when manipulating ForceRelation", () => {
+    it("should be able read UNIT relation", () => {
+      let unit = new Unit(parseFromString(UNIT_TEMPLATE));
+      expect(unit.superiorHandle).toBe("f9c2b9f6-2dcd-11e2-be2b-000c294c9df8");
+      expect(unit.forceRelationChoice).toBe(ForceOwnerType.Unit);
+      expect(unit.commandRelationshipType).toBe(
+        EnumCommandRelationshipType.Attached,
+      );
+    });
+    it("it should be able to read FORCE_SIDE relation", () => {
+      let unit = new Unit(parseFromString(UNIT_ROOT_UNIT));
+      expect(unit.superiorHandle).toBe("fbde006d-ffff-aaaa-cccc-892e67650eb9");
+      expect(unit.forceRelationChoice).toBe(ForceOwnerType.ForceSide);
+      expect(unit.commandRelationshipType).toBeUndefined();
+    });
   });
 });
 

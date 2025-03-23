@@ -6,6 +6,18 @@ export const ForceOwnerType = {
 export type ForceOwnerType =
   (typeof ForceOwnerType)[keyof typeof ForceOwnerType];
 
+export const EnumCommandRelationshipType = {
+  Organic: "ORGANIC",
+  Attached: "ATTACHED",
+  Opcon: "OPCON",
+  Tacon: "TACON",
+  Adcon: "ADCON",
+  None: "NONE",
+};
+
+export type EnumCommandRelationshipType =
+  (typeof EnumCommandRelationshipType)[keyof typeof EnumCommandRelationshipType];
+
 export const HostilityStatusCode = {
   AssumedFriend: "AFR",
   AssumedHostile: "AHO",
