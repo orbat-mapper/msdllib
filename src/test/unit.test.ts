@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { parseFromString, UNIT_MGRS } from "./testdata.js";
+import {
+  parseFromString,
+  UNIT_ATTACHED,
+  UNIT_MGRS,
+  UNIT_NO_DISPOSITION,
+  UNIT_ROOT_UNIT,
+} from "./testdata.js";
 import { Unit } from "../lib/units.js";
 import { loadTestScenario } from "./testutils.js";
 import {
@@ -9,152 +15,19 @@ import {
 } from "../lib/enums.js";
 import { getTagValue } from "../lib/domutils.js";
 
-const UNIT_TEMPLATE = ` <Unit>
-                <ObjectHandle>f9e16593-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
-                <SymbolIdentifier>S-G-----------G</SymbolIdentifier>
-                <Name>1/OPFOR-ARMOR</Name>
-                <UnitSymbolModifiers>
-                    <Echelon>COMPANY</Echelon>
-                    <CombatEffectiveness>GREEN</CombatEffectiveness>
-                    <HigherFormation>OPFOR-ARMOR</HigherFormation>
-                    <UniqueDesignation>1</UniqueDesignation>
-                </UnitSymbolModifiers>
-                <Disposition>
-                    <Location>
-                        <CoordinateChoice>GDC</CoordinateChoice>
-                        <CoordinateData>
-                            <GDC>
-                                <Latitude>58.54383</Latitude>
-                                <Longitude>15.038887</Longitude>
-                                <ElevationAGL>141.03737</ElevationAGL>
-                            </GDC>
-                        </CoordinateData>
-                    </Location>
-                    <DirectionOfMovement>175.37999</DirectionOfMovement>
-                    <Speed>4</Speed>
-                    <FormationPosition>
-                        <OutOfFormation>false</OutOfFormation>
-                        <FormationOrder>2</FormationOrder>
-                        <SensorOrientation>0.0</SensorOrientation>
-                    </FormationPosition>
-                    <OwnFormation>
-                        <FormationLocationType>LEAD_ELEMENT</FormationLocationType>
-                        <FormationSpacing>250.0</FormationSpacing>
-                        <FormationOrientation>175.37999</FormationOrientation>
-                        <FormationChoice>GROUND</FormationChoice>
-                        <FormationData>
-                            <GroundFormationType>WEDGE</GroundFormationType>
-                        </FormationData>
-                    </OwnFormation>
-                </Disposition>
-                <Relations>
-                    <ForceRelation>
-                        <ForceRelationChoice>UNIT</ForceRelationChoice>
-                        <ForceRelationData>
-                            <CommandRelation>
-                                <CommandingSuperiorHandle>f9c2b9f6-2dcd-11e2-be2b-000c294c9df8</CommandingSuperiorHandle>
-                                <CommandRelationshipType>ATTACHED</CommandRelationshipType>
-                            </CommandRelation>
-                        </ForceRelationData>
-                    </ForceRelation>
-                </Relations>
-                <Model>
-                    <Resolution>HIGH</Resolution>
-                    <AggregateBased>false</AggregateBased>
-                </Model>
-            </Unit>`;
-
-const UNIT_NO_DISPOSITION = `<Unit>
-    <ObjectHandle>f9e16593-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
-    <SymbolIdentifier>S-G-----------G</SymbolIdentifier>
-    <Name>1/OPFOR-ARMOR</Name>
-    <UnitSymbolModifiers>
-        <Echelon>COMPANY</Echelon>
-        <CombatEffectiveness>GREEN</CombatEffectiveness>
-        <HigherFormation>OPFOR-ARMOR</HigherFormation>
-        <UniqueDesignation>1</UniqueDesignation>
-    </UnitSymbolModifiers>
-    <Relations>
-        <ForceRelation>
-            <ForceRelationChoice>UNIT</ForceRelationChoice>
-            <ForceRelationData>
-                <CommandRelation>
-                    <CommandingSuperiorHandle>f9c2b9f6-2dcd-11e2-be2b-000c294c9df8</CommandingSuperiorHandle>
-                    <CommandRelationshipType>ATTACHED</CommandRelationshipType>
-                </CommandRelation>
-            </ForceRelationData>
-        </ForceRelation>
-    </Relations>
-    <Model>
-        <Resolution>HIGH</Resolution>
-        <AggregateBased>false</AggregateBased>
-    </Model>
-</Unit>`;
-
-const UNIT_ROOT_UNIT = `<Unit>
-    <ObjectHandle>1d8fbb85-1980-431f-aaaa-f4479e41c4a1</ObjectHandle>
-    <SymbolIdentifier>S-G-UCA----F---</SymbolIdentifier>
-    <UnitSymbolModifiers>
-        <UniqueDesignation>4</UniqueDesignation>
-        <HigherFormation>2-33 AR</HigherFormation>
-        <Echelon>BATTALION</Echelon>
-        <CombatEffectiveness>GREEN</CombatEffectiveness>
-    </UnitSymbolModifiers>
-    <Disposition>
-        <Location>
-            <CoordinateChoice>MGRS</CoordinateChoice>
-            <CoordinateData>
-                <MGRS>
-                    <MGRSGridZone>11S</MGRSGridZone>
-                    <MGRSGridSquare>NV</MGRSGridSquare>
-                    <MGRSPrecision>5</MGRSPrecision>
-                    <MGRSEasting>31919</MGRSEasting>
-                    <MGRSNorthing>10790</MGRSNorthing>
-                    <ElevationAGL>0</ElevationAGL>
-                </MGRS>
-            </CoordinateData>
-        </Location>
-        <DirectionOfMovement>0</DirectionOfMovement>
-        <Speed>0</Speed>
-        <FormationPosition>
-            <OutOfFormation>false</OutOfFormation>
-            <FormationOrder>1</FormationOrder>
-            <SensorOrientation>0</SensorOrientation>
-        </FormationPosition>
-        <OwnFormation>
-            <FormationSpacing>1200</FormationSpacing>
-            <FormationOrientation>85</FormationOrientation>
-            <FormationChoice>GROUND</FormationChoice>
-            <FormationLocationType>LEAD_ELEMENT</FormationLocationType>
-            <FormationData>
-                <GroundFormationType>WEDGE</GroundFormationType>
-            </FormationData>
-        </OwnFormation>
-    </Disposition>
-    <Relations>
-        <ForceRelation>
-            <ForceRelationChoice>FORCE_SIDE</ForceRelationChoice>
-            <ForceRelationData>
-                <ForceSideHandle>fbde006d-ffff-aaaa-cccc-892e67650eb9</ForceSideHandle>
-            </ForceRelationData>
-        </ForceRelation>
-    </Relations>
-</Unit>
-`;
-
 describe("MSDL Unit", () => {
   it("should be defined", () => {
     expect(Unit).toBeDefined();
   });
 
   it("should be created from Element", () => {
-    let element = parseFromString(UNIT_TEMPLATE);
+    let element = parseFromString(UNIT_ATTACHED);
     let unit = new Unit(element);
     expect(unit).toBeInstanceOf(Unit);
   });
 
   it("should be able to read unit data", () => {
-    let element = parseFromString(UNIT_TEMPLATE);
+    let element = parseFromString(UNIT_ATTACHED);
     let unit = new Unit(element);
     expect(unit.objectHandle).toBe("f9e16593-2dcd-11e2-be2b-000c294c9df8");
     expect(unit.name).toBe("1/OPFOR-ARMOR");
@@ -173,7 +46,7 @@ describe("MSDL Unit", () => {
   });
 
   it("should be able to create a GeoJson representation", () => {
-    let element = parseFromString(UNIT_TEMPLATE);
+    let element = parseFromString(UNIT_ATTACHED);
     let unit = new Unit(element);
     let gjson = unit.toGeoJson();
     expect(gjson.id).toBe("f9e16593-2dcd-11e2-be2b-000c294c9df8");
@@ -212,9 +85,9 @@ describe("Unit relations", () => {
     expect(hq.subordinates[1]?.name).toBe("2nd");
   });
 
-  describe("when manipulating ForceRelation", () => {
+  describe("when parsing ForceRelation", () => {
     it("should be able read UNIT relation", () => {
-      let unit = new Unit(parseFromString(UNIT_TEMPLATE));
+      let unit = new Unit(parseFromString(UNIT_ATTACHED));
       expect(unit.superiorHandle).toBe("f9c2b9f6-2dcd-11e2-be2b-000c294c9df8");
       expect(unit.forceRelationChoice).toBe(ForceOwnerType.Unit);
       expect(unit.commandRelationshipType).toBe(
@@ -260,7 +133,7 @@ describe("Unit class", () => {
   });
 
   describe("when calling toGeoJson", () => {
-    const unit = new Unit(parseFromString(UNIT_TEMPLATE));
+    const unit = new Unit(parseFromString(UNIT_ATTACHED));
     it("should be defined", () => {
       expect(unit.toGeoJson).toBeDefined();
     });
@@ -282,12 +155,12 @@ describe("Unit class", () => {
 
   describe("when writing a unit name", () => {
     it("should set the name", () => {
-      const unit = new Unit(parseFromString(UNIT_TEMPLATE));
+      const unit = new Unit(parseFromString(UNIT_ATTACHED));
       unit.name = "New Name";
       expect(unit.name).toBe("New Name");
     });
     it("should set the name in the XML element", () => {
-      const unit = new Unit(parseFromString(UNIT_TEMPLATE));
+      const unit = new Unit(parseFromString(UNIT_ATTACHED));
       expect(getTagValue(unit.element, "Name")).toBe("1/OPFOR-ARMOR");
       unit.name = "New Name";
       expect(unit.element.querySelector("Name")?.textContent).toBe("New Name");

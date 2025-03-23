@@ -1,45 +1,13 @@
-import { describe, it, expect } from "vitest";
-import { parseFromString } from "./testdata.js";
+import { describe, expect, it } from "vitest";
+import {
+  FORCESIDE_TEMPLATE_IS_FORCE,
+  FORCESIDE_TEMPLATE_IS_SIDE,
+  FORCESIDE_TEMPLATE_IS_SIDE2,
+  parseFromString,
+} from "./testdata.js";
 import { ForceSide } from "../index.js";
 import { loadTestScenario } from "./testutils.js";
 import { HostilityStatusCode, StandardIdentity } from "../lib/enums.js";
-
-const FORCESIDE_TEMPLATE_IS_SIDE = `<ForceSide>
-    <ObjectHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
-    <ForceSideName>Friendly</ForceSideName>
-    <AllegianceHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</AllegianceHandle>
-    <Associations>
-        <Association>
-            <AffiliateHandle>e7ae4710-2dcd-11e2-be2b-000c294c9df8</AffiliateHandle>
-            <Relationship>HO</Relationship>
-        </Association>
-        <Association>
-            <AffiliateHandle>e7ae4710-2ccc-11e2-be2b-000c294c9df8</AffiliateHandle>
-            <Relationship>FR</Relationship>
-        </Association>
-    </Associations>
-</ForceSide>`;
-
-const FORCESIDE_TEMPLATE_IS_SIDE2 = `<ForceSide>
-    <ObjectHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
-    <ForceSideName>Friendly</ForceSideName>
-    <Associations>
-        <Association>
-            <AffiliateHandle>e7ae4710-2dcd-11e2-be2b-000c294c9df8</AffiliateHandle>
-            <Relationship>HO</Relationship>
-        </Association>
-        <Association>
-            <AffiliateHandle>e7ae4710-2ccc-11e2-be2b-000c294c9df8</AffiliateHandle>
-            <Relationship>FR</Relationship>
-        </Association>
-    </Associations>
-</ForceSide>`;
-
-const FORCESIDE_TEMPLATE_IS_FORCE = `<ForceSide>
-    <ObjectHandle>e7ae4710-2ccc-11e2-be2b-000c294c9df8</ObjectHandle>
-    <ForceSideName>Army</ForceSideName>
-    <AllegianceHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</AllegianceHandle>
-</ForceSide>`;
 
 describe("ForceSide class", () => {
   it("is defined", () => {
