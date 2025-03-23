@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  FORCESIDE_TEMPLATE_IS_SIDE,
   parseFromString,
   UNIT_ATTACHED,
   UNIT_MGRS,
@@ -14,6 +15,7 @@ import {
   StandardIdentity,
 } from "../lib/enums.js";
 import { getTagValue } from "../lib/domutils.js";
+import { ForceSide } from "../lib/forcesides.js";
 
 describe("MSDL Unit", () => {
   it("should be defined", () => {
@@ -99,6 +101,42 @@ describe("Unit relations", () => {
       expect(unit.superiorHandle).toBe("fbde006d-ffff-aaaa-cccc-892e67650eb9");
       expect(unit.forceRelationChoice).toBe(ForceOwnerType.ForceSide);
       expect(unit.commandRelationshipType).toBeUndefined();
+    });
+  });
+
+  describe("when modifying ForceRelation", () => {
+    it("should be able to set UNIT relation with setForceRelation", () => {
+      let rootUnit = new Unit(parseFromString(UNIT_ROOT_UNIT));
+      let unit = new Unit(parseFromString(UNIT_ATTACHED));
+      expect(unit.setForceRelation).toBeDefined();
+      unit.setForceRelation(rootUnit, EnumCommandRelationshipType.Tacon);
+      expect(unit.superiorHandle).toBe(rootUnit.objectHandle);
+      expect(unit.forceRelationChoice).toBe(ForceOwnerType.Unit);
+      expect(unit.commandRelationshipType).toBe(
+        EnumCommandRelationshipType.Tacon,
+      );
+      let serializedUnitString = unit.toString();
+      let unitCopy = new Unit(parseFromString(serializedUnitString));
+      expect(unitCopy.superiorHandle).toBe(rootUnit.objectHandle);
+      expect(unitCopy.forceRelationChoice).toBe(ForceOwnerType.Unit);
+      expect(unitCopy.commandRelationshipType).toBe(
+        EnumCommandRelationshipType.Tacon,
+      );
+    });
+
+    it("should be able to set FORCE_SIDE relation", () => {
+      let forceSide = new ForceSide(
+        parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
+      );
+      let unit = new Unit(parseFromString(UNIT_ATTACHED));
+      unit.setForceRelation(forceSide);
+      expect(unit.superiorHandle).toBe(forceSide.objectHandle);
+      expect(unit.forceRelationChoice).toBe(ForceOwnerType.ForceSide);
+      expect(unit.commandRelationshipType).toBeUndefined();
+      let unitCopy = new Unit(parseFromString(unit.toString()));
+      expect(unitCopy.superiorHandle).toBe(forceSide.objectHandle);
+      expect(unitCopy.forceRelationChoice).toBe(ForceOwnerType.ForceSide);
+      expect(unitCopy.commandRelationshipType).toBeUndefined();
     });
   });
 });

@@ -104,3 +104,9 @@ export function getTagElements(
   if (!element) return [];
   return Array.from(element.getElementsByTagNameNS(MSDL_NS, tagName));
 }
+
+export function createXMLElement(xml: string): Element {
+  let parser = new DOMParser();
+  let doc = parser.parseFromString(xml, "text/xml");
+  return doc.documentElement;
+}

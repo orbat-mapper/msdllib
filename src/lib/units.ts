@@ -1,4 +1,9 @@
-import { getTagElement, getTagValue, getValueOrUndefined } from "./domutils.js";
+import {
+  createXMLElement,
+  getTagElement,
+  getTagValue,
+  getValueOrUndefined,
+} from "./domutils.js";
 import type { Feature, Point } from "geojson";
 import {
   type EnumCombatEffectivenessType,
@@ -16,6 +21,7 @@ import {
   type UnitEquipmentInterface,
 } from "./common.js";
 import { setCharAt } from "./symbology.js";
+import { ForceSide } from "./forcesides.js";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 
@@ -91,6 +97,41 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     }
   }
 
+  setForceRelation(
+    superior: Unit,
+    commandRelationshipType?: EnumCommandRelationshipType,
+  ): void;
+  setForceRelation(superior: ForceSide): void;
+  setForceRelation(
+    superior: Unit | ForceSide,
+    commandRelationshipType?: EnumCommandRelationshipType,
+  ) {
+    let forceRelationElement = getTagElement(this.element, "ForceRelation");
+
+    if (superior instanceof Unit) {
+      let unitRelation = createUnitRelation(
+        superior.objectHandle,
+        commandRelationshipType ?? EnumCommandRelationshipType.None,
+      );
+      forceRelationElement
+        ? forceRelationElement.replaceWith(unitRelation)
+        : this.element.appendChild(unitRelation);
+
+      this.superiorHandle = superior.objectHandle;
+      this.forceRelationChoice = ForceOwnerType.Unit;
+      this.commandRelationshipType =
+        commandRelationshipType ?? EnumCommandRelationshipType.None;
+    } else if (superior instanceof ForceSide) {
+      this.superiorHandle = superior.objectHandle;
+      this.forceRelationChoice = ForceOwnerType.ForceSide;
+      this.commandRelationshipType = undefined;
+      let forceRelation = createForceRelation(superior.objectHandle);
+      forceRelationElement
+        ? forceRelationElement.replaceWith(forceRelation)
+        : this.element.appendChild(forceRelation);
+    }
+  }
+
   private initializeRelations() {
     let forceRelationChoice = getTagValue(this.element, "ForceRelationChoice");
 
@@ -153,4 +194,32 @@ export class UnitSymbolModifiers implements UnitSymbolModifiersType {
       getValueOrUndefined(element, "UniqueDesignation") ?? "";
     this.specialC2HQ = getTagValue(element, "SpecialC2HQ");
   }
+}
+
+function createUnitRelation(
+  commandingSuperiorHandle: string,
+  commandRelationshipType: EnumCommandRelationshipType,
+) {
+  return createXMLElement(
+    `<ForceRelation>
+    <ForceRelationChoice>UNIT</ForceRelationChoice>
+    <ForceRelationData>
+        <CommandRelation>
+            <CommandingSuperiorHandle>${commandingSuperiorHandle}</CommandingSuperiorHandle>
+            <CommandRelationshipType>${commandRelationshipType}</CommandRelationshipType>
+        </CommandRelation>
+    </ForceRelationData>
+</ForceRelation>`,
+  );
+}
+
+function createForceRelation(forceSideHandle: string) {
+  return createXMLElement(
+    `<ForceRelation>
+    <ForceRelationChoice>FORCE_SIDE</ForceRelationChoice>
+    <ForceRelationData>
+        <ForceSideHandle>${forceSideHandle}</ForceSideHandle>
+    </ForceRelationData>
+</ForceRelation>`,
+  );
 }
