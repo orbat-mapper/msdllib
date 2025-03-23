@@ -251,6 +251,31 @@ describe("EquipmentItem class", () => {
     });
   });
 
+  describe("when calling toString", () => {
+    const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+    it("should be defined", () => {
+      expect(equipment.toString).toBeDefined();
+    });
+    it("should return a string", () => {
+      let str = equipment.toString();
+      expect(str).toBeDefined();
+      expect(typeof str).toBe("string");
+    });
+    it("should return a valid XML string", () => {
+      let str = equipment.toString();
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(str, "text/xml");
+      expect(doc.documentElement.nodeName).toBe("EquipmentItem");
+    });
+    it("should match the original XML string if unmodified", () => {
+      let str = equipment.toString();
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(str, "text/xml");
+      expect(doc.documentElement).toEqual(equipment.element);
+      expect(str).toBe(EQUIPMENT_TEMPLATE);
+    });
+  });
+
   describe("when setting the name", () => {
     it("should set the name", () => {
       const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));

@@ -24,6 +24,7 @@ export type UnitEquipmentInterface = {
   sidc: string;
   setAffiliation(s: StandardIdentity): void;
   getAffiliation(): StandardIdentity;
+  toString(): string;
 };
 
 export class UnitEquipmentBase implements UnitEquipmentInterface {
@@ -83,6 +84,12 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
       this._msdlLocation = new MsdlLocation(dispositionElement);
       this.location = this._msdlLocation.location;
     }
+  }
+
+  toString() {
+    if (!this.element) return "";
+    const oSerializer = new XMLSerializer();
+    return oSerializer.serializeToString(this.element);
   }
 }
 

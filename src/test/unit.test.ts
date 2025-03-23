@@ -153,6 +153,30 @@ describe("Unit class", () => {
     });
   });
 
+  describe("when calling toString", () => {
+    const unit = new Unit(parseFromString(UNIT_ATTACHED));
+    it("should be defined", () => {
+      expect(unit.toString).toBeDefined();
+    });
+    it("should return a string", () => {
+      expect(unit.toString()).toBeDefined();
+      expect(typeof unit.toString()).toBe("string");
+    });
+    it("should return a valid XML string", () => {
+      let str = unit.toString();
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(str, "text/xml");
+      expect(doc.documentElement.nodeName).toBe("Unit");
+    });
+    it("should match the original XML string if unmodified", () => {
+      let str = unit.toString();
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(str, "text/xml");
+      expect(doc.documentElement).toEqual(unit.element);
+      expect(unit.toString()).toBe(UNIT_ATTACHED.trim());
+    });
+  });
+
   describe("when writing a unit name", () => {
     it("should set the name", () => {
       const unit = new Unit(parseFromString(UNIT_ATTACHED));
