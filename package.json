@@ -1,6 +1,6 @@
 {
   "name": "@orbat-mapper/msdllib",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "A library for manipulating Military Scenario Definition Language (MSDL) data",
   "keywords": [],
   "files": [
@@ -35,9 +35,9 @@
     "utm": "^1.1.1"
   },
   "devDependencies": {
-    "@types/geojson": "^7946.0.16",
     "@arethetypeswrong/cli": "^0.17.3",
     "@changesets/cli": "^2.28.0",
+    "@types/geojson": "^7946.0.16",
     "@types/node": "^22.13.4",
     "@types/utm": "^1.1.4",
     "jsdom": "^26.0.0",

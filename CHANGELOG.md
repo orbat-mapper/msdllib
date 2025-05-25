@@ -1,5 +1,20 @@
 # @orbat-mapper/msdllib
 
+## 0.10.0 - 2025-05-25
+
+### Added
+
+- Add `forceRelationChoice` attribute to `Unit` class
+- Add `commandRelationshipType` attribute to `Unit` class
+- Add `toString` method to `Unit` and `EquipmentItem` classes
+- Add `setForceRelation` method to `Unit` class
+- Make unit and equipment name writable
+- Make ScenarioId name, description and securityClassification writable
+
+### Fixed
+
+- 54e5f13: Refactor constructors to be compatible with erasableSyntaxOnly TS setting
+
 ## 0.9.0 - 2025-03-11
 
 ### Added
