@@ -27,7 +27,7 @@ export interface MilitaryScenarioType {
 }
 
 export class MilitaryScenario implements MilitaryScenarioType {
-  scenarioId: ScenarioId = new ScenarioId();
+  scenarioId!: ScenarioId;
   forceSides: ForceSide[] = [];
   equipment: EquipmentItem[] = [];
   rootUnits: Unit[] = [];

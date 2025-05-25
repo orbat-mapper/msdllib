@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { MilitaryScenario, ScenarioId } from "../index.js";
 import { parseFromString } from "./testdata.js";
+import { getTagValue } from "../lib/domutils.js";
 
 const SCENARIO_ID_TEMPLATE = `<ScenarioID xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
                   xmlns:modelID="http://www.sisostds.org/schemas/modelID">
@@ -34,5 +35,36 @@ describe("ScenarioId", () => {
     expect(sid.name).toBe("Empty scenario");
     expect(sid.description).toBe("Description");
     expect(sid.securityClassification).toBe("Unclassified");
+  });
+
+  describe("when writing data", () => {
+    it("should set the name in the XML element", () => {
+      const scenarioId = new ScenarioId(parseFromString(SCENARIO_ID_TEMPLATE));
+      expect(getTagValue(scenarioId.element, "name")).toBe("Empty scenario");
+      scenarioId.name = "New Name";
+      expect(getTagValue(scenarioId.element, "name")).toBe("New Name");
+    });
+
+    it("should set the description in the XML element", () => {
+      const scenarioId = new ScenarioId(parseFromString(SCENARIO_ID_TEMPLATE));
+      expect(getTagValue(scenarioId.element, "description")).toBe(
+        "Description",
+      );
+      scenarioId.description = "New Description";
+      expect(getTagValue(scenarioId.element, "description")).toBe(
+        "New Description",
+      );
+    });
+
+    it("should set the security classification in the XML element", () => {
+      const scenarioId = new ScenarioId(parseFromString(SCENARIO_ID_TEMPLATE));
+      expect(getTagValue(scenarioId.element, "securityClassification")).toBe(
+        "Unclassified",
+      );
+      scenarioId.securityClassification = "UNKNOWN";
+      expect(getTagValue(scenarioId.element, "securityClassification")).toBe(
+        "UNKNOWN",
+      );
+    });
   });
 });
