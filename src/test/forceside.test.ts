@@ -4,10 +4,12 @@ import {
   FORCESIDE_TEMPLATE_IS_SIDE,
   FORCESIDE_TEMPLATE_IS_SIDE2,
   parseFromString,
+  UNIT_ATTACHED,
 } from "./testdata.js";
-import { ForceSide } from "../index.js";
+import { ForceSide, Unit } from "../index.js";
 import { loadTestScenario } from "./testutils.js";
 import { HostilityStatusCode, StandardIdentity } from "../lib/enums.js";
+import { getTagValue } from "../lib/domutils.js";
 
 describe("ForceSide class", () => {
   it("is defined", () => {
@@ -201,6 +203,18 @@ describe("ForceSide methods", () => {
           includeIdInProperties: true,
         }).features[0]!.properties.id,
       ).toBeDefined();
+    });
+  });
+
+  describe("when writing a forceside name", () => {
+    it("should set the name", () => {
+      const forceSide = new ForceSide(
+        parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
+      );
+      expect(forceSide.name).toBe("Friendly");
+      forceSide.name = "New Name";
+      expect(forceSide.name).toBe("New Name");
+      expect(getTagValue(forceSide.element, "ForceSideName")).toBe("New Name");
     });
   });
 });

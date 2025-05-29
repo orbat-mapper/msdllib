@@ -1,7 +1,11 @@
 import type { Feature, FeatureCollection, Point } from "geojson";
 import { HostilityStatusCode, StandardIdentity } from "./enums.js";
 import { Unit } from "./units.js";
-import { getTagElements, getTagValue } from "./domutils.js";
+import {
+  getTagElements,
+  getTagValue,
+  setOrCreateTagValue,
+} from "./domutils.js";
 import type { IdGeoJsonOptions, TacticalJson } from "./common.js";
 import type { EquipmentItem } from "./equipment.js";
 
@@ -26,7 +30,7 @@ type SideGeoJsonOptions = {
 
 export class ForceSide implements ForceSideType {
   objectHandle: string;
-  name: string;
+  #name: string;
   allegianceHandle: string;
   rootUnits: Unit[] = [];
   associations: AssociationType[] = [];
@@ -36,7 +40,7 @@ export class ForceSide implements ForceSideType {
 
   constructor(element: Element) {
     this.element = element;
-    this.name = getTagValue(element, "ForceSideName");
+    this.#name = getTagValue(element, "ForceSideName");
     this.objectHandle = getTagValue(element, "ObjectHandle");
     this.allegianceHandle = getTagValue(element, "AllegianceHandle");
     this.initAssociations();
@@ -46,6 +50,15 @@ export class ForceSide implements ForceSideType {
     return (
       !this.allegianceHandle || this.objectHandle === this.allegianceHandle
     );
+  }
+
+  get name(): string {
+    return this.#name ?? getTagValue(this.element, "ForceSideName");
+  }
+
+  set name(name: string) {
+    this.#name = name;
+    setOrCreateTagValue(this.element, "ForceSideName", name);
   }
 
   setAffiliation(s: StandardIdentity) {
