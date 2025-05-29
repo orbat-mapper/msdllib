@@ -269,5 +269,7 @@ export const FORCESIDE_TEMPLATE_IS_SIDE2 = `<ForceSide>
 export const FORCESIDE_TEMPLATE_IS_FORCE = `<ForceSide>
     <ObjectHandle>e7ae4710-2ccc-11e2-be2b-000c294c9df8</ObjectHandle>
     <ForceSideName>Army</ForceSideName>
+    <MilitaryService>ARMY</MilitaryService>
+    <CountryCode>USA</CountryCode>
     <AllegianceHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</AllegianceHandle>
 </ForceSide>`;

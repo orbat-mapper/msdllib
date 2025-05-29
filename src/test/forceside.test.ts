@@ -70,6 +70,7 @@ describe("ForceSide class", () => {
       "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8",
     );
     expect(forceSide.isSide).toBe(false);
+    expect(forceSide.militaryService).toBe("ARMY");
   });
 
   it("has GeoJSON interface", () => {
@@ -206,8 +207,8 @@ describe("ForceSide methods", () => {
     });
   });
 
-  describe("when writing a forceside name", () => {
-    it("should set the name", () => {
+  describe("when writing forceside data", () => {
+    it("should modify the name", () => {
       const forceSide = new ForceSide(
         parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
       );
@@ -215,6 +216,26 @@ describe("ForceSide methods", () => {
       forceSide.name = "New Name";
       expect(forceSide.name).toBe("New Name");
       expect(getTagValue(forceSide.element, "ForceSideName")).toBe("New Name");
+    });
+
+    it("should modify militaryService", () => {
+      const forceSide = new ForceSide(
+        parseFromString(FORCESIDE_TEMPLATE_IS_FORCE),
+      );
+      expect(forceSide.militaryService).toBe("ARMY");
+      forceSide.militaryService = "NAVY";
+      expect(forceSide.militaryService).toBe("NAVY");
+      expect(getTagValue(forceSide.element, "MilitaryService")).toBe("NAVY");
+    });
+
+    it("should modify country code", () => {
+      const forceSide = new ForceSide(
+        parseFromString(FORCESIDE_TEMPLATE_IS_FORCE),
+      );
+      expect(forceSide.countryCode).toBe("USA");
+      forceSide.countryCode = "CAN";
+      expect(forceSide.countryCode).toBe("CAN");
+      expect(getTagValue(forceSide.element, "CountryCode")).toBe("CAN");
     });
   });
 });

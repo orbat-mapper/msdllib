@@ -1,9 +1,14 @@
 import type { Feature, FeatureCollection, Point } from "geojson";
-import { HostilityStatusCode, StandardIdentity } from "./enums.js";
+import {
+  HostilityStatusCode,
+  type MilitaryService,
+  StandardIdentity,
+} from "./enums.js";
 import { Unit } from "./units.js";
 import {
   getTagElements,
   getTagValue,
+  getValueOrUndefined,
   setOrCreateTagValue,
 } from "./domutils.js";
 import type { IdGeoJsonOptions, TacticalJson } from "./common.js";
@@ -31,6 +36,8 @@ type SideGeoJsonOptions = {
 export class ForceSide implements ForceSideType {
   objectHandle: string;
   #name: string;
+  #militaryService?: MilitaryService;
+  #countryCode?: string;
   allegianceHandle: string;
   rootUnits: Unit[] = [];
   associations: AssociationType[] = [];
@@ -41,6 +48,11 @@ export class ForceSide implements ForceSideType {
   constructor(element: Element) {
     this.element = element;
     this.#name = getTagValue(element, "ForceSideName");
+    this.#militaryService = getValueOrUndefined(
+      element,
+      "MilitaryService",
+    ) as MilitaryService;
+    this.#countryCode = getTagValue(element, "CountryCode");
     this.objectHandle = getTagValue(element, "ObjectHandle");
     this.allegianceHandle = getTagValue(element, "AllegianceHandle");
     this.initAssociations();
@@ -59,6 +71,30 @@ export class ForceSide implements ForceSideType {
   set name(name: string) {
     this.#name = name;
     setOrCreateTagValue(this.element, "ForceSideName", name);
+  }
+
+  get militaryService(): MilitaryService | undefined {
+    return (
+      this.#militaryService ??
+      (getValueOrUndefined(this.element, "MilitaryService") as MilitaryService)
+    );
+  }
+
+  set militaryService(militaryService: MilitaryService | null) {
+    this.#militaryService =
+      militaryService !== null ? militaryService : undefined;
+    setOrCreateTagValue(this.element, "MilitaryService", militaryService);
+  }
+
+  get countryCode(): string | undefined {
+    return (
+      this.#countryCode ?? getValueOrUndefined(this.element, "CountryCode")
+    );
+  }
+
+  set countryCode(countryCode: string | null) {
+    this.#countryCode = countryCode ?? undefined;
+    setOrCreateTagValue(this.element, "CountryCode", countryCode);
   }
 
   setAffiliation(s: StandardIdentity) {

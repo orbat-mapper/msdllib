@@ -148,3 +148,30 @@ export const EnumCombatEffectivenessType = {
 
 export type EnumCombatEffectivenessType =
   (typeof EnumCombatEffectivenessType)[keyof typeof EnumCombatEffectivenessType];
+
+/**
+ * The specific value that represents a military, paramilitary, irregular force, force or group,
+ * capable of functioning as an offensive or defensive combat or support organisation.
+ */
+export const MilitaryService = {
+  AirForce: "AIRFRC",
+  Army: "ARMY",
+  BorderGuard: "BRDRGD",
+  CoastGuard: "COASTG",
+  Combined: "COMBND",
+  CivilService: "CVLSVC",
+  Guerrilla: "GUERLL",
+  Joint: "JOINT",
+  LocalDefenceForce: "LCLDFF",
+  LocalMilitia: "LCLMLT",
+  Marines: "MARINE",
+  Navy: "NAVY",
+  NotKnown: "NKN",
+  NotOtherwiseSpecified: "NOS",
+  Paramilitary: "PAR",
+  SpecialForce: "SPFRC",
+  TerritorialForce: "TERFRC",
+} as const;
+
+export type MilitaryService =
+  (typeof MilitaryService)[keyof typeof MilitaryService];
