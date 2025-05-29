@@ -1,5 +1,12 @@
 # @orbat-mapper/msdllib
 
+## 0.11.0 - 2025-05-29
+
+### Added
+
+- Add writable `militaryService` and `countryCode` properties to ForceSide class
+- Make ForceSide `name` and writable
+
 ## 0.10.0 - 2025-05-25
 
 ### Added
