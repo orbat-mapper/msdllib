@@ -7,3 +7,4 @@ export { type AssociationType } from "./lib/forcesides.js";
 export { type ForceSideType } from "./lib/forcesides.js";
 export * from "./lib/enums.js";
 export * from "./lib/types.js";
+export * from "./lib/enumValues.js";
