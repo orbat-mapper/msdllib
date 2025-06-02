@@ -6,7 +6,7 @@ import { getTagValue } from "../lib/domutils.js";
 const SCENARIO_ID_TEMPLATE = `<ScenarioID xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
                   xmlns:modelID="http://www.sisostds.org/schemas/modelID">
         <modelID:name>Empty scenario</modelID:name>
-        <modelID:type></modelID:type>
+        <modelID:type>BOM</modelID:type>
         <modelID:version>0</modelID:version>
         <modelID:modificationDate>2012-11-13-05:00</modelID:modificationDate>
         <modelID:securityClassification>Unclassified</modelID:securityClassification>
@@ -65,6 +65,31 @@ describe("ScenarioId", () => {
       expect(getTagValue(scenarioId.element, "securityClassification")).toBe(
         "UNKNOWN",
       );
+    });
+
+    it("should set the modification date in the XML element", () => {
+      const scenarioId = new ScenarioId(parseFromString(SCENARIO_ID_TEMPLATE));
+      expect(getTagValue(scenarioId.element, "modificationDate")).toBe(
+        "2012-11-13-05:00",
+      );
+      scenarioId.modificationDate = "2023-10-01T12:00:00Z";
+      expect(getTagValue(scenarioId.element, "modificationDate")).toBe(
+        "2023-10-01T12:00:00Z",
+      );
+    });
+
+    it("should set the version in the XML element", () => {
+      const scenarioId = new ScenarioId(parseFromString(SCENARIO_ID_TEMPLATE));
+      expect(getTagValue(scenarioId.element, "version")).toBe("0");
+      scenarioId.version = "1.0";
+      expect(getTagValue(scenarioId.element, "version")).toBe("1.0");
+    });
+
+    it("should set the type in the XML element", () => {
+      const scenarioId = new ScenarioId(parseFromString(SCENARIO_ID_TEMPLATE));
+      expect(getTagValue(scenarioId.element, "type")).toBe("BOM");
+      scenarioId.type = "FOM";
+      expect(getTagValue(scenarioId.element, "type")).toBe("FOM");
     });
   });
 });
