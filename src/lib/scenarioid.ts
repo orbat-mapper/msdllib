@@ -4,12 +4,18 @@ export interface ScenarioIdType {
   name: string;
   description: string;
   securityClassification: string;
+  modificationDate: string;
+  version: string;
+  type: string;
 }
 
 export class ScenarioId implements ScenarioIdType {
   #name = "";
   #description = "";
   #securityClassification = "";
+  #modificationDate: string = "";
+  #version: string = "";
+  #type: string = "";
   element: Element;
 
   constructor(element: Element) {
@@ -51,5 +57,32 @@ export class ScenarioId implements ScenarioIdType {
       "securityClassification",
       securityClassification,
     );
+  }
+
+  get modificationDate(): string {
+    return (
+      this.#modificationDate ?? getTagValue(this.element, "modificationDate")
+    );
+  }
+  set modificationDate(modificationDate: string) {
+    this.#modificationDate = modificationDate;
+    setOrCreateTagValue(this.element, "modificationDate", modificationDate);
+  }
+
+  get version(): string {
+    return this.#version ?? getTagValue(this.element, "version");
+  }
+  set version(version: string) {
+    this.#version = version;
+    setOrCreateTagValue(this.element, "version", version);
+  }
+
+  get type(): string {
+    return this.#type ?? getTagValue(this.element, "type");
+  }
+
+  set type(type: string) {
+    this.#type = type;
+    setOrCreateTagValue(this.element, "type", type);
   }
 }
