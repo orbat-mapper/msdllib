@@ -22,6 +22,7 @@ import {
 } from "./common.js";
 import { setCharAt } from "./symbology.js";
 import { ForceSide } from "./forcesides.js";
+import { UnitModelType } from "./modelType.js";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 
@@ -32,6 +33,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   superiorHandle = "";
   forceRelationChoice: ForceOwnerType | undefined;
   commandRelationshipType: EnumCommandRelationshipType | undefined;
+  model?: UnitModelType;
 
   constructor(element: Element) {
     super(element);
@@ -43,6 +45,11 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
       this.symbolModifiers = new UnitSymbolModifiers(
         unitSymbolModifiersElement,
       );
+    }
+
+    const modelElement = getTagElement(this.element, "Model");
+    if (modelElement) {
+      this.model = new UnitModelType(modelElement);
     }
     this.initializeRelations();
   }

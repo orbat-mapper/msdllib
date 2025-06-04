@@ -235,6 +235,78 @@ export const UNIT_ROOT_UNIT = `<Unit>
     </Relations>
 </Unit>
 `;
+
+export const UNIT_NETN = `<Unit>
+    <ObjectHandle>5a9871f7-7151-4f2f-b13a-7e1eab1e512a</ObjectHandle>
+    <SymbolIdentifier>O*GPB-------***</SymbolIdentifier>
+    <SymbolId-2525D>000000000000000000000000000000</SymbolId-2525D>
+    <Name>WHOM</Name>
+    <Type>
+        <unit_type_cat_code>NKN</unit_type_cat_code>
+        <arm_cat_code>NKN</arm_cat_code>
+        <size_code>NKN</size_code>
+        <service_code>NKN</service_code>
+        <cmd_function_ind_code>NO</cmd_function_ind_code>
+    </Type>
+    <UnitSymbolModifiers>
+        <Echelon>NONE</Echelon>
+        <UniqueDesignation>WHOM</UniqueDesignation>
+        <HigherFormation/>
+        <IFF/>
+    </UnitSymbolModifiers>
+    <Disposition>
+        <Location>
+            <CoordinateChoice>GDC</CoordinateChoice>
+            <CoordinateData>
+                <GDC>
+                    <Latitude>59.60696300000001</Latitude>
+                    <Longitude>16.567939</Longitude>
+                    <ElevationAGL>0.0</ElevationAGL>
+                </GDC>
+            </CoordinateData>
+        </Location>
+        <Speed>0.0</Speed>
+        <DirectionOfMovement>219.54051</DirectionOfMovement>
+    </Disposition>
+    <Relations>
+        <OrganicRelation>
+            <OrganicRelationChoice>FORCE_SIDE</OrganicRelationChoice>
+            <OrganicRelationData>
+                <OrganicForceSideHandle>225e5569-b609-4ace-9ad4-318175f02f91</OrganicForceSideHandle>
+            </OrganicRelationData>
+        </OrganicRelation>
+        <ForceRelation>
+            <ForceRelationChoice>UNIT</ForceRelationChoice>
+            <ForceRelationData>
+                <CommandRelation>
+                    <CommandingSuperiorHandle>a1c700a1-41ea-43de-81fe-597578ab01f2</CommandingSuperiorHandle>
+                    <CommandRelationshipType>ATTACHED</CommandRelationshipType>
+                </CommandRelation>
+            </ForceRelationData>
+        </ForceRelation>
+    </Relations>
+    <Model>
+        <EntityType>0.1.0.0.5.2.0</EntityType>
+    </Model>
+    <Holdings>
+        <Holding>
+            <NSN_Code>192-4848-484848-48484848</NSN_Code>
+            <NSN_Name>Personnel</NSN_Name>
+            <IsEquipment>false</IsEquipment>
+            <OperationalCount>0.0</OperationalCount>
+            <OnHandQuantity>5.0</OnHandQuantity>
+            <RequiredOnHandQuantity>0.0</RequiredOnHandQuantity>
+        </Holding>
+        <Holding>
+            <NSN_Code>192-4848-484848-48484848</NSN_Code>
+            <NSN_Name>Jeep</NSN_Name>
+            <IsEquipment>false</IsEquipment>
+            <OperationalCount>0.0</OperationalCount>
+            <OnHandQuantity>2.0</OnHandQuantity>
+            <RequiredOnHandQuantity>0.0</RequiredOnHandQuantity>
+        </Holding>
+    </Holdings>
+</Unit>`;
 export const FORCESIDE_TEMPLATE_IS_SIDE = `<ForceSide>
     <ObjectHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
     <ForceSideName>Friendly</ForceSideName>
@@ -273,3 +345,12 @@ export const FORCESIDE_TEMPLATE_IS_FORCE = `<ForceSide>
     <CountryCode>USA</CountryCode>
     <AllegianceHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</AllegianceHandle>
 </ForceSide>`;
+
+export const MODEL_TYPE_TEMPLATE = `<Model>
+    <Resolution>HIGH</Resolution>
+</Model>`;
+
+export const MODEL_TYPE_TEMPLATE_NETN = `<Model>
+    <Resolution>HIGH</Resolution>
+    <EntityType>1.1.0.3.17.4.0</EntityType>
+</Model>`;
