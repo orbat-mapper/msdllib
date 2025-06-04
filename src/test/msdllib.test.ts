@@ -230,3 +230,10 @@ describe("MilitaryScenario serialization", () => {
     expect(str.trim()).toBe(originalScenario.trim());
   });
 });
+
+describe("MilitaryScenario with NETN", () => {
+  it("should not detect NETN for plain MSDL scenarios", () => {
+    let scenario = loadTestScenario();
+    expect(scenario.isNETN).toBe(false);
+  });
+});
