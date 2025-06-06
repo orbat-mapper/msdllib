@@ -22,6 +22,11 @@ import {
 } from "./common.js";
 import { setCharAt } from "./symbology.js";
 import { ForceSide } from "./forcesides.js";
+import {
+  type UnitEquipmentModelBaseType,
+  UnitModel,
+  type UnitModelType,
+} from "./modelType.js";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 
@@ -32,6 +37,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   superiorHandle = "";
   forceRelationChoice: ForceOwnerType | undefined;
   commandRelationshipType: EnumCommandRelationshipType | undefined;
+  #model?: UnitModel;
 
   constructor(element: Element) {
     super(element);
@@ -44,11 +50,40 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
         unitSymbolModifiersElement,
       );
     }
+
+    const modelElement = getTagElement(this.element, "Model");
+    if (modelElement) {
+      this.#model = new UnitModel(modelElement);
+    }
     this.initializeRelations();
   }
 
   get isRoot(): boolean {
     return this.forceRelationChoice === ForceOwnerType.ForceSide;
+  }
+
+  get model(): UnitModel | undefined {
+    return this.#model;
+  }
+
+  set model(model: UnitModel | UnitModelType | undefined | null) {
+    if (!model) {
+      this.#model = undefined;
+      const modelElement = getTagElement(this.element, "Model");
+      if (modelElement) {
+        this.element.removeChild(modelElement);
+      }
+      return;
+    }
+
+    let test = model instanceof UnitModel ? model : UnitModel.fromModel(model);
+    if (this.#model) {
+      this.#model.element.replaceWith(test.element);
+    } else {
+      this.element.appendChild(test.element);
+    }
+
+    this.#model = test;
   }
 
   get label(): string {

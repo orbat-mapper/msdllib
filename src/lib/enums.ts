@@ -175,3 +175,30 @@ export const MilitaryService = {
 
 export type MilitaryService =
   (typeof MilitaryService)[keyof typeof MilitaryService];
+
+/**
+ * Enumeration indicating the level of fidelity appropriate for instancing
+ * the unit or equipment in the simulation
+ */
+export const ModelResolutionType = {
+  /** No resolution/representation of the unit or equipment is necessary to achieve scenario objectives. */
+  None: "NONE",
+
+  /** Minimal resolution representation (graphical display only, no behaviors) of the unit or equipment is necessary to achieve scenario objectives. */
+  Minimal: "MINIMAL",
+
+  /** Standard (low) resolution representation of the unit or equipment necessary to achieve scenario objectives. */
+  Standard: "STANDARD",
+
+  /** Enhanced (medium) resolution representation of the unit or equipment necessary to achieve scenario objectives. */
+  Enhanced: "ENHANCED",
+
+  /** High resolution representation of the unit or equipment necessary to achieve scenario objectives. */
+  High: "HIGH",
+
+  /** No resolution has been specified for the unit or equipment. */
+  NotSpecified: "NOT_SPECIFIED",
+} as const;
+
+export type ModelResolutionType =
+  (typeof ModelResolutionType)[keyof typeof ModelResolutionType];

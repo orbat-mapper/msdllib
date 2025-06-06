@@ -17,6 +17,7 @@ export interface MilitaryScenarioType {
   equipmentMap: Record<string, EquipmentItem>;
   unitCount: number;
   equipmentCount: number;
+  isNETN: Readonly<boolean>;
 
   getUnitById(objectHandle: string): Unit | undefined;
   getForceSideById(objectHandle: string): ForceSide | undefined;
@@ -36,8 +37,9 @@ export class MilitaryScenario implements MilitaryScenarioType {
   forceSideMap: Record<string, ForceSide> = {};
   equipmentMap: Record<string, EquipmentItem> = {};
   private _primarySide: ForceSide | null | undefined = null;
+  private _isNETN = false;
 
-  constructor(element?: Element) {
+  constructor(element?: Element, options?: { isNETN?: boolean }) {
     this.element = element;
     if (element) {
       this.initializeMetaInfo();
@@ -46,7 +48,16 @@ export class MilitaryScenario implements MilitaryScenarioType {
       this.initializeEquipment();
       this.updateSidesRootUnits();
       this.primarySide = this.forceSides[0]!;
+      if (options?.isNETN !== undefined) {
+        this._isNETN = options.isNETN;
+      } else {
+        this.detectNETN();
+      }
     }
+  }
+
+  get isNETN(): boolean {
+    return this._isNETN;
   }
 
   get unitCount() {
@@ -220,6 +231,14 @@ export class MilitaryScenario implements MilitaryScenarioType {
         }
       }
     }
+  }
+
+  private detectNETN() {
+    const netnElement =
+      getTagElement(this.element, "EntityType") ??
+      getTagElement(this.element, "Holdings") ??
+      getTagElement(this.element, "Deployment");
+    this._isNETN = !!netnElement;
   }
 
   toString() {

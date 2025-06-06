@@ -12,12 +12,14 @@ import {
   UnitEquipmentBase,
 } from "./common.js";
 import { ForceOwnerType } from "./enums.js";
+import { EquipmentModel, type EquipmentModelType } from "./modelType.js";
 
 export type EquipmentItemGeoJsonOptions = IdGeoJsonOptions;
 
 export class EquipmentItem extends UnitEquipmentBase {
   symbolModifiers?: EquipmentSymbolModifiers;
   relations: EquipmentRelationsType;
+  #model?: EquipmentModel;
 
   constructor(element: Element) {
     super(element);
@@ -29,6 +31,11 @@ export class EquipmentItem extends UnitEquipmentBase {
       this.symbolModifiers = new EquipmentSymbolModifiers(
         equipmentSymbolModifiersElement,
       );
+    }
+
+    const modelElement = getTagElement(this.element, "Model");
+    if (modelElement) {
+      this.#model = new EquipmentModel(modelElement);
     }
     this.relations = this.initializeRelations();
   }
@@ -50,6 +57,31 @@ export class EquipmentItem extends UnitEquipmentBase {
       ownerChoice: ownerType as ForceOwnerType,
       ownerHandle,
     };
+  }
+
+  get model(): EquipmentModel | undefined {
+    return this.#model;
+  }
+
+  set model(model: EquipmentModel | EquipmentModelType | undefined | null) {
+    if (!model) {
+      this.#model = undefined;
+      const modelElement = getTagElement(this.element, "Model");
+      if (modelElement) {
+        this.element.removeChild(modelElement);
+      }
+      return;
+    }
+
+    let test =
+      model instanceof EquipmentModel ? model : EquipmentModel.fromModel(model);
+    if (this.#model) {
+      this.#model.element.replaceWith(test.element);
+    } else {
+      this.element.appendChild(test.element);
+    }
+
+    this.#model = test;
   }
 
   get label(): string {
