@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.12.1 - 2025-06-06
+
+### Fixed
+
+- Fix ScenarioId modificationDate, version and type initialization
+
 ## 0.12.0 - 2025-06-06
 
 ### Added
@@ -44,13 +50,13 @@
 
 ## 0.8.2
 
-### Fixes
+### Fixed
 
 - Add missing toGeoJson options for root units and equipment
 
 ## 0.8.1 - 2025-03-02
 
-### Fixes
+### Fixed
 
 - Fix missing `includeId` options in `toGeoJson` for equipment
 
