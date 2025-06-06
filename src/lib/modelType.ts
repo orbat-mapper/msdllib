@@ -1,45 +1,95 @@
 import type { ModelResolutionType } from "./enums.js";
 import {
   createXMLElement,
+  getBooleanValue,
   getTagValue,
   getValueOrUndefined,
+  setOrCreateBooleanValue,
+  setOrCreateTagValue,
 } from "./domutils.js";
 
-export type UnitEquipmentModelType = {
+export type UnitEquipmentModelBaseType = {
   resolution?: ModelResolutionType;
   entityType?: string;
 };
 
-export class UnitEquipmentModelTypeBase implements UnitEquipmentModelType {
-  resolution?: ModelResolutionType;
-  entityType?: string;
+export interface UnitModelType extends UnitEquipmentModelBaseType {
+  aggregateBased?: boolean;
+}
+
+export interface EquipmentModelType extends UnitEquipmentModelBaseType {}
+
+export class UnitEquipmentModelBase implements UnitEquipmentModelBaseType {
+  #resolution?: ModelResolutionType;
+  #entityType?: string;
   element: Element;
 
   constructor(element: Element) {
     this.element = element;
-    this.resolution = getValueOrUndefined(
+    this.#resolution = getValueOrUndefined(
       element,
       "Resolution",
     ) as ModelResolutionType;
-    this.entityType = getValueOrUndefined(element, "EntityType") || undefined;
+    this.#entityType = getValueOrUndefined(element, "EntityType") || undefined;
+  }
+
+  get resolution(): ModelResolutionType | undefined {
+    return (
+      this.#resolution ??
+      (getValueOrUndefined(this.element, "Resolution") as ModelResolutionType)
+    );
+  }
+
+  set resolution(resolution: ModelResolutionType | undefined) {
+    this.#resolution = resolution;
+    setOrCreateTagValue(this.element, "Resolution", resolution);
+  }
+
+  get entityType(): string | undefined {
+    return this.#entityType ?? getValueOrUndefined(this.element, "EntityType");
+  }
+
+  set entityType(entityType: string | undefined) {
+    this.#entityType = entityType;
+    setOrCreateTagValue(this.element, "EntityType", entityType);
   }
 }
 
-export class UnitModelType extends UnitEquipmentModelTypeBase {
+export class UnitModel extends UnitEquipmentModelBase {
+  #aggregateBased?: boolean;
   constructor(element: Element) {
     super(element);
+    this.#aggregateBased = getBooleanValue(element, "AggregateBased");
+  }
+  get aggregateBased(): boolean | undefined {
+    return (
+      this.#aggregateBased ?? getBooleanValue(this.element, "AggregateBased")
+    );
   }
 
-  static fromEquipmentModel(model: UnitEquipmentModelType): UnitModelType {
-    const modelType = new UnitModelType(createXMLElement(`<Model></Model>`));
+  set aggregateBased(aggregateBased: boolean | undefined) {
+    this.#aggregateBased = aggregateBased;
+    setOrCreateBooleanValue(this.element, "AggregateBased", aggregateBased);
+  }
+
+  static fromModel(model: UnitModelType): UnitModel {
+    const modelType = new UnitModel(createXMLElement(`<Model></Model>`));
     modelType.resolution = model.resolution;
     modelType.entityType = model.entityType;
+    modelType.aggregateBased = model.aggregateBased;
     return modelType;
   }
 }
 
-export class EquipmentModelType extends UnitEquipmentModelTypeBase {
+export class EquipmentModel extends UnitEquipmentModelBase {
   constructor(element: Element) {
     super(element);
+  }
+
+  static fromModel(model: UnitEquipmentModelBaseType): EquipmentModel {
+    const modelType = new EquipmentModel(createXMLElement(`<Model></Model>`));
+    modelType.resolution = model.resolution;
+    modelType.entityType = model.entityType;
+    return modelType;
   }
 }

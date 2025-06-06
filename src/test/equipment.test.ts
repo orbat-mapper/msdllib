@@ -1,49 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { parseFromString } from "./testdata.js";
+import { describe, expect, it } from "vitest";
+import { EQUIPMENT_TEMPLATE, parseFromString } from "./testdata.js";
 
 import { EquipmentItem, EquipmentSymbolModifiers } from "../lib/equipment.js";
 import { getTagValue } from "../lib/domutils.js";
-
-const EQUIPMENT_TEMPLATE = `<EquipmentItem>
-    <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
-    <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
-    <Name>111</Name>
-    <EquipmentSymbolModifiers>
-        <Quantity>10</Quantity>
-        <CombatEffectiveness>GREEN</CombatEffectiveness>
-        <UniqueDesignation>111</UniqueDesignation>
-        <EquipmentType>T-80B</EquipmentType>
-    </EquipmentSymbolModifiers>
-    <Disposition>
-        <Location>
-            <CoordinateChoice>GDC</CoordinateChoice>
-            <CoordinateData>
-                <GDC>
-                    <Latitude>58.538208</Latitude>
-                    <Longitude>15.040084</Longitude>
-                    <ElevationAGL>137.71353</ElevationAGL>
-                </GDC>
-            </CoordinateData>
-        </Location>
-        <DirectionOfMovement>176.17091</DirectionOfMovement>
-        <Speed>0.0</Speed>
-        <FormationPosition>
-            <FormationOrder>1</FormationOrder>
-        </FormationPosition>
-    </Disposition>
-    <Relations>
-        <OrganicSuperiorHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</OrganicSuperiorHandle>
-        <HoldingOrganization>
-            <OwnerChoice>UNIT</OwnerChoice>
-            <OwnerData>
-                <UnitOwnerHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</UnitOwnerHandle>
-            </OwnerData>
-        </HoldingOrganization>
-    </Relations>
-    <Model>
-        <Resolution>HIGH</Resolution>
-    </Model>
-</EquipmentItem>`;
 
 const EQUIPMENT_NO_NAME_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>

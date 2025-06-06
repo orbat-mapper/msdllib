@@ -307,6 +307,35 @@ export const UNIT_NETN = `<Unit>
         </Holding>
     </Holdings>
 </Unit>`;
+
+export const EQUIPMENT_NETN = `<EquipmentItem>
+  <ObjectHandle>b2222222-ffff-4444-aaaa-ccccccccccc8</ObjectHandle>
+  <Name>1.Jeep</Name>
+  <Model>
+    <EntityType>1.1.225.6.8.0.0</EntityType>
+  </Model>
+  <Relations>
+    <HoldingOrganization>
+      <OwnerChoice>UNIT</OwnerChoice>
+      <OwnerData>
+        <UnitOwnerHandle>2191d4ae-d808-431e-9a5b-20fd397bdd13</UnitOwnerHandle>
+      </OwnerData>
+    </HoldingOrganization>
+  </Relations>
+  <Disposition>
+    <Location>
+      <CoordinateChoice>GDC</CoordinateChoice>
+      <CoordinateData>
+        <GDC>
+          <Latitude>58.395530700683594</Latitude>
+          <Longitude>15.643766403198242</Longitude>
+          <ElevationAGL>0.0</ElevationAGL>
+        </GDC>
+      </CoordinateData>
+    </Location>
+  </Disposition>
+</EquipmentItem>
+`;
 export const FORCESIDE_TEMPLATE_IS_SIDE = `<ForceSide>
     <ObjectHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
     <ForceSideName>Friendly</ForceSideName>
@@ -346,11 +375,82 @@ export const FORCESIDE_TEMPLATE_IS_FORCE = `<ForceSide>
     <AllegianceHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</AllegianceHandle>
 </ForceSide>`;
 
-export const MODEL_TYPE_TEMPLATE = `<Model>
-    <Resolution>HIGH</Resolution>
-</Model>`;
+export const EQUIPMENT_TEMPLATE = `<EquipmentItem>
+    <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
+    <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
+    <Name>111</Name>
+    <EquipmentSymbolModifiers>
+        <Quantity>10</Quantity>
+        <CombatEffectiveness>GREEN</CombatEffectiveness>
+        <UniqueDesignation>111</UniqueDesignation>
+        <EquipmentType>T-80B</EquipmentType>
+    </EquipmentSymbolModifiers>
+    <Disposition>
+        <Location>
+            <CoordinateChoice>GDC</CoordinateChoice>
+            <CoordinateData>
+                <GDC>
+                    <Latitude>58.538208</Latitude>
+                    <Longitude>15.040084</Longitude>
+                    <ElevationAGL>137.71353</ElevationAGL>
+                </GDC>
+            </CoordinateData>
+        </Location>
+        <DirectionOfMovement>176.17091</DirectionOfMovement>
+        <Speed>0.0</Speed>
+        <FormationPosition>
+            <FormationOrder>1</FormationOrder>
+        </FormationPosition>
+    </Disposition>
+    <Relations>
+        <OrganicSuperiorHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</OrganicSuperiorHandle>
+        <HoldingOrganization>
+            <OwnerChoice>UNIT</OwnerChoice>
+            <OwnerData>
+                <UnitOwnerHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</UnitOwnerHandle>
+            </OwnerData>
+        </HoldingOrganization>
+    </Relations>
+    <Model>
+        <Resolution>HIGH</Resolution>
+    </Model>
+</EquipmentItem>`;
 
-export const MODEL_TYPE_TEMPLATE_NETN = `<Model>
-    <Resolution>HIGH</Resolution>
-    <EntityType>1.1.0.3.17.4.0</EntityType>
-</Model>`;
+export const EQUIPMENT_NO_MODEL_TEMPLATE = `<EquipmentItem>
+    <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
+    <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
+    <Name>111</Name>
+    <EquipmentSymbolModifiers>
+        <Quantity>10</Quantity>
+        <CombatEffectiveness>GREEN</CombatEffectiveness>
+        <UniqueDesignation>111</UniqueDesignation>
+        <EquipmentType>T-80B</EquipmentType>
+    </EquipmentSymbolModifiers>
+    <Disposition>
+        <Location>
+            <CoordinateChoice>GDC</CoordinateChoice>
+            <CoordinateData>
+                <GDC>
+                    <Latitude>58.538208</Latitude>
+                    <Longitude>15.040084</Longitude>
+                    <ElevationAGL>137.71353</ElevationAGL>
+                </GDC>
+            </CoordinateData>
+        </Location>
+        <DirectionOfMovement>176.17091</DirectionOfMovement>
+        <Speed>0.0</Speed>
+        <FormationPosition>
+            <FormationOrder>1</FormationOrder>
+        </FormationPosition>
+    </Disposition>
+    <Relations>
+        <OrganicSuperiorHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</OrganicSuperiorHandle>
+        <HoldingOrganization>
+            <OwnerChoice>UNIT</OwnerChoice>
+            <OwnerData>
+                <UnitOwnerHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</UnitOwnerHandle>
+            </OwnerData>
+        </HoldingOrganization>
+    </Relations>
+
+</EquipmentItem>`;

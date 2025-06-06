@@ -22,7 +22,11 @@ import {
 } from "./common.js";
 import { setCharAt } from "./symbology.js";
 import { ForceSide } from "./forcesides.js";
-import { type UnitEquipmentModelType, UnitModelType } from "./modelType.js";
+import {
+  type UnitEquipmentModelBaseType,
+  UnitModel,
+  type UnitModelType,
+} from "./modelType.js";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 
@@ -33,7 +37,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   superiorHandle = "";
   forceRelationChoice: ForceOwnerType | undefined;
   commandRelationshipType: EnumCommandRelationshipType | undefined;
-  #model?: UnitModelType;
+  #model?: UnitModel;
 
   constructor(element: Element) {
     super(element);
@@ -49,7 +53,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
 
     const modelElement = getTagElement(this.element, "Model");
     if (modelElement) {
-      this.#model = new UnitModelType(modelElement);
+      this.#model = new UnitModel(modelElement);
     }
     this.initializeRelations();
   }
@@ -58,11 +62,11 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     return this.forceRelationChoice === ForceOwnerType.ForceSide;
   }
 
-  get model(): UnitModelType | undefined {
+  get model(): UnitModel | undefined {
     return this.#model;
   }
 
-  set model(model: UnitModelType | UnitEquipmentModelType | undefined) {
+  set model(model: UnitModel | UnitModelType | undefined | null) {
     if (!model) {
       this.#model = undefined;
       const modelElement = getTagElement(this.element, "Model");
@@ -72,10 +76,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
       return;
     }
 
-    let test =
-      model instanceof UnitModelType
-        ? model
-        : UnitModelType.fromEquipmentModel(model);
+    let test = model instanceof UnitModel ? model : UnitModel.fromModel(model);
     if (this.#model) {
       this.#model.element.replaceWith(test.element);
     } else {

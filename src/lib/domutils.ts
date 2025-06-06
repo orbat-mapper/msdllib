@@ -28,7 +28,7 @@ export function setTagValue(
 export function setOrCreateTagValue(
   parent: Element,
   tagName: string,
-  value: string | null,
+  value: string | null | undefined,
   { deleteIfNull = true, namespace = "*" } = {},
 ): void {
   let el = parent.getElementsByTagNameNS(namespace, tagName).item(0);
@@ -36,13 +36,30 @@ export function setOrCreateTagValue(
     if (deleteIfNull && value == null) {
       el.parentNode?.removeChild(el);
     } else {
-      el.textContent = value;
+      el.textContent = value ?? "";
     }
   } else {
     let newElem = parent.ownerDocument.createElementNS(namespace, tagName);
-    newElem.textContent = value;
+    newElem.textContent = value ?? "";
     parent.appendChild(newElem);
   }
+}
+
+export function setOrCreateBooleanValue(
+  parent: Element,
+  tagName: string,
+  value: boolean | null | undefined,
+  { deleteIfNull = true, namespace = "*" } = {},
+): void {
+  setOrCreateTagValue(
+    parent,
+    tagName,
+    value === null || value === undefined ? value : value ? "true" : "false",
+    {
+      deleteIfNull,
+      namespace,
+    },
+  );
 }
 
 export type GetValueOptions = {
