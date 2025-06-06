@@ -35,6 +35,9 @@ describe("ScenarioId", () => {
     expect(sid.name).toBe("Empty scenario");
     expect(sid.description).toBe("Description");
     expect(sid.securityClassification).toBe("Unclassified");
+    expect(sid.modificationDate).toBe("2012-11-13-05:00");
+    expect(sid.type).toBe("BOM");
+    expect(sid.version).toBe("0");
   });
 
   describe("when writing data", () => {
