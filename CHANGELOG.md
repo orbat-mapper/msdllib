@@ -1,5 +1,15 @@
 # @orbat-mapper/msdllib
 
+## 0.12.0 - 2025-06-06
+
+### Added
+
+- Add basic support for the `<EntityType>` NETN element
+- Add writable `model` element to `Unit` and `EquipmentItem` classes 
+- Add HostilityStatusCodeItems and MilitaryServiceItems
+- Add `isNETN` property to `MilitaryScenario` class
+- Add writable `modificationData`, `version` and `type` to `ScenarioId`
+
 ## 0.11.0 - 2025-05-29
 
 ### Added
