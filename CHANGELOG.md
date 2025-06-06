@@ -5,7 +5,7 @@
 ### Added
 
 - Add basic support for the `<EntityType>` NETN element
-- Add writable `model` element to `Unit` and `EquipmentItem` classes 
+- Add writable `model` element to `Unit` and `EquipmentItem` classes
 - Add HostilityStatusCodeItems and MilitaryServiceItems
 - Add `isNETN` property to `MilitaryScenario` class
 - Add writable `modificationData`, `version` and `type` to `ScenarioId`
@@ -15,7 +15,7 @@
 ### Added
 
 - Add writable `militaryService` and `countryCode` properties to ForceSide class
-- Make ForceSide `name` and writable
+- Make ForceSide `name` and `description` writable
 
 ## 0.10.0 - 2025-05-25
 
