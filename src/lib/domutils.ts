@@ -110,3 +110,8 @@ export function createXMLElement(xml: string): Element {
   let doc = parser.parseFromString(xml, "text/xml");
   return doc.documentElement;
 }
+
+export function xmlToString(element: Element): string {
+  let serializer = new XMLSerializer();
+  return serializer.serializeToString(element);
+}

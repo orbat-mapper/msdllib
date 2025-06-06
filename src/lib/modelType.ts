@@ -1,5 +1,9 @@
 import type { ModelResolutionType } from "./enums.js";
-import { getTagValue, getValueOrUndefined } from "./domutils.js";
+import {
+  createXMLElement,
+  getTagValue,
+  getValueOrUndefined,
+} from "./domutils.js";
 
 export type UnitEquipmentModelType = {
   resolution?: ModelResolutionType;
@@ -24,6 +28,13 @@ export class UnitEquipmentModelTypeBase implements UnitEquipmentModelType {
 export class UnitModelType extends UnitEquipmentModelTypeBase {
   constructor(element: Element) {
     super(element);
+  }
+
+  static fromEquipmentModel(model: UnitEquipmentModelType): UnitModelType {
+    const modelType = new UnitModelType(createXMLElement(`<Model></Model>`));
+    modelType.resolution = model.resolution;
+    modelType.entityType = model.entityType;
+    return modelType;
   }
 }
 
