@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.13.0 - 2025-06-10
+
+### Added
+
+- Add basic read support for the NETN `<Deployment>` element
+
 ## 0.12.1 - 2025-06-06
 
 ### Fixed
