@@ -4,6 +4,7 @@ import { Unit } from "./units.js";
 import { rel2code, StandardIdentity } from "./enums.js";
 import { ForceSide } from "./forcesides.js";
 import { EquipmentItem } from "./equipment.js";
+import { Deployment } from "./deployment.js";
 
 /**
  * MilitaryScenarioType
@@ -36,6 +37,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
   element?: Element;
   forceSideMap: Record<string, ForceSide> = {};
   equipmentMap: Record<string, EquipmentItem> = {};
+  deployment?: Deployment;
   private _primarySide: ForceSide | null | undefined = null;
   private _isNETN = false;
 
@@ -47,6 +49,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
       this.initializeUnits();
       this.initializeEquipment();
       this.updateSidesRootUnits();
+      this.initializeDeployment();
       this.primarySide = this.forceSides[0]!;
       if (options?.isNETN !== undefined) {
         this._isNETN = options.isNETN;
@@ -85,6 +88,12 @@ export class MilitaryScenario implements MilitaryScenarioType {
       throw new TypeError("Invalid MSDL");
     }
     return militaryScenario;
+  }
+
+  private initializeDeployment() {
+    const deploymentEl = getTagElement(this.element, "Deployment");
+    if (!deploymentEl) return;
+    this.deployment = new Deployment(deploymentEl);
   }
 
   private initializeMetaInfo() {
