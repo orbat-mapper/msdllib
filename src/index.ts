@@ -5,6 +5,7 @@ export { Unit } from "./lib/units.js";
 export { EquipmentItem } from "./lib/equipment.js";
 export { type AssociationType } from "./lib/forcesides.js";
 export { type ForceSideType } from "./lib/forcesides.js";
+export { Federate, Deployment, FederateItem } from "./lib/deployment.js";
 export * from "./lib/enums.js";
 export * from "./lib/types.js";
 export * from "./lib/enumValues.js";

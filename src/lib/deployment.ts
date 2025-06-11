@@ -11,6 +11,7 @@ import {
 export class Deployment {
   element: Element;
   federates: Federate[] = [];
+
   constructor(element: Element) {
     this.element = element;
     const federateElements = getTagElements(element, "Federate");
