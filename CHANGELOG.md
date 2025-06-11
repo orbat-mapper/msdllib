@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.13.1 - 2025-06-11
+
+### Fixed
+
+- Add missing `Deployment`, `Federate` and `FederateItem` exports
+
 ## 0.13.0 - 2025-06-10
 
 ### Added
