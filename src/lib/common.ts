@@ -1,8 +1,14 @@
-import { getTagElement, getTagValue, setOrCreateTagValue } from "./domutils.js";
+import {
+  getTagElement,
+  getTagElements,
+  getTagValue,
+  setOrCreateTagValue,
+} from "./domutils.js";
 import { MsdlLocation } from "./geo.js";
 import { StandardIdentity } from "./enums.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 import { setCharAt } from "./symbology.js";
+import { Holding } from "./holdings.js";
 
 export type TacticalJson = {
   id?: string;
@@ -22,6 +28,7 @@ export type UnitEquipmentInterface = {
   /** The direction of movement, in compass degrees */
   directionOfMovement?: number;
   sidc: string;
+  holdings: Holding[];
   setAffiliation(s: StandardIdentity): void;
   getAffiliation(): StandardIdentity;
   toString(): string;
@@ -36,6 +43,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   #name: string;
   objectHandle: string;
   element: Element;
+  holdings: Holding[] = [];
 
   protected _msdlLocation?: MsdlLocation;
 
@@ -50,6 +58,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
       1,
       StandardIdentity.NoneSpecified,
     );
+    this.initHoldings();
   }
 
   get name(): string {
@@ -67,6 +76,16 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
 
   getAffiliation(): StandardIdentity {
     return this.sidc[1] as StandardIdentity;
+  }
+
+  private initHoldings() {
+    const holdingsElement = getTagElement(this.element, "Holdings");
+    if (holdingsElement) {
+      this.holdings = [];
+      for (const holdingElement of getTagElements(this.element, "Holding")) {
+        this.holdings.push(new Holding(holdingElement));
+      }
+    }
   }
 
   private getDisposition() {

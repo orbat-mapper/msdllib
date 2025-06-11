@@ -103,6 +103,24 @@
                         </ForceRelationData>
                     </ForceRelation>
                 </Relations>
+                <Holdings>
+                    <Holding>
+                        <NSN_Code>192-4848-484848-48484848</NSN_Code>
+                        <NSN_Name>Personnel</NSN_Name>
+                        <IsEquipment>false</IsEquipment>
+                        <OperationalCount>0.0</OperationalCount>
+                        <OnHandQuantity>5.0</OnHandQuantity>
+                        <RequiredOnHandQuantity>0.0</RequiredOnHandQuantity>
+                    </Holding>
+                    <Holding>
+                        <NSN_Code>192-4848-484848-48484848</NSN_Code>
+                        <NSN_Name>Jeep</NSN_Name>
+                        <IsEquipment>true</IsEquipment>
+                        <OperationalCount>0.0</OperationalCount>
+                        <OnHandQuantity>2.0</OnHandQuantity>
+                        <RequiredOnHandQuantity>0.0</RequiredOnHandQuantity>
+                    </Holding>
+                </Holdings>
             </Unit>
             <Unit>
                 <ObjectHandle>7a815ba0-febb-11e7-8be5-0ed5f89f718b</ObjectHandle>

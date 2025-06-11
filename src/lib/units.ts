@@ -22,11 +22,7 @@ import {
 } from "./common.js";
 import { setCharAt } from "./symbology.js";
 import { ForceSide } from "./forcesides.js";
-import {
-  type UnitEquipmentModelBaseType,
-  UnitModel,
-  type UnitModelType,
-} from "./modelType.js";
+import { UnitModel, type UnitModelType } from "./modelType.js";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 

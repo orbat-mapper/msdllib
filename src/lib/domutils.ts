@@ -39,7 +39,10 @@ export function setOrCreateTagValue(
       el.textContent = value ?? "";
     }
   } else {
-    let newElem = parent.ownerDocument.createElementNS(namespace, tagName);
+    let newElem =
+      namespace === "*"
+        ? parent.ownerDocument.createElement(tagName)
+        : parent.ownerDocument.createElementNS(namespace, tagName);
     newElem.textContent = value ?? "";
     parent.appendChild(newElem);
   }
