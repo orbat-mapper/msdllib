@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.14.0 - 2025-06-11
+
+### Added
+
+- Add basic read support for NETN `<Holdings>` and `<Holding>` element
+
 ## 0.13.1 - 2025-06-11
 
 ### Fixed
