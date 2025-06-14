@@ -27,17 +27,17 @@ that is held by, installed in, or included with a unit.
 */
 export class Holding implements HoldingType {
   element: Element;
+  #isEquipment?: boolean;
   #nsnCode: string;
   #nsnName?: string;
-  #isEquipment?: boolean;
-  #operationalCount?: number;
-  #totalQuantity?: number;
   #onHandQuantity?: number;
-  #requiredTotalQuantity?: number;
-  #requiredOnHandQuantity?: number;
+  #operationalCount?: number;
   #postTypeCategory?: string;
   #postTypeRank?: string;
   #requiredCalculationMethodCode?: number;
+  #requiredOnHandQuantity?: number;
+  #requiredTotalQuantity?: number;
+  #totalQuantity?: number;
   constructor(element: Element) {
     this.element = element;
     this.#nsnCode = getTagValue(element, "NSN_Code");
@@ -62,26 +62,31 @@ export class Holding implements HoldingType {
     );
   }
 
+  get isEquipment() {
+    return this.#isEquipment ?? getBooleanValue(this.element, "IsEquipment");
+  }
+
+  set isEquipment(isEquipment: boolean | undefined) {
+    this.#isEquipment = isEquipment;
+    setOrCreateBooleanValue(this.element, "IsEquipment", isEquipment);
+  }
+
   get nsnCode(): string {
     return this.#nsnCode ?? getTagValue(this.element, "NSN_Code");
+  }
+
+  set nsnCode(nsnCode: string) {
+    this.#nsnCode = nsnCode;
+    setOrCreateTagValue(this.element, "NSN_Code", nsnCode);
   }
 
   get nsnName(): string | undefined {
     return this.#nsnName ?? getValueOrUndefined(this.element, "NSN_Name");
   }
 
-  get isEquipment() {
-    return this.#isEquipment ?? getBooleanValue(this.element, "IsEquipment");
-  }
-
-  get operationalCount(): number | undefined {
-    return (
-      this.#operationalCount ?? getNumberValue(this.element, "OperationalCount")
-    );
-  }
-
-  get totalQuantity(): number | undefined {
-    return this.#totalQuantity ?? getNumberValue(this.element, "TotalQuantity");
+  set nsnName(nsnName: string | undefined) {
+    this.#nsnName = nsnName;
+    setOrCreateTagValue(this.element, "NSN_Name", nsnName);
   }
 
   get onHandQuantity(): number | undefined {
@@ -90,53 +95,19 @@ export class Holding implements HoldingType {
     );
   }
 
-  get requiredTotalQuantity(): number | undefined {
-    return (
-      this.#requiredTotalQuantity ??
-      getNumberValue(this.element, "RequiredTotalQuantity")
+  set onHandQuantity(onHandQuantity: number | undefined) {
+    this.#onHandQuantity = onHandQuantity;
+    setOrCreateTagValue(
+      this.element,
+      "OnHandQuantity",
+      onHandQuantity?.toString(),
     );
   }
 
-  get requiredOnHandQuantity(): number | undefined {
+  get operationalCount(): number | undefined {
     return (
-      this.#requiredOnHandQuantity ??
-      getNumberValue(this.element, "RequiredOnHandQuantity")
+      this.#operationalCount ?? getNumberValue(this.element, "OperationalCount")
     );
-  }
-
-  get postTypeCategory(): string | undefined {
-    return (
-      this.#postTypeCategory ??
-      getValueOrUndefined(this.element, "Post_Type_Category")
-    );
-  }
-
-  get postTypeRank(): string | undefined {
-    return (
-      this.#postTypeRank ?? getValueOrUndefined(this.element, "Post_Type_Rank")
-    );
-  }
-
-  get requiredCalculationMethodCode(): number | undefined {
-    return (
-      this.#requiredCalculationMethodCode ??
-      getNumberValue(this.element, "RequiredCalculationMethodCode")
-    );
-  }
-
-  set nsnCode(nsnCode: string) {
-    this.#nsnCode = nsnCode;
-    setOrCreateTagValue(this.element, "NSN_Code", nsnCode);
-  }
-
-  set nsnName(nsnName: string | undefined) {
-    this.#nsnName = nsnName;
-    setOrCreateTagValue(this.element, "NSN_Name", nsnName);
-  }
-
-  set isEquipment(isEquipment: boolean | undefined) {
-    this.#isEquipment = isEquipment;
-    setOrCreateBooleanValue(this.element, "IsEquipment", isEquipment);
   }
 
   set operationalCount(operationalCount: number | undefined) {
@@ -148,38 +119,10 @@ export class Holding implements HoldingType {
     );
   }
 
-  set totalQuantity(totalQuantity: number | undefined) {
-    this.#totalQuantity = totalQuantity;
-    setOrCreateTagValue(
-      this.element,
-      "TotalQuantity",
-      totalQuantity?.toString(),
-    );
-  }
-  set onHandQuantity(onHandQuantity: number | undefined) {
-    this.#onHandQuantity = onHandQuantity;
-    setOrCreateTagValue(
-      this.element,
-      "OnHandQuantity",
-      onHandQuantity?.toString(),
-    );
-  }
-
-  set requiredTotalQuantity(requiredTotalQuantity: number | undefined) {
-    this.#requiredTotalQuantity = requiredTotalQuantity;
-    setOrCreateTagValue(
-      this.element,
-      "RequiredTotalQuantity",
-      requiredTotalQuantity?.toString(),
-    );
-  }
-
-  set requiredOnHandQuantity(requiredOnHandQuantity: number | undefined) {
-    this.#requiredOnHandQuantity = requiredOnHandQuantity;
-    setOrCreateTagValue(
-      this.element,
-      "RequiredOnHandQuantity",
-      requiredOnHandQuantity?.toString(),
+  get postTypeCategory(): string | undefined {
+    return (
+      this.#postTypeCategory ??
+      getValueOrUndefined(this.element, "Post_Type_Category")
     );
   }
 
@@ -188,9 +131,22 @@ export class Holding implements HoldingType {
     setOrCreateTagValue(this.element, "Post_Type_Category", postTypeCategory);
   }
 
+  get postTypeRank(): string | undefined {
+    return (
+      this.#postTypeRank ?? getValueOrUndefined(this.element, "Post_Type_Rank")
+    );
+  }
+
   set postTypeRank(postTypeRank: string | undefined) {
     this.#postTypeRank = postTypeRank;
     setOrCreateTagValue(this.element, "Post_Type_Rank", postTypeRank);
+  }
+
+  get requiredCalculationMethodCode(): number | undefined {
+    return (
+      this.#requiredCalculationMethodCode ??
+      getNumberValue(this.element, "RequiredCalculationMethodCode")
+    );
   }
 
   set requiredCalculationMethodCode(
@@ -204,19 +160,64 @@ export class Holding implements HoldingType {
     );
   }
 
+  get requiredOnHandQuantity(): number | undefined {
+    return (
+      this.#requiredOnHandQuantity ??
+      getNumberValue(this.element, "RequiredOnHandQuantity")
+    );
+  }
+
+  set requiredOnHandQuantity(requiredOnHandQuantity: number | undefined) {
+    this.#requiredOnHandQuantity = requiredOnHandQuantity;
+    setOrCreateTagValue(
+      this.element,
+      "RequiredOnHandQuantity",
+      requiredOnHandQuantity?.toString(),
+    );
+  }
+
+  get requiredTotalQuantity(): number | undefined {
+    return (
+      this.#requiredTotalQuantity ??
+      getNumberValue(this.element, "RequiredTotalQuantity")
+    );
+  }
+
+  set requiredTotalQuantity(requiredTotalQuantity: number | undefined) {
+    this.#requiredTotalQuantity = requiredTotalQuantity;
+    setOrCreateTagValue(
+      this.element,
+      "RequiredTotalQuantity",
+      requiredTotalQuantity?.toString(),
+    );
+  }
+
+  get totalQuantity(): number | undefined {
+    return this.#totalQuantity ?? getNumberValue(this.element, "TotalQuantity");
+  }
+
+  set totalQuantity(totalQuantity: number | undefined) {
+    this.#totalQuantity = totalQuantity;
+    setOrCreateTagValue(
+      this.element,
+      "TotalQuantity",
+      totalQuantity?.toString(),
+    );
+  }
+
   toJson(): HoldingType {
     return {
+      isEquipment: this.isEquipment,
       nsnCode: this.nsnCode,
       nsnName: this.nsnName,
-      isEquipment: this.isEquipment,
-      operationalCount: this.operationalCount,
-      totalQuantity: this.totalQuantity,
       onHandQuantity: this.onHandQuantity,
-      requiredTotalQuantity: this.requiredTotalQuantity,
-      requiredOnHandQuantity: this.requiredOnHandQuantity,
+      operationalCount: this.operationalCount,
       postTypeCategory: this.postTypeCategory,
       postTypeRank: this.postTypeRank,
       requiredCalculationMethodCode: this.requiredCalculationMethodCode,
+      requiredOnHandQuantity: this.requiredOnHandQuantity,
+      requiredTotalQuantity: this.requiredTotalQuantity,
+      totalQuantity: this.totalQuantity,
     };
   }
 
