@@ -239,3 +239,39 @@ describe("ForceSide methods", () => {
     });
   });
 });
+
+describe("ForceSide serialization", () => {
+  describe("toObject", () => {
+    it("should serialize to an object", () => {
+      const forceSide = new ForceSide(
+        parseFromString(FORCESIDE_TEMPLATE_IS_FORCE),
+      );
+      const obj = forceSide.toObject();
+      expect(obj).toBeDefined();
+      expect(obj.name).toBe("Army");
+      expect(obj.militaryService).toBe("ARMY");
+      expect(obj.countryCode).toBe("USA");
+    });
+  });
+
+  describe("updateFromObject", () => {
+    it("should update from an object", () => {
+      const forceSide = new ForceSide(
+        parseFromString(FORCESIDE_TEMPLATE_IS_FORCE),
+      );
+      expect(forceSide.name).toBe("Army");
+      expect(forceSide.militaryService).toBe("ARMY");
+      expect(forceSide.countryCode).toBe("USA");
+
+      forceSide.updateFromObject({
+        name: "New Army",
+        militaryService: undefined,
+        countryCode: "CAN",
+      });
+
+      expect(forceSide.name).toBe("New Army");
+      expect(forceSide.militaryService).toBeUndefined();
+      expect(forceSide.countryCode).toBe("CAN");
+    });
+  });
+});

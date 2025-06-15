@@ -9,6 +9,7 @@ import {
   getTagElements,
   getTagValue,
   getValueOrUndefined,
+  removeUndefinedValues,
   setOrCreateTagValue,
 } from "./domutils.js";
 import type { IdGeoJsonOptions, TacticalJson } from "./common.js";
@@ -18,9 +19,16 @@ export interface ForceSideType {
   objectHandle: string;
   name: string;
   allegianceHandle?: string;
+  militaryService?: MilitaryService;
+  countryCode?: string;
   rootUnits: Unit[];
   equipment: EquipmentItem[];
 }
+
+export type ForceSideTypeUpdate = Omit<
+  ForceSideType,
+  "objectHandle" | "allegianceHandle" | "rootUnits" | "equipment"
+>;
 
 export interface AssociationType {
   affiliateHandle: string;
@@ -190,5 +198,23 @@ export class ForceSide implements ForceSideType {
       };
       this.associations.push(association);
     }
+  }
+
+  toObject(): ForceSideTypeUpdate {
+    return removeUndefinedValues({
+      name: this.name,
+      militaryService: this.militaryService,
+      countryCode: this.countryCode,
+    });
+  }
+
+  updateFromObject(data: Partial<ForceSideTypeUpdate>): void {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key in this) {
+        (this as any)[key] = value;
+      } else {
+        console.warn(`Property ${key} does not exist.`);
+      }
+    });
   }
 }
