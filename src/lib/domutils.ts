@@ -135,3 +135,15 @@ export function xmlToString(element: Element): string {
   let serializer = new XMLSerializer();
   return serializer.serializeToString(element);
 }
+
+export function removeUndefinedValues<T extends Record<string, any>>(
+  v: T,
+): {
+  [K in keyof T]: T[K] extends undefined ? never : T[K];
+} {
+  return Object.fromEntries(
+    Object.entries(v).filter(([_, value]) => value !== undefined),
+  ) as {
+    [K in keyof T]: T[K] extends undefined ? never : T[K];
+  };
+}

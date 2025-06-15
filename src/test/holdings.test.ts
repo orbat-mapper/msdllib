@@ -31,7 +31,6 @@ const HOLDING_ELEMENT_SAMPLE = `<Holding>
     <RequiredOnHandQuantity>0.0</RequiredOnHandQuantity>
     <TotalQuantity>22.0</TotalQuantity>
     <RequiredTotalQuantity>33.0</RequiredTotalQuantity>
-    <RequiredCalculationMethodCode>3</RequiredCalculationMethodCode>
     <Post_Type_Category>SURPHY</Post_Type_Category>
     <Post_Type_Rank>NCO</Post_Type_Rank>
 </Holding>`;
@@ -136,7 +135,7 @@ describe("Holding class", () => {
     expect(holding.requiredTotalQuantity).toBe(33.0);
     expect(holding.postTypeCategory).toBe("SURPHY");
     expect(holding.postTypeRank).toBe("NCO");
-    expect(holding.requiredCalculationMethodCode).toBe(3);
+    expect(holding.requiredCalculationMethodCode).toBeUndefined();
   });
 
   it("can be modified and serialized back to XML", () => {
@@ -179,8 +178,9 @@ describe("Holding class", () => {
       requiredTotalQuantity: 33.0,
       postTypeCategory: "SURPHY",
       postTypeRank: "NCO",
-      requiredCalculationMethodCode: 3,
     });
+    expect(json.requiredCalculationMethodCode).toBeUndefined();
+    expect("requiredCalculationMethodCode" in json).toBe(false);
   });
 
   it("has a updateFromJson method that updates properties from a JSON object", () => {

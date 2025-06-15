@@ -3,6 +3,7 @@ import {
   getNumberValue,
   getTagValue,
   getValueOrUndefined,
+  removeUndefinedValues,
   setOrCreateBooleanValue,
   setOrCreateTagValue,
 } from "./domutils.js";
@@ -206,7 +207,7 @@ export class Holding implements HoldingType {
   }
 
   toObject(): HoldingType {
-    return {
+    return removeUndefinedValues({
       isEquipment: this.isEquipment,
       nsnCode: this.nsnCode,
       nsnName: this.nsnName,
@@ -218,7 +219,7 @@ export class Holding implements HoldingType {
       requiredOnHandQuantity: this.requiredOnHandQuantity,
       requiredTotalQuantity: this.requiredTotalQuantity,
       totalQuantity: this.totalQuantity,
-    };
+    });
   }
 
   updateFromObject(data: Partial<HoldingType>) {
