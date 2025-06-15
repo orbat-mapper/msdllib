@@ -60,7 +60,7 @@ export class ForceSide implements ForceSideType {
       element,
       "MilitaryService",
     ) as MilitaryService;
-    this.#countryCode = getTagValue(element, "CountryCode");
+    this.#countryCode = getValueOrUndefined(element, "CountryCode");
     this.objectHandle = getTagValue(element, "ObjectHandle");
     this.allegianceHandle = getTagValue(element, "AllegianceHandle");
     this.initAssociations();
