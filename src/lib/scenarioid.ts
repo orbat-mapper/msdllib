@@ -1,4 +1,8 @@
-import { getTagValue, setOrCreateTagValue } from "./domutils.js";
+import {
+  getTagValue,
+  removeUndefinedValues,
+  setOrCreateTagValue,
+} from "./domutils.js";
 
 export interface ScenarioIdType {
   name: string;
@@ -87,5 +91,26 @@ export class ScenarioId implements ScenarioIdType {
   set type(type: string) {
     this.#type = type;
     setOrCreateTagValue(this.element, "type", type);
+  }
+
+  toObject(): ScenarioIdType {
+    return removeUndefinedValues({
+      name: this.name,
+      description: this.description,
+      securityClassification: this.securityClassification,
+      modificationDate: this.modificationDate,
+      version: this.version,
+      type: this.type,
+    });
+  }
+
+  updateFromObject(data: Partial<ScenarioIdType>) {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key in this) {
+        (this as any)[key] = value;
+      } else {
+        console.warn(`Property ${key} does not exist.`);
+      }
+    });
   }
 }

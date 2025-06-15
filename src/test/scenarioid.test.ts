@@ -17,6 +17,19 @@ const SCENARIO_ID_TEMPLATE = `<ScenarioID xmlns="urn:sisostds:scenario:military:
         </modelID:poc>
     </ScenarioID>`;
 
+const SCENARIO_ID_TEMPLATE_MISSING = `<ScenarioID xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
+                  xmlns:modelID="http://www.sisostds.org/schemas/modelID">
+        <modelID:name>Empty scenario</modelID:name>
+        <modelID:type>BOM</modelID:type>
+        <modelID:version>0</modelID:version>
+        <modelID:modificationDate>2012-11-13-05:00</modelID:modificationDate>
+        <modelID:securityClassification>Unclassified</modelID:securityClassification>
+        <modelID:poc>
+            <modelID:pocType>e-mail</modelID:pocType>
+            <modelID:pocEmail>helpdesk@ideorlando.org</modelID:pocEmail>
+        </modelID:poc>
+    </ScenarioID>`;
+
 describe("ScenarioId", () => {
   it("defined", () => {
     expect(MilitaryScenario).toBeDefined();
@@ -93,6 +106,64 @@ describe("ScenarioId", () => {
       expect(getTagValue(scenarioId.element, "type")).toBe("BOM");
       scenarioId.type = "FOM";
       expect(getTagValue(scenarioId.element, "type")).toBe("FOM");
+    });
+  });
+});
+
+describe("ScenarioId serialization", () => {
+  describe("toObject", () => {
+    it("should return an object with the correct properties", () => {
+      const scenarioId = new ScenarioId(parseFromString(SCENARIO_ID_TEMPLATE));
+      const obj = scenarioId.toObject();
+      expect(obj.name).toBe("Empty scenario");
+      expect(obj.description).toBe("Description");
+      expect(obj.securityClassification).toBe("Unclassified");
+      expect(obj.modificationDate).toBe("2012-11-13-05:00");
+      expect(obj.version).toBe("0");
+      expect(obj.type).toBe("BOM");
+    });
+  });
+
+  describe("updateFromObject", () => {
+    it("should update properties from an object", () => {
+      const scenarioId = new ScenarioId(parseFromString(SCENARIO_ID_TEMPLATE));
+      const updateData = {
+        name: "Updated Scenario",
+        description: "Updated Description",
+        securityClassification: "Confidential",
+        modificationDate: "2023-10-01T12:00:00Z",
+      };
+      scenarioId.updateFromObject(updateData);
+      expect(scenarioId.name).toBe("Updated Scenario");
+      expect(scenarioId.description).toBe("Updated Description");
+      expect(scenarioId.securityClassification).toBe("Confidential");
+      expect(scenarioId.modificationDate).toBe("2023-10-01T12:00:00Z");
+
+      expect(scenarioId.version).toBe("0");
+      expect(scenarioId.type).toBe("BOM");
+    });
+
+    it("should remove undefined properties", () => {
+      const scenarioId = new ScenarioId(parseFromString(SCENARIO_ID_TEMPLATE));
+      const updateData = {
+        description: undefined,
+        version: undefined,
+      };
+      scenarioId.updateFromObject(updateData);
+      expect(scenarioId.name).toBe("Empty scenario");
+
+      expect(scenarioId.description).toBe("");
+      expect(scenarioId.version).toBe("");
+      const descriptionElements = scenarioId.element.getElementsByTagNameNS(
+        "*",
+        "description",
+      );
+      expect(descriptionElements.length).toBe(0);
+      const versionElements = scenarioId.element.getElementsByTagNameNS(
+        "*",
+        "version",
+      );
+      expect(versionElements.length).toBe(0);
     });
   });
 });
