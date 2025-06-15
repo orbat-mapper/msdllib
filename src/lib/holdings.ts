@@ -205,7 +205,7 @@ export class Holding implements HoldingType {
     );
   }
 
-  toJson(): HoldingType {
+  toObject(): HoldingType {
     return {
       isEquipment: this.isEquipment,
       nsnCode: this.nsnCode,
@@ -221,7 +221,7 @@ export class Holding implements HoldingType {
     };
   }
 
-  updateFromJson(data: Partial<HoldingType>) {
+  updateFromObject(data: Partial<HoldingType>) {
     Object.entries(data).forEach(([key, value]) => {
       if (key in this) {
         (this as any)[key] = value;

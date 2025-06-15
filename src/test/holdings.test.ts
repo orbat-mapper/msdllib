@@ -167,7 +167,7 @@ describe("Holding class", () => {
 
   it("has a toJson method that returns a JSON representation", () => {
     const holding = new Holding(createXMLElement(HOLDING_ELEMENT_SAMPLE));
-    const json = holding.toJson();
+    const json = holding.toObject();
     expect(json).toEqual({
       nsnCode: "192-4848-484848-48484848",
       nsnName: "Jeep",
@@ -185,7 +185,7 @@ describe("Holding class", () => {
 
   it("has a updateFromJson method that updates properties from a JSON object", () => {
     const holding = new Holding(createXMLElement(HOLDING_ELEMENT_SAMPLE2));
-    holding.updateFromJson({
+    holding.updateFromObject({
       nsnName: "Updated Jeep",
       onHandQuantity: 4.0,
       requiredTotalQuantity: 40.0,
