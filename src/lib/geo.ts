@@ -4,7 +4,12 @@ import * as mgrs from "mgrs";
 import * as projector from "ecef-projector";
 import { toLatLon } from "utm";
 
-import { getTagElement, getTagValue } from "./domutils.js";
+import {
+  getNumberValue,
+  getTagElement,
+  getTagValue,
+  setOrCreateTagValue,
+} from "./domutils.js";
 import type {
   CoordinateChoice,
   LngLatElevationTuple,
@@ -96,7 +101,7 @@ export class MsdlLocation {
     let utmElement = getTagElement(this.element, "UTM");
     let gridZone = getTagValue(utmElement, "UTMGridZone");
     const zoneLetter = gridZone[2] ?? "";
-    const zoneNum = Number(gridZone.substr(0, 2));
+    const zoneNum = Number(gridZone.slice(0, 2));
     let easting = Number(getTagValue(utmElement, "UTMEasting"));
     let northing = Number(getTagValue(utmElement, "UTMNorthing"));
     let elevationValue = getTagValue(utmElement, "ElevationAGL");
@@ -113,5 +118,60 @@ export class MsdlLocation {
     } else {
       return [longitude, latitude];
     }
+  }
+}
+
+export class DispositionBase {
+  element: Element;
+  #directionOfMovement?: number;
+  #speed?: number;
+  #msdlLocation?: MsdlLocation;
+  location?: LngLatTuple | LngLatElevationTuple;
+
+  constructor(element: Element) {
+    this.element = element;
+    this.#directionOfMovement = getNumberValue(element, "DirectionOfMovement");
+    this.#speed = getNumberValue(element, "Speed");
+    let dispositionElement = getTagElement(element, "Location");
+    if (dispositionElement) {
+      this.#msdlLocation = new MsdlLocation(dispositionElement);
+    }
+    this.location = this.#msdlLocation?.location;
+  }
+
+  get directionOfMovement(): number | undefined {
+    return (
+      this.#directionOfMovement ??
+      getNumberValue(this.element, "DirectionOfMovement")
+    );
+  }
+
+  set directionOfMovement(direction: number | undefined) {
+    this.#directionOfMovement = direction;
+    setOrCreateTagValue(
+      this.element,
+      "DirectionOfMovement",
+      direction?.toString(),
+    );
+  }
+
+  get speed(): number | undefined {
+    return this.#speed ?? getNumberValue(this.element, "Speed");
+  }
+  set speed(speed: number | undefined) {
+    this.#speed = speed;
+    setOrCreateTagValue(this.element, "Speed", speed?.toString());
+  }
+}
+
+export class UnitDisposition extends DispositionBase {
+  constructor(element: Element) {
+    super(element);
+  }
+}
+
+export class EquipmentItemDisposition extends DispositionBase {
+  constructor(element: Element) {
+    super(element);
   }
 }

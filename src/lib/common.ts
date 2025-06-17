@@ -4,11 +4,11 @@ import {
   getTagValue,
   setOrCreateTagValue,
 } from "./domutils.js";
-import { MsdlLocation } from "./geo.js";
 import { StandardIdentity } from "./enums.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 import { setCharAt } from "./symbology.js";
 import { Holding } from "./holdings.js";
+import { type EquipmentItemDisposition, type UnitDisposition } from "./geo.js";
 
 export type TacticalJson = {
   id?: string;
@@ -29,6 +29,7 @@ export type UnitEquipmentInterface = {
   directionOfMovement?: number;
   sidc: string;
   holdings: Holding[];
+  disposition?: UnitDisposition | EquipmentItemDisposition;
   setAffiliation(s: StandardIdentity): void;
   getAffiliation(): StandardIdentity;
   toString(): string;
@@ -45,14 +46,12 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   element: Element;
   holdings: Holding[] = [];
 
-  protected _msdlLocation?: MsdlLocation;
-
   constructor(element: Element) {
     this.element = element;
     this.objectHandle = getTagValue(element, "ObjectHandle");
     this.symbolIdentifier = getTagValue(this.element, "SymbolIdentifier");
     this.#name = getTagValue(element, "Name");
-    this.getDisposition();
+
     this.sidc = setCharAt(
       this.symbolIdentifier,
       1,
@@ -85,23 +84,6 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
       for (const holdingElement of getTagElements(this.element, "Holding")) {
         this.holdings.push(new Holding(holdingElement));
       }
-    }
-  }
-
-  private getDisposition() {
-    let dispositionElement = getTagElement(this.element, "Disposition");
-    let speed = getTagValue(dispositionElement, "Speed");
-    let directionOfMovement = getTagValue(
-      dispositionElement,
-      "DirectionOfMovement",
-    );
-    this.speed = speed ? +speed : undefined;
-    this.directionOfMovement = directionOfMovement
-      ? +directionOfMovement
-      : undefined;
-    if (dispositionElement) {
-      this._msdlLocation = new MsdlLocation(dispositionElement);
-      this.location = this._msdlLocation.location;
     }
   }
 

@@ -10,3 +10,4 @@ export { Holding, type HoldingType } from "./lib/holdings.js";
 export * from "./lib/enums.js";
 export * from "./lib/types.js";
 export * from "./lib/enumValues.js";
+export { UnitDisposition, EquipmentItemDisposition } from "./lib/geo.js";

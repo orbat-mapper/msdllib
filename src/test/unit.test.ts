@@ -47,6 +47,30 @@ describe("MSDL Unit", () => {
     expect(unit.superiorHandle).toBe("f9c2b9f6-2dcd-11e2-be2b-000c294c9df8");
   });
 
+  it("should have a disposition", () => {
+    let element = parseFromString(UNIT_ATTACHED);
+    let unit = new Unit(element);
+
+    expect(unit.disposition).toBeDefined();
+    if (unit.disposition && unit.disposition.location) {
+      expect(unit.disposition.location.length).toBe(3);
+      expect(unit.disposition.location[1]).toBe(58.54383);
+      expect(unit.disposition.location[0]).toBe(15.038887);
+      expect(unit.disposition.location[2]).toBe(141.03737);
+
+      expect(unit.disposition.speed).toBe(4);
+      expect(unit.disposition.directionOfMovement).toBe(175.37999);
+    }
+    if (unit.location) {
+      expect(unit.location.length).toBe(3);
+      expect(unit.location[1]).toBe(58.54383);
+      expect(unit.location[0]).toBe(15.038887);
+      expect(unit.location[2]).toBe(141.03737);
+    }
+    expect(unit.speed).toBe(4);
+    expect(unit.directionOfMovement).toBe(175.37999);
+  });
+
   it("should be able to create a GeoJson representation", () => {
     let element = parseFromString(UNIT_ATTACHED);
     let unit = new Unit(element);

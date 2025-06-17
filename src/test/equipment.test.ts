@@ -103,7 +103,25 @@ describe("MSDL Equipment", () => {
     expect(equipmentItem.name).toBe("111");
     expect(equipmentItem.label).toBe("111");
     expect(equipmentItem.symbolIdentifier).toBe("S-G-EVAT------G");
-    expect(equipmentItem.location).toBeDefined();
+    expect(equipmentItem.superiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+  });
+
+  it("should have a disposition", () => {
+    let element = parseFromString(EQUIPMENT_TEMPLATE);
+    let equipmentItem = new EquipmentItem(element);
+
+    expect(equipmentItem.disposition).toBeDefined();
+    if (equipmentItem.disposition && equipmentItem.disposition.location) {
+      expect(equipmentItem.disposition.location.length).toBe(3);
+      expect(equipmentItem.disposition.location[1]).toBe(58.538208);
+      expect(equipmentItem.disposition.location[0]).toBe(15.040084);
+      expect(equipmentItem.disposition.location[2]).toBe(137.71353);
+
+      expect(equipmentItem.disposition.speed).toBe(0);
+      expect(equipmentItem.disposition.directionOfMovement).toBe(176.17091);
+    }
     if (equipmentItem.location) {
       expect(equipmentItem.location.length).toBe(3);
       expect(equipmentItem.location[1]).toBe(58.538208);
@@ -112,9 +130,6 @@ describe("MSDL Equipment", () => {
     }
     expect(equipmentItem.speed).toBe(0);
     expect(equipmentItem.directionOfMovement).toBe(176.17091);
-    expect(equipmentItem.superiorHandle).toBe(
-      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
-    );
   });
 
   it("GeoJson interface", () => {

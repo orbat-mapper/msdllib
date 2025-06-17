@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { parseFromString } from "./testdata.js";
-import { MsdlLocation } from "../lib/geo.js";
+import { DispositionBase, MsdlLocation } from "../lib/geo.js";
 import type { Point } from "geojson";
+import { createXMLElement, xmlToString } from "../lib/domutils.js";
 
 function precisionRound(num: number, precision: number) {
   let factor = Math.pow(10, precision);
@@ -107,6 +108,25 @@ const UNKNOWN_TEMPLATE = `
         </CoordinateData>
     </Location>`;
 
+const DISPOSITION_TEMPLATE = `<Disposition>
+    <Location>
+        <CoordinateChoice>MGRS</CoordinateChoice>
+        <CoordinateData>
+            <MGRS>
+                <MGRSGridZone>33V</MGRSGridZone>
+                <MGRSGridSquare>WE</MGRSGridSquare>
+                <MGRSPrecision>5</MGRSPrecision>
+                <MGRSEasting>02263</MGRSEasting>
+                <MGRSNorthing>89259</MGRSNorthing>
+                <ElevationAGL>10</ElevationAGL>
+            </MGRS>
+        </CoordinateData>
+    </Location>
+    <DirectionOfMovement>88</DirectionOfMovement>
+    <Speed>10</Speed>
+</Disposition>
+`;
+
 describe("MSDL Location", () => {
   it("defined", () => {
     expect(MsdlLocation).toBeDefined();
@@ -192,5 +212,48 @@ describe("MSDL Location", () => {
     let element = parseFromString(UNKNOWN_TEMPLATE);
     let loc = new MsdlLocation(element);
     expect(loc.location).toBeUndefined();
+  });
+});
+
+describe("DispositionBase class", () => {
+  describe("Parsing Disposition", () => {
+    it("MGRS Disposition", () => {
+      let element = parseFromString(DISPOSITION_TEMPLATE);
+      let disp = new DispositionBase(element);
+      expect(disp.location).toBeDefined();
+      if (disp.location) {
+        expect(disp.location.length).toBe(3);
+        expect(disp.location[1]).toBeCloseTo(58.54383, 5);
+        expect(disp.location[0]).toBeCloseTo(15.038887, 5);
+        expect(disp.location[2]).toBe(10);
+      }
+      expect(disp.directionOfMovement).toBe(88);
+      expect(disp.speed).toBe(10);
+    });
+  });
+
+  describe("Modifying Disposition", () => {
+    it("Set direction of movement", () => {
+      let element = parseFromString(DISPOSITION_TEMPLATE);
+      let loc = new DispositionBase(element);
+      expect(loc.directionOfMovement).toBe(88);
+      loc.directionOfMovement = 45;
+      expect(loc.directionOfMovement).toBe(45);
+      let loc2 = new DispositionBase(
+        createXMLElement(xmlToString(loc.element)),
+      );
+      expect(loc2.directionOfMovement).toBe(45);
+    });
+
+    it("Set speed", () => {
+      let element = parseFromString(DISPOSITION_TEMPLATE);
+      let loc = new DispositionBase(element);
+      loc.speed = 20;
+      expect(loc.speed).toBe(20);
+      let loc2 = new DispositionBase(
+        createXMLElement(xmlToString(loc.element)),
+      );
+      expect(loc2.speed).toBe(20);
+    });
   });
 });

@@ -13,6 +13,7 @@ import {
 } from "./common.js";
 import { ForceOwnerType } from "./enums.js";
 import { EquipmentModel, type EquipmentModelType } from "./modelType.js";
+import { EquipmentItemDisposition } from "./geo.js";
 
 export type EquipmentItemGeoJsonOptions = IdGeoJsonOptions;
 
@@ -20,6 +21,7 @@ export class EquipmentItem extends UnitEquipmentBase {
   symbolModifiers?: EquipmentSymbolModifiers;
   relations: EquipmentRelationsType;
   #model?: EquipmentModel;
+  #disposition?: EquipmentItemDisposition;
 
   constructor(element: Element) {
     super(element);
@@ -36,6 +38,14 @@ export class EquipmentItem extends UnitEquipmentBase {
     const modelElement = getTagElement(this.element, "Model");
     if (modelElement) {
       this.#model = new EquipmentModel(modelElement);
+    }
+
+    const dispositionElement = getTagElement(this.element, "Disposition");
+    if (dispositionElement) {
+      this.#disposition = new EquipmentItemDisposition(dispositionElement);
+      this.location = this.#disposition.location;
+      this.speed = this.#disposition.speed;
+      this.directionOfMovement = this.#disposition.directionOfMovement;
     }
     this.relations = this.initializeRelations();
   }
@@ -57,6 +67,10 @@ export class EquipmentItem extends UnitEquipmentBase {
       ownerChoice: ownerType as ForceOwnerType,
       ownerHandle,
     };
+  }
+
+  get disposition(): EquipmentItemDisposition | undefined {
+    return this.#disposition;
   }
 
   get model(): EquipmentModel | undefined {

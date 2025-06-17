@@ -23,6 +23,7 @@ import {
 import { setCharAt } from "./symbology.js";
 import { ForceSide } from "./forcesides.js";
 import { UnitModel, type UnitModelType } from "./modelType.js";
+import { UnitDisposition } from "./geo.js";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 
@@ -34,11 +35,12 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   forceRelationChoice: ForceOwnerType | undefined;
   commandRelationshipType: EnumCommandRelationshipType | undefined;
   #model?: UnitModel;
+  #disposition?: UnitDisposition;
 
   constructor(element: Element) {
     super(element);
     const unitSymbolModifiersElement = getTagElement(
-      this.element,
+      element,
       "UnitSymbolModifiers",
     );
     if (unitSymbolModifiersElement) {
@@ -51,11 +53,22 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     if (modelElement) {
       this.#model = new UnitModel(modelElement);
     }
+    const dispositionElement = getTagElement(this.element, "Disposition");
+    if (dispositionElement) {
+      this.#disposition = new UnitDisposition(dispositionElement);
+      this.location = this.#disposition.location;
+      this.speed = this.#disposition.speed;
+      this.directionOfMovement = this.#disposition.directionOfMovement;
+    }
     this.initializeRelations();
   }
 
   get isRoot(): boolean {
     return this.forceRelationChoice === ForceOwnerType.ForceSide;
+  }
+
+  get disposition(): UnitDisposition | undefined {
+    return this.#disposition;
   }
 
   get model(): UnitModel | undefined {
