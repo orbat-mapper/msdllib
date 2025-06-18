@@ -18,7 +18,7 @@ import type {
 } from "./types.js";
 
 export class MsdlLocation {
-  location?: LngLatTuple | LngLatElevationTuple;
+  #location?: LngLatTuple | LngLatElevationTuple;
   coordinateChoice: CoordinateChoice;
   element: Element;
 
@@ -31,18 +31,65 @@ export class MsdlLocation {
     this.parseLocation();
   }
 
+  get location(): LngLatTuple | LngLatElevationTuple | undefined {
+    return this.#location;
+  }
+
+  set location(loc: LngLatTuple | LngLatElevationTuple) {
+    this.#location = loc;
+    if (!loc) return;
+    if (this.coordinateChoice === "GDC") {
+      this.writeGDCLocation(loc);
+    } else {
+      console.warn("Unhandled location type", this.coordinateChoice);
+    }
+  }
+
+  private writeGDCLocation(loc: LngLatTuple | LngLatElevationTuple) {
+    if (loc.length >= 2) {
+      // LngLatTuple
+      setOrCreateTagValue(this.element, "CoordinateChoice", "GDC");
+      setOrCreateTagValue(this.element, "Latitude", loc[1].toString());
+      setOrCreateTagValue(this.element, "Longitude", loc[0].toString());
+    }
+    if (loc.length === 3) {
+      // LngLatElevationTuple
+      setOrCreateTagValue(this.element, "ElevationAGL", loc[2].toString());
+    }
+  }
+
+  // private writeMGRSLocation(loc: LngLatTuple | LngLatElevationTuple) {
+  //   if (loc.length >= 2) {
+  //     // LngLatTuple
+  //     setOrCreateTagValue(this.element, "CoordinateChoice", "MGRS");
+  //     let mgrsString = mgrs.toMGRS(loc[0], loc[1], 5);
+  //     let gridZone = mgrsString.slice(0, 3);
+  //     let gridSquare = mgrsString.slice(3, 5);
+  //     let easting = mgrsString.slice(5, 10);
+  //     let northing = mgrsString.slice(10, 15);
+  //     setOrCreateTagValue(this.element, "MGRSGridZone", gridZone);
+  //     setOrCreateTagValue(this.element, "MGRSGridSquare", gridSquare);
+  //     setOrCreateTagValue(this.element, "MGRSEasting", easting);
+  //     setOrCreateTagValue(this.element, "MGRSNorthing", northing);
+  //   }
+  //   if (loc.length === 3) {
+  //     // LngLatElevationTuple
+  //     setOrCreateTagValue(this.element, "ElevationAGL", loc[2].toString());
+  //   }
+  // }
+
   private parseLocation() {
     if (this.coordinateChoice === "MGRS") {
-      this.location = this.parseMgrsLocation();
+      this.#location = this.parseMgrsLocation();
     } else if (this.coordinateChoice === "GDC") {
-      this.location = this.parseGDCLocation();
+      this.#location = this.parseGDCLocation();
     } else if (this.coordinateChoice === "GCC") {
-      this.location = this.parseGCCLocation();
+      this.#location = this.parseGCCLocation();
     } else if (this.coordinateChoice === "UTM") {
-      this.location = this.parseUTMLocation();
+      this.#location = this.parseUTMLocation();
     } else {
       // console.warn(`Unhandled coordinate choice ${this.coordinateChoice}`);
-      this.location = undefined;
+      this.#location = undefined;
     }
   }
 

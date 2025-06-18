@@ -215,6 +215,56 @@ describe("MSDL Location", () => {
   });
 });
 
+describe("MSDL Location write", () => {
+  describe("GDC", () => {
+    it("should write GDC location", () => {
+      let element = parseFromString(LOCATION_GDC_TEMPLATE);
+      let loc = new MsdlLocation(element);
+      expect(loc.location).toBeDefined();
+      if (loc.location) {
+        expect(loc.location.length).toBe(3);
+        expect(loc.location[0]).toBeCloseTo(15.038887, 5);
+        expect(loc.location[1]).toBeCloseTo(58.54383, 5);
+        expect(loc.location[2]).toBe(141.03737);
+      }
+      loc.location = [5.0, 8.0, 100];
+      let newElement = createXMLElement(xmlToString(loc.element));
+      let newLoc = new MsdlLocation(newElement);
+      expect(newLoc.location).toBeDefined();
+      if (newLoc.location) {
+        expect(newLoc.location.length).toBe(3);
+        expect(newLoc.location[0]).toBeCloseTo(5.0, 5);
+        expect(newLoc.location[1]).toBeCloseTo(8.0, 5);
+        expect(newLoc.location[2]).toBe(100);
+      }
+    });
+  });
+
+  //   describe("MGRS", () => {
+  //     it("should write MGRS location", () => {
+  //       let element = parseFromString(LOCATION_MGRS_TEMPLATE);
+  //       let loc = new MsdlLocation(element);
+  //       expect(loc.location).toBeDefined();
+  //       if (loc.location) {
+  //         expect(loc.location.length).toBe(3);
+  //         expect(loc.location[0]).toBeCloseTo(15.038887, 5);
+  //         expect(loc.location[1]).toBeCloseTo(58.54383, 5);
+  //         expect(loc.location[2]).toBe(10);
+  //       }
+  //       loc.location = [5.0, 8.0, 100];
+  //       let newElement = createXMLElement(xmlToString(loc.element));
+  //       let newLoc = new MsdlLocation(newElement);
+  //       expect(newLoc.location).toBeDefined();
+  //       if (newLoc.location) {
+  //         expect(newLoc.location.length).toBe(3);
+  //         expect(newLoc.location[0]).toBeCloseTo(5.0, 5);
+  //         expect(newLoc.location[1]).toBeCloseTo(8.0, 5);
+  //         expect(newLoc.location[2]).toBe(100);
+  //       }
+  //     });
+  //   });
+});
+
 describe("DispositionBase class", () => {
   describe("Parsing Disposition", () => {
     it("MGRS Disposition", () => {
