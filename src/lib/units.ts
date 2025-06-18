@@ -24,6 +24,7 @@ import { setCharAt } from "./symbology.js";
 import { ForceSide } from "./forcesides.js";
 import { UnitModel, type UnitModelType } from "./modelType.js";
 import { UnitDisposition } from "./geo.js";
+import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 
@@ -56,11 +57,22 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     const dispositionElement = getTagElement(this.element, "Disposition");
     if (dispositionElement) {
       this.#disposition = new UnitDisposition(dispositionElement);
-      this.location = this.#disposition.location;
       this.speed = this.#disposition.speed;
       this.directionOfMovement = this.#disposition.directionOfMovement;
     }
     this.initializeRelations();
+  }
+
+  get location(): LngLatTuple | LngLatElevationTuple | undefined {
+    return this.#disposition?.location;
+  }
+
+  set location(loc: LngLatTuple | LngLatElevationTuple | undefined) {
+    if (!this.#disposition) {
+      console.warn("UnitDisposition is not initialized");
+      return;
+    }
+    this.#disposition.location = loc!;
   }
 
   get isRoot(): boolean {

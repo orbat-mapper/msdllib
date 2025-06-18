@@ -127,6 +127,22 @@ const DISPOSITION_TEMPLATE = `<Disposition>
 </Disposition>
 `;
 
+const DISPOSITION_TEMPLATE_GDC = `<Disposition>
+    <Location>
+        <CoordinateChoice>GDC</CoordinateChoice>
+        <CoordinateData>
+            <GDC>
+                <Latitude>58.54383</Latitude>
+                <Longitude>15.038887</Longitude>
+                 <ElevationAGL>10</ElevationAGL>
+            </GDC>
+        </CoordinateData>
+    </Location>
+    <DirectionOfMovement>88</DirectionOfMovement>
+    <Speed>10</Speed>
+</Disposition>
+`;
+
 describe("MSDL Location", () => {
   it("defined", () => {
     expect(MsdlLocation).toBeDefined();
@@ -304,6 +320,27 @@ describe("DispositionBase class", () => {
         createXMLElement(xmlToString(loc.element)),
       );
       expect(loc2.speed).toBe(20);
+    });
+    it("Set location", () => {
+      let element = parseFromString(DISPOSITION_TEMPLATE_GDC);
+      let loc = new DispositionBase(element);
+      expect(loc.location).toBeDefined();
+      if (loc.location) {
+        expect(loc.location.length).toBe(3);
+        expect(loc.location[1]).toBeCloseTo(58.54383, 5);
+        expect(loc.location[0]).toBeCloseTo(15.038887, 5);
+        expect(loc.location[2]).toBe(10);
+      }
+      loc.location = [5.0, 8.0, 100];
+      let newElement = createXMLElement(xmlToString(loc.element));
+      let newLoc = new DispositionBase(newElement);
+      expect(newLoc.location).toBeDefined();
+      if (newLoc.location) {
+        expect(newLoc.location.length).toBe(3);
+        expect(newLoc.location[1]).toBeCloseTo(8.0, 5);
+        expect(newLoc.location[0]).toBeCloseTo(5.0, 5);
+        expect(newLoc.location[2]).toBe(100);
+      }
     });
   });
 

@@ -180,7 +180,7 @@ export class DispositionBase {
   #directionOfMovement?: number;
   #speed?: number;
   #msdlLocation?: MsdlLocation;
-  location?: LngLatTuple | LngLatElevationTuple;
+  // location: LngLatTuple | LngLatElevationTuple | undefined;
 
   constructor(element: Element) {
     this.element = element;
@@ -190,7 +190,19 @@ export class DispositionBase {
     if (dispositionElement) {
       this.#msdlLocation = new MsdlLocation(dispositionElement);
     }
-    this.location = this.#msdlLocation?.location;
+    // this.location = this.#msdlLocation?.location;
+  }
+
+  get location(): LngLatTuple | LngLatElevationTuple | undefined {
+    return this.#msdlLocation?.location;
+  }
+
+  set location(loc: LngLatTuple | LngLatElevationTuple | undefined) {
+    if (!this.#msdlLocation) {
+      console.warn("MsdlLocation is not initialized");
+      return;
+    }
+    this.#msdlLocation.location = loc!;
   }
 
   get directionOfMovement(): number | undefined {

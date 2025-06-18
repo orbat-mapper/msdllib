@@ -14,6 +14,7 @@ import {
 import { ForceOwnerType } from "./enums.js";
 import { EquipmentModel, type EquipmentModelType } from "./modelType.js";
 import { EquipmentItemDisposition } from "./geo.js";
+import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 
 export type EquipmentItemGeoJsonOptions = IdGeoJsonOptions;
 
@@ -43,7 +44,7 @@ export class EquipmentItem extends UnitEquipmentBase {
     const dispositionElement = getTagElement(this.element, "Disposition");
     if (dispositionElement) {
       this.#disposition = new EquipmentItemDisposition(dispositionElement);
-      this.location = this.#disposition.location;
+      // this.location = this.#disposition.location;
       this.speed = this.#disposition.speed;
       this.directionOfMovement = this.#disposition.directionOfMovement;
     }
@@ -71,6 +72,18 @@ export class EquipmentItem extends UnitEquipmentBase {
 
   get disposition(): EquipmentItemDisposition | undefined {
     return this.#disposition;
+  }
+
+  get location(): LngLatTuple | LngLatElevationTuple | undefined {
+    return this.#disposition?.location;
+  }
+
+  set location(loc: LngLatTuple | LngLatElevationTuple | undefined) {
+    if (!this.#disposition) {
+      console.warn("Disposition is not initialized");
+      return;
+    }
+    this.#disposition.location = loc!;
   }
 
   get model(): EquipmentModel | undefined {
