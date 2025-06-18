@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.15.1 2025-06-18
+
+### Fixed
+
+- Fix location property to use getter/setter in Disposition, Equipment, and Unit classes
+
 ## 0.15.0 2025-06-18
 
 ### Added
