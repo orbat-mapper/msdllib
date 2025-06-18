@@ -8,6 +8,7 @@ import {
   getNumberValue,
   getTagElement,
   getTagValue,
+  removeUndefinedValues,
   setOrCreateTagValue,
 } from "./domutils.js";
 import type {
@@ -121,6 +122,12 @@ export class MsdlLocation {
   }
 }
 
+export type DispositionType = {
+  directionOfMovement?: number;
+  location?: LngLatTuple | LngLatElevationTuple;
+  speed?: number;
+};
+
 export class DispositionBase {
   element: Element;
   #directionOfMovement?: number;
@@ -158,9 +165,28 @@ export class DispositionBase {
   get speed(): number | undefined {
     return this.#speed ?? getNumberValue(this.element, "Speed");
   }
+
   set speed(speed: number | undefined) {
     this.#speed = speed;
     setOrCreateTagValue(this.element, "Speed", speed?.toString());
+  }
+
+  toObject(): DispositionType {
+    return removeUndefinedValues({
+      directionOfMovement: this.directionOfMovement,
+      speed: this.speed,
+      location: this.location,
+    });
+  }
+
+  updateFromObject(data: Partial<DispositionType>) {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key in this) {
+        (this as any)[key] = value;
+      } else {
+        console.warn(`Property ${key} does not exist.`);
+      }
+    });
   }
 }
 

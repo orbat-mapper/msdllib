@@ -256,4 +256,28 @@ describe("DispositionBase class", () => {
       expect(loc2.speed).toBe(20);
     });
   });
+
+  describe("Serialization", () => {
+    it("should serialize to Object", () => {
+      let element = parseFromString(DISPOSITION_TEMPLATE);
+      let disp = new DispositionBase(element);
+      const obj = disp.toObject();
+      expect(obj.directionOfMovement).toBe(88);
+      expect(obj.speed).toBe(10);
+      expect(obj.location?.[1]).toBeCloseTo(58.54383, 5);
+      expect(obj.location?.[0]).toBeCloseTo(15.038887, 5);
+      expect(obj.location?.[2]).toBe(10);
+    });
+
+    it("should update from Object", () => {
+      let element = parseFromString(DISPOSITION_TEMPLATE);
+      let disp = new DispositionBase(element);
+      disp.updateFromObject({
+        directionOfMovement: 180,
+        speed: 5,
+      });
+      expect(disp.directionOfMovement).toBe(180);
+      expect(disp.speed).toBe(5);
+    });
+  });
 });
