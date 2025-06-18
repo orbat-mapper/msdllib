@@ -1,5 +1,18 @@
 # @orbat-mapper/msdllib
 
+## 0.15.0 2025-06-18
+
+### Added
+
+- Add experimental GDC Location write support
+- Add `disposition` to `Unit` and `EquipmentItem` classes
+- Add `toObject` and `updateFromObject` methods to ForceSide
+
+### Changed
+
+- `ForceSide.countryCode` is now undefined if not set
+- Rename `Holding.toJson()` and `Holding.updateFromJson()` to `toObject()` and `updateFromObject()`
+
 ## 0.14.0 - 2025-06-11
 
 ### Added
