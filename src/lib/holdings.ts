@@ -1,4 +1,5 @@
 import {
+  createXMLElement,
   getBooleanValue,
   getNumberValue,
   getTagValue,
@@ -230,5 +231,11 @@ export class Holding implements HoldingType {
         console.warn(`Property ${key} does not exist on Holding class.`);
       }
     });
+  }
+
+  static fromModel(model: HoldingType): Holding {
+    const holdingType = new Holding(createXMLElement(`<Holding></Holding>`));
+    holdingType.updateFromObject(model);
+    return holdingType;
   }
 }

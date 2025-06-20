@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createXMLElement, xmlToString } from "../lib/domutils.js";
-import { Holding } from "../lib/holdings.js";
+import { Holding, type HoldingType } from "../lib/holdings.js";
 import { Unit } from "../lib/units.js";
+import { UNIT_ROOT_UNIT } from "./testdata.js";
 
 const HOLDINGS_ELEMENT_SAMPLE = `<Holdings>
     <Holding>
@@ -114,7 +115,6 @@ const UNIT_HOLDINGS = `<Unit>
         </Holding>
     </Holdings>
 </Unit>
-
 `;
 
 describe("Holding class", () => {
@@ -224,5 +224,41 @@ describe("Unit holdings", () => {
     expect(holdings[1]?.nsnName).toBe("Jeep");
     expect(holdings[1]?.isEquipment).toBe(true);
     expect(holdings[1]?.onHandQuantity).toBe(2.0);
+  });
+
+  it("can be removed from a unit element", () => {
+    const unitElement = new Unit(createXMLElement(UNIT_HOLDINGS));
+    const holdings = unitElement.holdings;
+    expect(holdings.length).toBe(2);
+    unitElement.holdings = [];
+    expect(holdings.length).toBe(0);
+  });
+
+  it("can be created from HoldingType model", () => {
+    const holdingType: HoldingType = {
+      nsnName: "Diesel fuel",
+      nsnCode: "6.0.0.0.1.2.0",
+      onHandQuantity: 10000,
+    };
+    const holding = Holding.fromModel(holdingType);
+    expect(holding).toBeInstanceOf(Holding);
+    expect(holding.onHandQuantity).toBe(10000);
+    expect(holding.nsnCode).toBe("6.0.0.0.1.2.0");
+    expect(holding.nsnName).toBe("Diesel fuel");
+    expect(holding.postTypeCategory).toBeUndefined();
+  });
+
+  it("can be added to a unit without holdings", () => {
+    const unitElement = new Unit(createXMLElement(UNIT_ROOT_UNIT));
+    expect(unitElement.holdings.length).toBe(0);
+    const holdingType: HoldingType = {
+      nsnName: "Diesel fuel",
+      nsnCode: "6.0.0.0.1.2.0",
+      onHandQuantity: 10000,
+    };
+    const holding = Holding.fromModel(holdingType);
+    unitElement.holdings = [holding];
+    expect(unitElement.holdings.length).toBe(1);
+    expect(unitElement.holdings[0]?.nsnName).toBe("Diesel fuel");
   });
 });
