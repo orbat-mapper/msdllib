@@ -147,3 +147,10 @@ export function removeUndefinedValues<T extends Record<string, any>>(
     [K in keyof T]: T[K] extends undefined ? never : T[K];
   };
 }
+
+export function removeTagValue(parent: Element, tagName: string): void {
+  let el = parent.getElementsByTagNameNS(MSDL_NS, tagName).item(0);
+  if (el) {
+    el.parentNode?.removeChild(el);
+  }
+}

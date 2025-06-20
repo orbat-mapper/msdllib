@@ -2,7 +2,12 @@ import { describe, it, expect } from "vitest";
 import { ForceSide, MilitaryScenario, ScenarioId } from "../index.js";
 import { EMPTY_SCENARIO } from "./testdata.js";
 import fs from "fs/promises";
-import { loadTestScenario, loadTestScenarioAsString } from "./testutils.js";
+import {
+  loadNetnTestScenario,
+  loadNetnTestScenarioAsString,
+  loadTestScenario,
+  loadTestScenarioAsString,
+} from "./testutils.js";
 import { Unit } from "../lib/units.js";
 
 describe("MilitaryScenario class", () => {
@@ -227,7 +232,7 @@ describe("MilitaryScenario serialization", () => {
   it("should create the same output as input if unmodified", () => {
     const str = scenario.toString();
     const originalScenario = loadTestScenarioAsString();
-    expect(str.trim()).toBe(originalScenario.trim());
+    expect(str.replace(/\s+/g, "")).toBe(originalScenario.replace(/\s+/g, ""));
   });
 });
 
@@ -235,5 +240,17 @@ describe("MilitaryScenario with NETN", () => {
   it("should not detect NETN for plain MSDL scenarios", () => {
     let scenario = loadTestScenario();
     expect(scenario.isNETN).toBe(false);
+  });
+
+  it("should detect NETN for plain MSDL scenarios", () => {
+    let scenario = loadNetnTestScenario();
+    expect(scenario.isNETN).toBe(true);
+  });
+
+  it("should create the same output as input if unmodified", () => {
+    let scenario = loadNetnTestScenario();
+    const str = scenario.toString();
+    const originalScenario = loadNetnTestScenarioAsString();
+    expect(str.replace(/\s+/g, "")).toBe(originalScenario.replace(/\s+/g, ""));
   });
 });

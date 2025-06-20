@@ -2,13 +2,18 @@ import {
   getTagElement,
   getTagElements,
   getTagValue,
+  removeTagValue,
   setOrCreateTagValue,
+  xmlToString,
 } from "./domutils.js";
 import { StandardIdentity } from "./enums.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 import { setCharAt } from "./symbology.js";
 import { Holding } from "./holdings.js";
 import { type EquipmentItemDisposition, type UnitDisposition } from "./geo.js";
+
+export const HOLDINGS_ELEMENT_TAG = "Holdings";
+export const HOLDING_ELEMENT_TAG = "Holding";
 
 export type TacticalJson = {
   id?: string;
@@ -44,7 +49,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   #name: string;
   objectHandle: string;
   element: Element;
-  holdings: Holding[] = [];
+  #holdings: Holding[] = [];
 
   constructor(element: Element) {
     this.element = element;
@@ -69,6 +74,24 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
     setOrCreateTagValue(this.element, "Name", name);
   }
 
+  get holdings(): Holding[] {
+    return this.#holdings ?? getTagValue(this.element, HOLDINGS_ELEMENT_TAG);
+  }
+
+  set holdings(holdings: Holding[]) {
+    this.#holdings.length = 0;
+    holdings.length === 0
+      ? removeTagValue(this.element, HOLDINGS_ELEMENT_TAG)
+      : setOrCreateTagValue(this.element, HOLDINGS_ELEMENT_TAG, null, {
+          deleteIfNull: false,
+        }); // Create empty node if holdings exist, remove otherwise
+    const holdingsElement = getTagElement(this.element, HOLDINGS_ELEMENT_TAG)!;
+    for (const newHolding of holdings) {
+      this.#holdings.push(newHolding);
+      holdingsElement.appendChild(newHolding.element);
+    }
+  }
+
   setAffiliation(s: StandardIdentity) {
     this.sidc = setCharAt(this.sidc, 1, s);
   }
@@ -78,12 +101,18 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   }
 
   private initHoldings() {
-    const holdingsElement = getTagElement(this.element, "Holdings");
+    const holdingsElement = getTagElement(this.element, HOLDINGS_ELEMENT_TAG);
     if (holdingsElement) {
-      this.holdings = [];
-      for (const holdingElement of getTagElements(this.element, "Holding")) {
-        this.holdings.push(new Holding(holdingElement));
+      const holdings = [] as Holding[];
+      for (const holdingElement of getTagElements(
+        holdingsElement,
+        HOLDING_ELEMENT_TAG,
+      )) {
+        holdings.push(new Holding(holdingElement));
       }
+      this.holdings = holdings;
+    } else {
+      this.holdings = [] as Holding[];
     }
   }
 
