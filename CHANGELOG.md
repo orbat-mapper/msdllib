@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.16.0 2025-06-20
+
+### Minor Changes
+
+- Add holdings write support
+
 ## 0.15.1 2025-06-18
 
 ### Fixed
