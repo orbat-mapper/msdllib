@@ -1,5 +1,9 @@
-import { ScenarioId } from "./scenarioid.js";
-import { getTagElement, getTagElements } from "./domutils.js";
+import { ScenarioId, type ScenarioIdType } from "./scenarioid.js";
+import {
+  createEmptyXMLElementFromTagName,
+  getTagElement,
+  getTagElements,
+} from "./domutils.js";
 import { Unit } from "./units.js";
 import { rel2code, StandardIdentity } from "./enums.js";
 import { ForceSide } from "./forcesides.js";
@@ -28,7 +32,13 @@ export interface MilitaryScenarioType {
   toString(): string;
 }
 
+export interface MilitaryScenarioInputType {
+  scenarioId: ScenarioIdType;
+  isNETN: boolean;
+}
+
 export class MilitaryScenario implements MilitaryScenarioType {
+  static readonly TAG_NAME = "MilitaryScenario";
   scenarioId!: ScenarioId;
   forceSides: ForceSide[] = [];
   equipment: EquipmentItem[] = [];
@@ -88,6 +98,23 @@ export class MilitaryScenario implements MilitaryScenarioType {
       throw new TypeError("Invalid MSDL");
     }
     return militaryScenario;
+  }
+
+  static createFromModel(msdlInputType: MilitaryScenarioInputType) {
+    if (!msdlInputType?.scenarioId || !msdlInputType?.scenarioId.name)
+      throw new TypeError("Invalid MSDL input");
+    const milScen = new MilitaryScenario(
+      createEmptyXMLElementFromTagName(MilitaryScenario.TAG_NAME),
+      {
+        isNETN: msdlInputType.isNETN,
+      },
+    );
+    milScen.scenarioId = ScenarioId.fromModel(msdlInputType.scenarioId);
+    milScen.element!.appendChild(milScen.scenarioId.element);
+    milScen.element!.appendChild(
+      createEmptyXMLElementFromTagName("ForceSides"),
+    );
+    return milScen;
   }
 
   private initializeDeployment() {

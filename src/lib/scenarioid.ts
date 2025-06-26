@@ -106,6 +106,12 @@ export class ScenarioId implements ScenarioIdType {
     });
   }
 
+  toString() {
+    if (!this.element) return "";
+    const oSerializer = new XMLSerializer();
+    return oSerializer.serializeToString(this.element);
+  }
+
   updateFromObject(data: Partial<ScenarioIdType>) {
     Object.entries(data).forEach(([key, value]) => {
       if (key in this) {
@@ -114,5 +120,13 @@ export class ScenarioId implements ScenarioIdType {
         console.warn(`Property ${key} does not exist.`);
       }
     });
+  }
+
+  static fromModel(model: ScenarioIdType): ScenarioId {
+    const scenarioId = new ScenarioId(
+      createEmptyXMLElementFromTagName(ScenarioId.TAG_NAME),
+    );
+    scenarioId.updateFromObject(model);
+    return scenarioId;
   }
 }

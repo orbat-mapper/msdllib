@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { ForceSide, MilitaryScenario, ScenarioId } from "../index.js";
-import { EMPTY_SCENARIO } from "./testdata.js";
+import { EMPTY_SCENARIO, SCENARIO_ID_TYPE } from "./testdata.js";
 import fs from "fs/promises";
 import {
   loadNetnTestScenario,
@@ -9,6 +9,8 @@ import {
   loadTestScenarioAsString,
 } from "./testutils.js";
 import { Unit } from "../lib/units.js";
+import type { MilitaryScenarioInputType } from "../lib/militaryscenario.js";
+import { createXMLElement, getTagElement } from "../lib/domutils.js";
 
 describe("MilitaryScenario class", () => {
   it("is defined", () => {
@@ -252,5 +254,48 @@ describe("MilitaryScenario with NETN", () => {
     const str = scenario.toString();
     const originalScenario = loadNetnTestScenarioAsString();
     expect(str.replace(/\s+/g, "")).toBe(originalScenario.replace(/\s+/g, ""));
+  });
+});
+
+describe("Create a MilitaryScenario", () => {
+  const scenarioInput: MilitaryScenarioInputType = {
+    isNETN: false,
+    scenarioId: SCENARIO_ID_TYPE,
+  };
+  const scenarioInputNetn: MilitaryScenarioInputType = {
+    isNETN: true,
+    scenarioId: SCENARIO_ID_TYPE,
+  };
+  it("should create a plain MSDL scenario from input", () => {
+    let scenario = MilitaryScenario.createFromModel(scenarioInput);
+    expect(scenario.isNETN).toBe(false);
+    expect(scenario.scenarioId.name).toBe(SCENARIO_ID_TYPE.name);
+    expect(scenario.forceSides.length).toBe(0);
+    expect(scenario.rootUnits.length).toBe(0);
+    expect(scenario.equipment.length).toBe(0);
+  });
+  it("should create a NETN MSDL scenario from input", () => {
+    let scenario = MilitaryScenario.createFromModel(scenarioInputNetn);
+    expect(scenario.isNETN).toBe(true);
+    expect(scenario.scenarioId.name).toBe(SCENARIO_ID_TYPE.name);
+  });
+  it("should throw an error on incomplete input", () => {
+    expect(() =>
+      MilitaryScenario.createFromModel({} as MilitaryScenarioInputType),
+    ).toThrow(TypeError);
+    expect(() =>
+      MilitaryScenario.createFromModel({
+        scenarioId: { modificationDate: "" },
+        isNETN: false,
+      } as MilitaryScenarioInputType),
+    ).toThrow(TypeError);
+  });
+  it("should output a minimal scenario file", () => {
+    let scenario = MilitaryScenario.createFromModel(scenarioInputNetn);
+    const xml = createXMLElement(scenario.toString());
+    let scenarioId = getTagElement(xml, "ScenarioID");
+    expect(scenarioId).toBeDefined();
+    expect(getTagElement(scenarioId, "name")).toBeDefined();
+    expect(getTagElement(xml, "ForceSides")).toBeDefined();
   });
 });
