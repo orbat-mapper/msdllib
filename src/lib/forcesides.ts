@@ -42,6 +42,7 @@ type SideGeoJsonOptions = {
 };
 
 export class ForceSide implements ForceSideType {
+  static readonly TAG_NAME = "ForceSide";
   objectHandle: string;
   #name: string;
   #militaryService?: MilitaryService;

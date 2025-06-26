@@ -1,4 +1,5 @@
 import {
+  createEmptyXMLElementFromTagName,
   getTagValue,
   removeUndefinedValues,
   setOrCreateTagValue,
@@ -14,6 +15,7 @@ export interface ScenarioIdType {
 }
 
 export class ScenarioId implements ScenarioIdType {
+  static readonly TAG_NAME = "ScenarioID";
   #name = "";
   #description = "";
   #securityClassification = "";
