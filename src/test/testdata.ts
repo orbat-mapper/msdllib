@@ -1,8 +1,19 @@
+import type { ScenarioIdType } from "../lib/scenarioid.js";
+
 export function parseFromString(xmlString: string): Element {
   let parser = new DOMParser();
   let doc = parser.parseFromString(xmlString, "text/xml");
   return doc.documentElement;
 }
+
+export const SCENARIO_ID_TYPE: ScenarioIdType = {
+  name: "Test scenario",
+  description: "Somewhere on earth",
+  modificationDate: "2025-06-26",
+  securityClassification: "SECRET",
+  type: "MSDL",
+  version: "1.0",
+};
 
 export const EMPTY_SCENARIO = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <MilitaryScenario xmlns="urn:sisostds:scenario:military:data:draft:1"

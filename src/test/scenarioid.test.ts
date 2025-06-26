@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { MilitaryScenario, ScenarioId } from "../index.js";
-import { parseFromString } from "./testdata.js";
+import { parseFromString, SCENARIO_ID_TYPE } from "./testdata.js";
 import { getTagValue } from "../lib/domutils.js";
 
 const SCENARIO_ID_TEMPLATE = `<ScenarioID xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
@@ -164,6 +164,30 @@ describe("ScenarioId serialization", () => {
         "version",
       );
       expect(versionElements.length).toBe(0);
+    });
+  });
+
+  describe("fromModel", () => {
+    it("should create an instance from an object", () => {
+      const scenarioId = ScenarioId.fromModel(SCENARIO_ID_TYPE);
+      expect(scenarioId.name).toBe(SCENARIO_ID_TYPE.name);
+      expect(scenarioId.description).toBe(SCENARIO_ID_TYPE.description);
+      expect(scenarioId.version).toBe(SCENARIO_ID_TYPE.version);
+      expect(scenarioId.securityClassification).toBe(
+        SCENARIO_ID_TYPE.securityClassification,
+      );
+      expect(scenarioId.type).toBe(SCENARIO_ID_TYPE.type);
+      expect(scenarioId.modificationDate).toBe(
+        SCENARIO_ID_TYPE.modificationDate,
+      );
+    });
+    it("should be the same after serializing to xml back and forth", () => {
+      const scenarioIdBefore = ScenarioId.fromModel(SCENARIO_ID_TYPE);
+      const xmlString = scenarioIdBefore.toString();
+      const scenarioIdAfter = new ScenarioId(parseFromString(xmlString));
+      expect(scenarioIdBefore.name).toBe(scenarioIdAfter.name);
+      expect(scenarioIdBefore.description).toBe(scenarioIdAfter.description);
+      expect(scenarioIdBefore.version).toBe(scenarioIdAfter.version);
     });
   });
 });
