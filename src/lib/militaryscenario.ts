@@ -97,7 +97,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private initializeMetaInfo() {
-    const scenarioIdElement = getTagElement(this.element, "ScenarioID");
+    const scenarioIdElement = getTagElement(this.element, ScenarioId.TAG_NAME);
     if (!scenarioIdElement) {
       // throw new Error("ScenarioID element is required but not found");
       return;
@@ -108,7 +108,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     this.forceSides = [];
     const forceSideEl = getTagElement(this.element, "ForceSides");
     if (!forceSideEl) return;
-    let forceSideElements = getTagElements(forceSideEl, "ForceSide");
+    let forceSideElements = getTagElements(forceSideEl, ForceSide.TAG_NAME);
     for (let e of forceSideElements) {
       let forceSide = new ForceSide(e);
       this.forceSides.push(forceSide);

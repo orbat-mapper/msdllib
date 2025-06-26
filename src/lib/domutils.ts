@@ -131,6 +131,12 @@ export function createXMLElement(xml: string): Element {
   return doc.documentElement;
 }
 
+export function createEmptyXMLElementFromTagName(tagName: string): Element {
+  let parser = new DOMParser();
+  let doc = parser.parseFromString(`<${tagName}></${tagName}>`, "text/xml");
+  return doc.documentElement;
+}
+
 export function xmlToString(element: Element): string {
   let serializer = new XMLSerializer();
   return serializer.serializeToString(element);

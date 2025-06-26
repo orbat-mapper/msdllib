@@ -1,5 +1,5 @@
 import {
-  createXMLElement,
+  createEmptyXMLElementFromTagName,
   getBooleanValue,
   getNumberValue,
   getTagValue,
@@ -28,6 +28,7 @@ The quantity of each specific Equipment/Consumable defined by a Nato Stock Numbe
 that is held by, installed in, or included with a unit.
 */
 export class Holding implements HoldingType {
+  static readonly TAG_NAME = "Holding";
   element: Element;
   #isEquipment?: boolean;
   #nsnCode: string;
@@ -234,7 +235,9 @@ export class Holding implements HoldingType {
   }
 
   static fromModel(model: HoldingType): Holding {
-    const holdingType = new Holding(createXMLElement(`<Holding></Holding>`));
+    const holdingType = new Holding(
+      createEmptyXMLElementFromTagName(Holding.TAG_NAME),
+    );
     holdingType.updateFromObject(model);
     return holdingType;
   }

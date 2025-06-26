@@ -1,8 +1,7 @@
 import type { ModelResolutionType } from "./enums.js";
 import {
-  createXMLElement,
+  createEmptyXMLElementFromTagName,
   getBooleanValue,
-  getTagValue,
   getValueOrUndefined,
   setOrCreateBooleanValue,
   setOrCreateTagValue,
@@ -20,6 +19,7 @@ export interface UnitModelType extends UnitEquipmentModelBaseType {
 export interface EquipmentModelType extends UnitEquipmentModelBaseType {}
 
 export class UnitEquipmentModelBase implements UnitEquipmentModelBaseType {
+  static readonly TAG_NAME = "Model";
   #resolution?: ModelResolutionType;
   #entityType?: string;
   element: Element;
@@ -73,7 +73,9 @@ export class UnitModel extends UnitEquipmentModelBase {
   }
 
   static fromModel(model: UnitModelType): UnitModel {
-    const modelType = new UnitModel(createXMLElement(`<Model></Model>`));
+    const modelType = new UnitModel(
+      createEmptyXMLElementFromTagName(UnitEquipmentModelBase.TAG_NAME),
+    );
     modelType.resolution = model.resolution;
     modelType.entityType = model.entityType;
     modelType.aggregateBased = model.aggregateBased;
@@ -87,7 +89,9 @@ export class EquipmentModel extends UnitEquipmentModelBase {
   }
 
   static fromModel(model: UnitEquipmentModelBaseType): EquipmentModel {
-    const modelType = new EquipmentModel(createXMLElement(`<Model></Model>`));
+    const modelType = new EquipmentModel(
+      createEmptyXMLElementFromTagName(UnitEquipmentModelBase.TAG_NAME),
+    );
     modelType.resolution = model.resolution;
     modelType.entityType = model.entityType;
     return modelType;
