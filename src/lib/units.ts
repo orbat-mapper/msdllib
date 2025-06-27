@@ -1,8 +1,10 @@
 import {
+  createEmptyXMLElementFromTagName,
   createXMLElement,
   getTagElement,
   getTagValue,
   getValueOrUndefined,
+  setOrCreateTagValue,
 } from "./domutils.js";
 import type { Feature, Point } from "geojson";
 import {
@@ -23,12 +25,14 @@ import {
 import { setCharAt } from "./symbology.js";
 import { ForceSide } from "./forcesides.js";
 import { UnitModel, type UnitModelType } from "./modelType.js";
-import { UnitDisposition } from "./geo.js";
+import { UnitDisposition, type DispositionType } from "./geo.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
+import { v4 as uuidv4 } from "uuid";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 
 export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
+  static readonly TAG_NAME = "Unit";
   symbolModifiers?: UnitSymbolModifiers;
   equipment: EquipmentItem[] = [];
   subordinates: Unit[] = [];
@@ -54,11 +58,13 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     if (modelElement) {
       this.#model = new UnitModel(modelElement);
     }
-    const dispositionElement = getTagElement(this.element, "Disposition");
+
+    const dispositionElement = getTagElement(
+      this.element,
+      UnitDisposition.TAG_NAME,
+    );
     if (dispositionElement) {
       this.#disposition = new UnitDisposition(dispositionElement);
-      this.speed = this.#disposition.speed;
-      this.directionOfMovement = this.#disposition.directionOfMovement;
     }
     this.initializeRelations();
   }
@@ -67,20 +73,42 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     return this.#disposition?.location;
   }
 
-  set location(loc: LngLatTuple | LngLatElevationTuple | undefined) {
-    if (!this.#disposition) {
-      console.warn("UnitDisposition is not initialized");
-      return;
-    }
-    this.#disposition.location = loc!;
-  }
-
   get isRoot(): boolean {
     return this.forceRelationChoice === ForceOwnerType.ForceSide;
   }
 
   get disposition(): UnitDisposition | undefined {
     return this.#disposition;
+  }
+
+  set disposition(disposition: UnitDisposition | DispositionType | undefined) {
+    const dispElm = getTagElement(this.element, UnitDisposition.TAG_NAME);
+    if (!disposition) {
+      this.#disposition = undefined;
+      if (dispElm) {
+        this.element.removeChild(dispElm);
+      }
+      return;
+    }
+
+    let test =
+      disposition instanceof UnitDisposition
+        ? disposition
+        : UnitDisposition.fromModel(disposition);
+    this.#disposition = test;
+    if (dispElm) {
+      this.element.replaceChild(dispElm, this.#disposition.element);
+    } else {
+      this.element.appendChild(this.#disposition.element);
+    }
+  }
+
+  get speed(): number | undefined {
+    return this.#disposition?.speed;
+  }
+
+  get directionOfMovement(): number | undefined {
+    return this.#disposition?.directionOfMovement;
   }
 
   get model(): UnitModel | undefined {
@@ -120,11 +148,11 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     let feature: Feature<Point | null, TacticalJson>;
     let properties: TacticalJson = {};
 
-    if (this.speed) {
-      properties.speed = this.speed;
+    if (this.disposition?.speed) {
+      properties.speed = this.disposition.speed;
     }
-    if (this.directionOfMovement) {
-      properties.direction = this.directionOfMovement;
+    if (this.disposition?.directionOfMovement) {
+      properties.direction = this.disposition.directionOfMovement;
     }
     properties.sidc = this.sidc;
     properties.label = this.label;
@@ -207,6 +235,21 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
       console.error("Invalid ForceRelationChoice " + this.forceRelationChoice);
     }
     // Todo: Add support for support and organic relations
+  }
+
+  static create(): Unit {
+    const unit: Unit = new Unit(
+      createEmptyXMLElementFromTagName(Unit.TAG_NAME),
+    );
+    const baseProps: Partial<UnitEquipmentInterface> = {
+      objectHandle: uuidv4(),
+    };
+    unit.updateFromObject(baseProps);
+    // TODO: getter and setter for relations
+    setOrCreateTagValue(unit.element, "Relations", null, {
+      deleteIfNull: false,
+    });
+    return unit;
   }
 }
 

@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { EQUIPMENT_TEMPLATE, parseFromString } from "./testdata.js";
 
 import { EquipmentItem, EquipmentSymbolModifiers } from "../lib/equipment.js";
-import { getTagValue } from "../lib/domutils.js";
+import { getTagElement, getTagValue } from "../lib/domutils.js";
+import { EquipmentItemDisposition } from "../lib/geo.js";
 
 const EQUIPMENT_NO_NAME_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -264,5 +265,59 @@ describe("EquipmentItem class", () => {
         "New Name",
       );
     });
+  });
+});
+
+describe("New EquipmentItem", () => {
+  const equipment = EquipmentItem.create();
+  it("should be created from scratch", () => {
+    expect(equipment).toBeInstanceOf(EquipmentItem);
+    expect(equipment.objectHandle).toBeTypeOf("string");
+    expect(equipment.objectHandle.length).toBe(36);
+  });
+  it("should have a minimal element tags", () => {
+    expect(equipment).toBeInstanceOf(EquipmentItem);
+    expect(getTagElement(equipment.element, "Relations", true)).toBeDefined();
+  });
+  it("should have writeable and clearable properties", () => {
+    expect(equipment.name).toBe("");
+    expect(equipment.disposition).toBeUndefined();
+    equipment.name = "Another name";
+    equipment.disposition = EquipmentItemDisposition.fromModel({
+      speed: 42,
+      directionOfMovement: 1,
+      location: [5.0, 54.0],
+    });
+    expect(equipment.name).toBe("Another name");
+    expect(equipment.disposition?.speed).toBe(42);
+    expect(equipment.disposition?.directionOfMovement).toBe(1);
+    expect(equipment.disposition?.location).toEqual([5.0, 54.0]);
+    equipment.disposition = undefined;
+    expect(equipment.disposition).toBeUndefined();
+  });
+  it("should match the original when going to XML string and back", () => {
+    let unitOriginal = EquipmentItem.create();
+    unitOriginal.name = "MyName";
+    unitOriginal.disposition = EquipmentItemDisposition.fromModel({
+      speed: 42,
+      directionOfMovement: 1,
+      location: [5.0, 54.0],
+    });
+    let strOriginal = unitOriginal.toString();
+    let geojOrignal = unitOriginal.toGeoJson();
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(strOriginal, "text/xml");
+    expect(doc.documentElement).toEqual(unitOriginal.element);
+    let unitAgain = new EquipmentItem(doc.documentElement);
+    expect(unitAgain.toString()).toBe(strOriginal);
+    expect(unitAgain.toGeoJson()).toEqual(geojOrignal);
+  });
+  it("should have a location property directly accessible", () => {
+    equipment.disposition = EquipmentItemDisposition.fromModel({
+      speed: 42,
+      directionOfMovement: 1,
+      location: [5.0, 54.0],
+    });
+    expect(equipment.location).toEqual([5.0, 54.0]);
   });
 });

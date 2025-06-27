@@ -3,6 +3,7 @@ import { parseFromString } from "./testdata.js";
 import { DispositionBase, MsdlLocation } from "../lib/geo.js";
 import type { Point } from "geojson";
 import { createXMLElement, xmlToString } from "../lib/domutils.js";
+import type { CoordinateChoice } from "../lib/types.js";
 
 function precisionRound(num: number, precision: number) {
   let factor = Math.pow(10, precision);
@@ -146,6 +147,13 @@ const DISPOSITION_TEMPLATE_GDC = `<Disposition>
 describe("MSDL Location", () => {
   it("defined", () => {
     expect(MsdlLocation).toBeDefined();
+  });
+
+  it("create from scratch", () => {
+    let loc = MsdlLocation.createGDCLocation([5.0, 54.0]);
+    expect(loc).toBeInstanceOf(MsdlLocation);
+    expect(loc.coordinateChoice).toEqual("GDC" as CoordinateChoice);
+    expect(loc.location).toEqual([5.0, 54.0]);
   });
 
   it("create from Element", () => {
@@ -356,15 +364,46 @@ describe("DispositionBase class", () => {
       expect(obj.location?.[2]).toBe(10);
     });
 
-    it("should update from Object", () => {
+    it("should update its properties from Object", () => {
       let element = parseFromString(DISPOSITION_TEMPLATE);
       let disp = new DispositionBase(element);
       disp.updateFromObject({
         directionOfMovement: 180,
         speed: 5,
+        location: [5.0, 54.0],
       });
       expect(disp.directionOfMovement).toBe(180);
       expect(disp.speed).toBe(5);
+      expect(disp.location).toEqual([5.0, 54.0]);
+    });
+
+    it("should update its element from Object (MGRS)", () => {
+      let element = parseFromString(DISPOSITION_TEMPLATE);
+      let disp1 = new DispositionBase(element);
+      disp1.updateFromObject({
+        directionOfMovement: 142,
+        speed: 33,
+        location: [5.0, 54.0],
+      });
+      let disp2 = new DispositionBase(disp1.element);
+      expect(disp2.directionOfMovement).toBe(142);
+      expect(disp2.speed).toBe(33);
+      expect(disp2.location![0]).toBeCloseTo(5.0, 3);
+      expect(disp2.location![1]).toBeCloseTo(54.0, 3);
+    });
+
+    it("should update its element from Object (GDC)", () => {
+      let element = parseFromString(DISPOSITION_TEMPLATE_GDC);
+      let disp1 = new DispositionBase(element);
+      disp1.updateFromObject({
+        directionOfMovement: 142,
+        speed: 33,
+        location: [5.0, 54.0],
+      });
+      let disp2 = new DispositionBase(disp1.element);
+      expect(disp2.directionOfMovement).toBe(142);
+      expect(disp2.speed).toBe(33);
+      expect(disp2.location).toEqual([5.0, 54.0]);
     });
   });
 });
