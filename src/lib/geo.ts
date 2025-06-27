@@ -5,11 +5,14 @@ import * as projector from "ecef-projector";
 import { toLatLon } from "utm";
 
 import {
+  createEmptyXMLElementFromTagName,
   getNumberValue,
   getTagElement,
   getTagValue,
+  removeTagValue,
   removeUndefinedValues,
   setOrCreateTagValue,
+  xmlToString,
 } from "./domutils.js";
 import type {
   CoordinateChoice,
@@ -18,8 +21,9 @@ import type {
 } from "./types.js";
 
 export class MsdlLocation {
+  static readonly TAG_NAME = "Location";
   #location?: LngLatTuple | LngLatElevationTuple;
-  coordinateChoice: CoordinateChoice;
+  #coordinateChoice?: CoordinateChoice;
   element: Element;
 
   constructor(element: Element) {
@@ -31,6 +35,19 @@ export class MsdlLocation {
     this.parseLocation();
   }
 
+  get coordinateChoice(): CoordinateChoice | undefined {
+    return (
+      this.#coordinateChoice ??
+      (getTagValue(this.element, "CoordinateChoice") as CoordinateChoice)
+    );
+  }
+
+  set coordinateChoice(coordinateChoice: CoordinateChoice) {
+    this.#coordinateChoice = coordinateChoice;
+    setOrCreateTagValue(this.element, "CoordinateChoice", coordinateChoice);
+    if (this.#location) this.writeLocation(this.#location);
+  }
+
   get location(): LngLatTuple | LngLatElevationTuple | undefined {
     return this.#location;
   }
@@ -38,45 +55,65 @@ export class MsdlLocation {
   set location(loc: LngLatTuple | LngLatElevationTuple) {
     this.#location = loc;
     if (!loc) return;
+    this.writeLocation(loc);
+  }
+
+  private writeLocation(loc: LngLatTuple | LngLatElevationTuple) {
     if (this.coordinateChoice === "GDC") {
       this.writeGDCLocation(loc);
+    } else if (this.coordinateChoice === "MGRS") {
+      this.writeMGRSLocation(loc);
+      // } else if (this.coordinateChoice === "GCC") {
+      //   this.#location = this.writeGCCLocation();
+      // } else if (this.coordinateChoice === "UTM") {
+      //   this.#location = this.writeUTMLocation();
     } else {
-      console.warn("Unhandled location type", this.coordinateChoice);
+      console.warn(`Unhandled coordinate choice ${this.coordinateChoice}`);
     }
   }
 
   private writeGDCLocation(loc: LngLatTuple | LngLatElevationTuple) {
+    setOrCreateTagValue(this.element, "CoordinateChoice", "GDC");
+    removeTagValue(this.element, "CoordinateData");
+    const dataElement = createEmptyXMLElementFromTagName("CoordinateData");
+    const gdcElement = createEmptyXMLElementFromTagName("GDC");
     if (loc.length >= 2) {
       // LngLatTuple
-      setOrCreateTagValue(this.element, "CoordinateChoice", "GDC");
-      setOrCreateTagValue(this.element, "Latitude", loc[1].toString());
-      setOrCreateTagValue(this.element, "Longitude", loc[0].toString());
+      setOrCreateTagValue(gdcElement, "Latitude", loc[1].toString());
+      setOrCreateTagValue(gdcElement, "Longitude", loc[0].toString());
+    }
+    if (loc.length === 2) {
+      removeTagValue(gdcElement, "ElevationAGL");
+    } else if (loc.length === 3) {
+      // LngLatElevationTuple
+      setOrCreateTagValue(gdcElement, "ElevationAGL", loc[2].toString());
+    }
+    dataElement.appendChild(gdcElement);
+    this.element.appendChild(dataElement);
+  }
+
+  private writeMGRSLocation(loc: LngLatTuple | LngLatElevationTuple) {
+    if (loc.length >= 2) {
+      // LngLatTuple
+      setOrCreateTagValue(this.element, "CoordinateChoice", "MGRS");
+      let mgrsString = mgrs.forward([loc[0], loc[1]], 5);
+      let gridZone = mgrsString.slice(0, 3);
+      let gridSquare = mgrsString.slice(3, 5);
+      let easting = mgrsString.slice(5, 10);
+      let northing = mgrsString.slice(10, 15);
+      setOrCreateTagValue(this.element, "MGRSGridZone", gridZone);
+      setOrCreateTagValue(this.element, "MGRSGridSquare", gridSquare);
+      setOrCreateTagValue(this.element, "MGRSEasting", easting);
+      setOrCreateTagValue(this.element, "MGRSNorthing", northing);
+    }
+    if (loc.length === 2) {
+      removeTagValue(this.element, "ElevationAGL");
     }
     if (loc.length === 3) {
       // LngLatElevationTuple
       setOrCreateTagValue(this.element, "ElevationAGL", loc[2].toString());
     }
   }
-
-  // private writeMGRSLocation(loc: LngLatTuple | LngLatElevationTuple) {
-  //   if (loc.length >= 2) {
-  //     // LngLatTuple
-  //     setOrCreateTagValue(this.element, "CoordinateChoice", "MGRS");
-  //     let mgrsString = mgrs.toMGRS(loc[0], loc[1], 5);
-  //     let gridZone = mgrsString.slice(0, 3);
-  //     let gridSquare = mgrsString.slice(3, 5);
-  //     let easting = mgrsString.slice(5, 10);
-  //     let northing = mgrsString.slice(10, 15);
-  //     setOrCreateTagValue(this.element, "MGRSGridZone", gridZone);
-  //     setOrCreateTagValue(this.element, "MGRSGridSquare", gridSquare);
-  //     setOrCreateTagValue(this.element, "MGRSEasting", easting);
-  //     setOrCreateTagValue(this.element, "MGRSNorthing", northing);
-  //   }
-  //   if (loc.length === 3) {
-  //     // LngLatElevationTuple
-  //     setOrCreateTagValue(this.element, "ElevationAGL", loc[2].toString());
-  //   }
-  // }
 
   private parseLocation() {
     if (this.coordinateChoice === "MGRS") {
@@ -167,6 +204,22 @@ export class MsdlLocation {
       return [longitude, latitude];
     }
   }
+
+  static createGDCLocation(
+    lngLat: LngLatTuple | LngLatElevationTuple,
+  ): MsdlLocation {
+    const msdlLoc = MsdlLocation.create("GDC");
+    msdlLoc.location = lngLat;
+    return msdlLoc;
+  }
+
+  static create(coordinateChoice: CoordinateChoice): MsdlLocation {
+    const msdlLocation = new MsdlLocation(
+      createEmptyXMLElementFromTagName(MsdlLocation.TAG_NAME),
+    );
+    msdlLocation.coordinateChoice = coordinateChoice;
+    return msdlLocation;
+  }
 }
 
 export type DispositionType = {
@@ -176,6 +229,7 @@ export type DispositionType = {
 };
 
 export class DispositionBase {
+  static readonly TAG_NAME = "Disposition";
   element: Element;
   #directionOfMovement?: number;
   #speed?: number;
@@ -186,9 +240,9 @@ export class DispositionBase {
     this.element = element;
     this.#directionOfMovement = getNumberValue(element, "DirectionOfMovement");
     this.#speed = getNumberValue(element, "Speed");
-    let dispositionElement = getTagElement(element, "Location");
-    if (dispositionElement) {
-      this.#msdlLocation = new MsdlLocation(dispositionElement);
+    let locationElement = getTagElement(element, MsdlLocation.TAG_NAME);
+    if (locationElement) {
+      this.#msdlLocation = new MsdlLocation(locationElement);
     }
     // this.location = this.#msdlLocation?.location;
   }
@@ -198,11 +252,17 @@ export class DispositionBase {
   }
 
   set location(loc: LngLatTuple | LngLatElevationTuple | undefined) {
-    if (!this.#msdlLocation) {
-      console.warn("MsdlLocation is not initialized");
+    if (!loc) {
+      this.#msdlLocation = undefined;
+      removeTagValue(this.element, MsdlLocation.TAG_NAME);
       return;
     }
-    this.#msdlLocation.location = loc!;
+    if (!this.#msdlLocation) {
+      console.warn("MsdlLocation is not initialized");
+      this.#msdlLocation = MsdlLocation.createGDCLocation(loc);
+    }
+    this.#msdlLocation.location = loc;
+    this.element.appendChild(this.#msdlLocation.element);
   }
 
   get directionOfMovement(): number | undefined {
@@ -253,10 +313,38 @@ export class UnitDisposition extends DispositionBase {
   constructor(element: Element) {
     super(element);
   }
+
+  static fromModel(model: Partial<DispositionType>): UnitDisposition {
+    const disposition = new UnitDisposition(
+      createEmptyXMLElementFromTagName(UnitDisposition.TAG_NAME),
+    );
+    disposition.updateFromObject(model);
+    return disposition;
+  }
+
+  static create(): UnitDisposition {
+    return new UnitDisposition(
+      createEmptyXMLElementFromTagName(UnitDisposition.TAG_NAME),
+    );
+  }
 }
 
 export class EquipmentItemDisposition extends DispositionBase {
   constructor(element: Element) {
     super(element);
+  }
+
+  static fromModel(model: Partial<DispositionType>): EquipmentItemDisposition {
+    const disposition = new EquipmentItemDisposition(
+      createEmptyXMLElementFromTagName(EquipmentItemDisposition.TAG_NAME),
+    );
+    disposition.updateFromObject(model);
+    return disposition;
+  }
+
+  static create(): EquipmentItemDisposition {
+    return new EquipmentItemDisposition(
+      createEmptyXMLElementFromTagName(EquipmentItemDisposition.TAG_NAME),
+    );
   }
 }

@@ -32,7 +32,8 @@
   "dependencies": {
     "ecef-projector": "^1.0.1",
     "mgrs": "^2.1.0",
-    "utm": "^1.1.1"
+    "utm": "^1.1.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.3",

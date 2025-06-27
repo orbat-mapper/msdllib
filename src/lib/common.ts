@@ -4,7 +4,6 @@ import {
   getTagValue,
   removeTagValue,
   setOrCreateTagValue,
-  xmlToString,
 } from "./domutils.js";
 import { StandardIdentity } from "./enums.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
@@ -22,6 +21,8 @@ export type TacticalJson = {
   direction?: number;
   label?: string;
 };
+
+export type UnitOrEquipmentType = "unit" | "equipment";
 
 export type UnitEquipmentInterface = {
   objectHandle: string;
@@ -43,22 +44,22 @@ export type UnitEquipmentInterface = {
 export class UnitEquipmentBase implements UnitEquipmentInterface {
   sidc: string;
   // location?: LngLatTuple | LngLatElevationTuple;
-  speed?: number;
-  directionOfMovement?: number;
-  symbolIdentifier: string;
+  // speed?: number;
+  // directionOfMovement?: number;
+  #symbolIdentifier: string;
   #name: string;
-  objectHandle: string;
+  #objectHandle: string;
   element: Element;
   #holdings: Holding[] = [];
 
   constructor(element: Element) {
     this.element = element;
-    this.objectHandle = getTagValue(element, "ObjectHandle");
-    this.symbolIdentifier = getTagValue(this.element, "SymbolIdentifier");
+    this.#objectHandle = getTagValue(element, "ObjectHandle");
+    this.#symbolIdentifier = getTagValue(this.element, "SymbolIdentifier");
     this.#name = getTagValue(element, "Name");
 
     this.sidc = setCharAt(
-      this.symbolIdentifier,
+      this.#symbolIdentifier,
       1,
       StandardIdentity.NoneSpecified,
     );
@@ -72,6 +73,26 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   set name(name: string) {
     this.#name = name;
     setOrCreateTagValue(this.element, "Name", name);
+  }
+
+  get objectHandle(): string {
+    return this.#objectHandle ?? getTagValue(this.element, "ObjectHandle");
+  }
+
+  set objectHandle(objectHandle: string) {
+    this.#objectHandle = objectHandle;
+    setOrCreateTagValue(this.element, "ObjectHandle", objectHandle);
+  }
+
+  get symbolIdentifier(): string {
+    return (
+      this.#symbolIdentifier ?? getTagValue(this.element, "SymbolIdentifier")
+    );
+  }
+
+  set symbolIdentifier(symbolIdentifier: string) {
+    this.#symbolIdentifier = symbolIdentifier;
+    setOrCreateTagValue(this.element, "SymbolIdentifier", symbolIdentifier);
   }
 
   get holdings(): Holding[] {
@@ -120,6 +141,16 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
     if (!this.element) return "";
     const oSerializer = new XMLSerializer();
     return oSerializer.serializeToString(this.element);
+  }
+
+  updateFromObject(data: Partial<UnitEquipmentBase>) {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key in this) {
+        (this as any)[key] = value;
+      } else {
+        console.warn(`Property ${key} does not exist.`);
+      }
+    });
   }
 }
 

@@ -14,8 +14,9 @@ import {
   ForceOwnerType,
   StandardIdentity,
 } from "../lib/enums.js";
-import { getTagValue } from "../lib/domutils.js";
+import { getTagElement, getTagValue } from "../lib/domutils.js";
 import { ForceSide } from "../lib/forcesides.js";
+import { UnitDisposition } from "../lib/geo.js";
 
 describe("MSDL Unit", () => {
   it("should be defined", () => {
@@ -251,5 +252,62 @@ describe("Unit class", () => {
       unit.name = "New Name";
       expect(unit.element.querySelector("Name")?.textContent).toBe("New Name");
     });
+  });
+});
+
+describe("New Unit", () => {
+  const unit = Unit.create();
+  it("should be created from scratch", () => {
+    expect(unit).toBeInstanceOf(Unit);
+    expect(unit.objectHandle).toBeTypeOf("string");
+    expect(unit.objectHandle.length).toBe(36);
+  });
+  it("should only have required element tags", () => {
+    expect(unit).toBeInstanceOf(Unit);
+    expect(getTagElement(unit.element, "ObjectHandle")).toBeDefined();
+    expect(getTagElement(unit.element, "Relations")).toBeDefined();
+    expect(getTagElement(unit.element, "Name")).toBeUndefined();
+    expect(getTagElement(unit.element, "Holdings")).toBeUndefined();
+  });
+  it("should have writeable and clearable properties", () => {
+    expect(unit.name).toBe("");
+    expect(unit.disposition).toBeUndefined();
+    unit.name = "Another name";
+    unit.disposition = UnitDisposition.fromModel({
+      speed: 42,
+      directionOfMovement: 1,
+      location: [5.0, 54.0],
+    });
+    expect(unit.name).toBe("Another name");
+    expect(unit.disposition?.speed).toBe(42);
+    expect(unit.disposition?.directionOfMovement).toBe(1);
+    expect(unit.disposition?.location).toEqual([5.0, 54.0]);
+    unit.disposition = undefined;
+    expect(unit.disposition).toBeUndefined();
+  });
+  it("should match the original when going to XML string and back", () => {
+    let unitOriginal = Unit.create();
+    unitOriginal.name = "MyName";
+    unitOriginal.disposition = UnitDisposition.fromModel({
+      speed: 42,
+      directionOfMovement: 1,
+      location: [5.0, 54.0],
+    });
+    let strOriginal = unitOriginal.toString();
+    let geojOrignal = unitOriginal.toGeoJson();
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(strOriginal, "text/xml");
+    expect(doc.documentElement).toEqual(unitOriginal.element);
+    let unitAgain = new Unit(doc.documentElement);
+    expect(unitAgain.toString()).toBe(strOriginal);
+    expect(unitAgain.toGeoJson()).toEqual(geojOrignal);
+  });
+  it("should have a location property directly accessible", () => {
+    unit.disposition = UnitDisposition.fromModel({
+      speed: 42,
+      directionOfMovement: 1,
+      location: [5.0, 54.0],
+    });
+    expect(unit.location).toEqual([5.0, 54.0]);
   });
 });

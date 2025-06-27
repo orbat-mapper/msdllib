@@ -1,8 +1,10 @@
 import {
+  createEmptyXMLElementFromTagName,
   getNumberValue,
   getTagElement,
   getTagValue,
   getValueOrUndefined,
+  setOrCreateTagValue,
 } from "./domutils.js";
 import type { Feature, Point } from "geojson";
 
@@ -10,15 +12,18 @@ import {
   type IdGeoJsonOptions,
   type TacticalJson,
   UnitEquipmentBase,
+  type UnitEquipmentInterface,
 } from "./common.js";
 import { ForceOwnerType } from "./enums.js";
 import { EquipmentModel, type EquipmentModelType } from "./modelType.js";
-import { EquipmentItemDisposition } from "./geo.js";
+import { EquipmentItemDisposition, type DispositionType } from "./geo.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
+import { v4 as uuidv4 } from "uuid";
 
 export type EquipmentItemGeoJsonOptions = IdGeoJsonOptions;
 
 export class EquipmentItem extends UnitEquipmentBase {
+  static readonly TAG_NAME = "EquipmentItem";
   symbolModifiers?: EquipmentSymbolModifiers;
   relations: EquipmentRelationsType;
   #model?: EquipmentModel;
@@ -41,12 +46,12 @@ export class EquipmentItem extends UnitEquipmentBase {
       this.#model = new EquipmentModel(modelElement);
     }
 
-    const dispositionElement = getTagElement(this.element, "Disposition");
+    const dispositionElement = getTagElement(
+      this.element,
+      EquipmentItemDisposition.TAG_NAME,
+    );
     if (dispositionElement) {
       this.#disposition = new EquipmentItemDisposition(dispositionElement);
-      // this.location = this.#disposition.location;
-      this.speed = this.#disposition.speed;
-      this.directionOfMovement = this.#disposition.directionOfMovement;
     }
     this.relations = this.initializeRelations();
   }
@@ -74,16 +79,43 @@ export class EquipmentItem extends UnitEquipmentBase {
     return this.#disposition;
   }
 
-  get location(): LngLatTuple | LngLatElevationTuple | undefined {
-    return this.#disposition?.location;
-  }
-
-  set location(loc: LngLatTuple | LngLatElevationTuple | undefined) {
-    if (!this.#disposition) {
-      console.warn("Disposition is not initialized");
+  set disposition(
+    disposition: EquipmentItemDisposition | DispositionType | undefined,
+  ) {
+    const dispElm = getTagElement(
+      this.element,
+      EquipmentItemDisposition.TAG_NAME,
+    );
+    if (!disposition) {
+      this.#disposition = undefined;
+      if (dispElm) {
+        this.element.removeChild(dispElm);
+      }
       return;
     }
-    this.#disposition.location = loc!;
+
+    let test =
+      disposition instanceof EquipmentItemDisposition
+        ? disposition
+        : EquipmentItemDisposition.fromModel(disposition);
+    this.#disposition = test;
+    if (dispElm) {
+      this.element.replaceChild(dispElm, this.#disposition.element);
+    } else {
+      this.element.appendChild(this.#disposition.element);
+    }
+  }
+
+  get speed(): number | undefined {
+    return this.#disposition?.speed;
+  }
+
+  get directionOfMovement(): number | undefined {
+    return this.#disposition?.directionOfMovement;
+  }
+
+  get location(): LngLatTuple | LngLatElevationTuple | undefined {
+    return this.#disposition?.location;
   }
 
   get model(): EquipmentModel | undefined {
@@ -155,6 +187,21 @@ export class EquipmentItem extends UnitEquipmentBase {
       properties,
     };
     return feature;
+  }
+
+  static create(): EquipmentItem {
+    const equipment: EquipmentItem = new EquipmentItem(
+      createEmptyXMLElementFromTagName(EquipmentItem.TAG_NAME),
+    );
+    const baseProps: Partial<UnitEquipmentInterface> = {
+      objectHandle: uuidv4(),
+    };
+    equipment.updateFromObject(baseProps);
+    // TODO: getter and setter for relations
+    setOrCreateTagValue(equipment.element, "Relations", null, {
+      deleteIfNull: false,
+    });
+    return equipment;
   }
 }
 
