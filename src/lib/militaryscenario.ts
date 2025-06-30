@@ -5,10 +5,20 @@ import {
   getTagElements,
 } from "./domutils.js";
 import { Unit } from "./units.js";
-import { rel2code, StandardIdentity } from "./enums.js";
+import {
+  EnumCommandRelationshipType,
+  rel2code,
+  StandardIdentity,
+} from "./enums.js";
 import { ForceSide } from "./forcesides.js";
 import { EquipmentItem } from "./equipment.js";
 import { Deployment } from "./deployment.js";
+import type { DropTarget } from "./types.js";
+
+export type SetUnitForceRelationTypeOptions = {
+  commandRelationshipType?: EnumCommandRelationshipType;
+  target?: DropTarget;
+};
 
 /**
  * MilitaryScenarioType
@@ -28,6 +38,27 @@ export interface MilitaryScenarioType {
   getForceSideById(objectHandle: string): ForceSide | undefined;
   getUnitOrForceSideById(objectHandle: string): Unit | ForceSide | undefined;
   getEquipmentById(objectHandle: string): EquipmentItem | undefined;
+
+  getUnitHierarchy(unitOrObjectHandle: Unit | string): {
+    forceSide: ForceSide;
+    hierarchy: Unit[];
+  };
+
+  setUnitForceRelation(
+    unitOrObjectHandle: Unit | string,
+    superiorOrObjectHandle: Unit | string,
+    options: SetUnitForceRelationTypeOptions,
+  ): void;
+  setUnitForceRelation(
+    unitOrObjectHandle: Unit | string,
+    superiorOrObjectHandle: ForceSide | string,
+    // options: SetUnitForceRelationTypeOptions,
+  ): void;
+  // setUnitForceRelation(
+  //   unitOrObjectHandle: Unit | string,
+  //   superiorOrObjectHandle: Unit | ForceSide | string,
+  //   options: SetUnitForceRelationTypeOptions,
+  // ): void;
 
   toString(): string;
 }
@@ -79,6 +110,42 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
   get equipmentCount() {
     return Object.keys(this.equipmentMap).length;
+  }
+
+  getUnitParent(unit: Unit): Unit | ForceSide | undefined {
+    return (
+      this.unitMap[unit.superiorHandle] ??
+      this.forceSideMap[unit.superiorHandle]
+    );
+  }
+
+  getUnitHierarchy(unitOrObjectHandle: Unit | string) {
+    let unit: Unit | undefined;
+    if (typeof unitOrObjectHandle === "string") {
+      unit = this.getUnitById(unitOrObjectHandle);
+    } else {
+      unit = unitOrObjectHandle;
+    }
+    if (!unit) {
+      throw new Error("Unit not found");
+    }
+    let that = this;
+    let hierarchy: Unit[] = [];
+    let forceSide!: ForceSide;
+
+    function helper(unit: Unit) {
+      let p = that.getUnitParent(unit);
+      if (p instanceof Unit) {
+        hierarchy.push(p);
+        helper(p);
+      } else if (p instanceof ForceSide) {
+        forceSide = p;
+      }
+    }
+
+    helper(unit);
+
+    return { forceSide, hierarchy };
   }
 
   static createFromString(xmlString: string) {
@@ -277,6 +344,47 @@ export class MilitaryScenario implements MilitaryScenarioType {
     this._isNETN = !!netnElement;
   }
 
+  setUnitForceRelation(
+    unitOrObjectHandle: Unit | string,
+    superiorOrObjectHandle: Unit | ForceSide | string,
+    options: SetUnitForceRelationTypeOptions = {},
+  ) {
+    const { commandRelationshipType } = options;
+    const unit =
+      typeof unitOrObjectHandle === "string"
+        ? this.getUnitById(unitOrObjectHandle)
+        : unitOrObjectHandle;
+    if (!unit) throw new Error("Unit not found");
+
+    const superior =
+      typeof superiorOrObjectHandle === "string"
+        ? this.getUnitOrForceSideById(superiorOrObjectHandle)
+        : superiorOrObjectHandle;
+    if (!superior) throw new Error("Superior not found");
+
+    // Remove from previous superior
+    const originalSuperior = unit.superiorHandle
+      ? this.getUnitOrForceSideById(unit.superiorHandle)
+      : undefined;
+    if (originalSuperior instanceof Unit) {
+      originalSuperior.subordinates = originalSuperior.subordinates.filter(
+        (u) => u.objectHandle !== unit.objectHandle,
+      );
+    } else if (originalSuperior instanceof ForceSide) {
+      originalSuperior.rootUnits = originalSuperior.rootUnits.filter(
+        (u) => u.objectHandle !== unit.objectHandle,
+      );
+    }
+
+    // Add to new superior
+    if (superior instanceof Unit) {
+      unit.setForceRelation(superior, commandRelationshipType);
+      superior.subordinates.push(unit);
+    } else {
+      unit.setForceRelation(superior);
+      superior.rootUnits.push(unit);
+    }
+  }
   toString() {
     if (!this.element) return "";
     const oSerializer = new XMLSerializer();

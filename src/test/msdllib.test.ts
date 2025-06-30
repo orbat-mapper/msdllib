@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { ForceSide, MilitaryScenario, ScenarioId } from "../index.js";
+import {
+  EnumCommandRelationshipType,
+  ForceSide,
+  MilitaryScenario,
+  ScenarioId,
+} from "../index.js";
 import { EMPTY_SCENARIO, SCENARIO_ID_TYPE } from "./testdata.js";
 import fs from "fs/promises";
 import {
@@ -297,5 +302,121 @@ describe("Create a MilitaryScenario", () => {
     expect(scenarioId).toBeDefined();
     expect(getTagElement(scenarioId, "name")).toBeDefined();
     expect(getTagElement(xml, "ForceSides")).toBeDefined();
+  });
+});
+
+describe("MilitaryScenario.setForceRelation()", () => {
+  describe("when changing unit superior to force side", () => {
+    it("should set the unit superior and be a root unit", () => {
+      const scenario = loadTestScenario();
+      const unit = scenario.getUnitById(
+        "f9e16593-2dcd-11e2-be2b-000c294c9df8",
+      )!;
+      const forceSide = scenario.getForceSideById(
+        "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8",
+      )!;
+      const originalUnitParent = scenario.getUnitById(unit.superiorHandle)!;
+      expect(unit.superiorHandle).not.toBe(forceSide.objectHandle);
+      scenario.setUnitForceRelation(unit, forceSide);
+      expect(unit.superiorHandle).not.toBe(originalUnitParent.objectHandle);
+      expect(unit.superiorHandle).toBe(forceSide.objectHandle);
+      expect(unit.isRoot).toBe(true);
+
+      // check internal state
+      expect(originalUnitParent?.subordinates).not.toContain(unit);
+      expect(forceSide.rootUnits).toContain(unit);
+    });
+
+    it("should work after serialization", () => {
+      const scenario = loadTestScenario();
+      const unit = scenario.getUnitById(
+        "f9e16593-2dcd-11e2-be2b-000c294c9df8",
+      )!;
+      const forceSide = scenario.getForceSideById(
+        "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8",
+      )!;
+      const originalUnitParent = scenario.getUnitById(unit.superiorHandle)!;
+      scenario.setUnitForceRelation(unit, forceSide);
+      // check after serialization
+      const str = scenario.toString();
+      const newScenario = MilitaryScenario.createFromString(str);
+      const newUnit = newScenario.getUnitById(
+        "f9e16593-2dcd-11e2-be2b-000c294c9df8",
+      )!;
+      const newForceSide = newScenario.getForceSideById(
+        "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8",
+      )!;
+      const newOriginalUnitParent = newScenario.getUnitById(
+        originalUnitParent.objectHandle,
+      );
+      scenario.setUnitForceRelation(unit, forceSide);
+
+      expect(newUnit.superiorHandle).toBe(forceSide.objectHandle);
+      expect(newUnit.isRoot).toBe(true);
+      expect(newForceSide.rootUnits).toContain(newUnit);
+      expect(newOriginalUnitParent?.subordinates).not.toContain(newUnit);
+    });
+  });
+
+  describe("when changing unit superior to another unit", () => {
+    it("should set the unit superior and be a subordinate", () => {
+      const scenario = loadTestScenario();
+      const unit = scenario.getUnitById(
+        "f9e16593-2dcd-11e2-be2b-000c294c9df8",
+      )!;
+      const subordinate = scenario.getUnitById(
+        "13a68150-febe-11e7-b297-fbee9593fdcc",
+      )!;
+      const originalUnitParent = scenario.getUnitById(unit.superiorHandle)!;
+      expect(unit.superiorHandle).not.toBe(subordinate.objectHandle);
+      scenario.setUnitForceRelation(unit, subordinate, {
+        commandRelationshipType: EnumCommandRelationshipType.Adcon,
+      });
+
+      expect(unit.superiorHandle).not.toBe(originalUnitParent.objectHandle);
+      expect(unit.superiorHandle).toBe(subordinate.objectHandle);
+      expect(unit.commandRelationshipType).toBe(
+        EnumCommandRelationshipType.Adcon,
+      );
+      expect(unit.isRoot).toBe(false);
+
+      // check internal state
+      expect(originalUnitParent?.subordinates).not.toContain(unit);
+      expect(subordinate.subordinates).toContain(unit);
+    });
+
+    it("should work after serialization", () => {
+      const scenario = loadTestScenario();
+      const unit = scenario.getUnitById(
+        "f9e16593-2dcd-11e2-be2b-000c294c9df8",
+      )!;
+      const subordinate = scenario.getUnitById(
+        "13a68150-febe-11e7-b297-fbee9593fdcc",
+      )!;
+      const originalUnitParent = scenario.getUnitById(unit.superiorHandle)!;
+      scenario.setUnitForceRelation(unit, subordinate, {
+        commandRelationshipType: EnumCommandRelationshipType.Adcon,
+      });
+
+      // check after serialization
+      const str = scenario.toString();
+      const newScenario = MilitaryScenario.createFromString(str);
+      const newUnit = newScenario.getUnitById(
+        "f9e16593-2dcd-11e2-be2b-000c294c9df8",
+      )!;
+      const newSubordinate = newScenario.getUnitById(
+        "13a68150-febe-11e7-b297-fbee9593fdcc",
+      )!;
+      const newOriginalUnitParent = newScenario.getUnitById(
+        originalUnitParent.objectHandle,
+      );
+      expect(newUnit.superiorHandle).toBe(subordinate.objectHandle);
+      expect(newUnit.commandRelationshipType).toBe(
+        EnumCommandRelationshipType.Adcon,
+      );
+      expect(newUnit.isRoot).toBe(false);
+      expect(newSubordinate.subordinates).toContain(newUnit);
+      expect(newOriginalUnitParent?.subordinates).not.toContain(newUnit);
+    });
   });
 });
