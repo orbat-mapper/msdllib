@@ -52,13 +52,7 @@ export interface MilitaryScenarioType {
   setUnitForceRelation(
     unitOrObjectHandle: Unit | string,
     superiorOrObjectHandle: ForceSide | string,
-    // options: SetUnitForceRelationTypeOptions,
   ): void;
-  // setUnitForceRelation(
-  //   unitOrObjectHandle: Unit | string,
-  //   superiorOrObjectHandle: Unit | ForceSide | string,
-  //   options: SetUnitForceRelationTypeOptions,
-  // ): void;
 
   toString(): string;
 }
