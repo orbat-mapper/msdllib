@@ -205,7 +205,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
     const forces = this.forceSides.filter((fs) => !fs.isSide);
     for (let force of forces) {
-      let parentSide = this.forceSideMap[force.allegianceHandle];
+      let parentSide =
+        force.allegianceHandle && this.forceSideMap[force.allegianceHandle];
       if (parentSide) {
         parentSide.forces.push(force);
       }
