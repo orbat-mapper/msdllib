@@ -47,7 +47,7 @@ export class ForceSide implements ForceSideType {
   #name: string;
   #militaryService?: MilitaryService;
   #countryCode?: string;
-  allegianceHandle: string;
+  #allegianceHandle?: string;
   rootUnits: Unit[] = [];
   associations: AssociationType[] = [];
   forces: ForceSide[] = [];
@@ -63,8 +63,20 @@ export class ForceSide implements ForceSideType {
     ) as MilitaryService;
     this.#countryCode = getValueOrUndefined(element, "CountryCode");
     this.objectHandle = getTagValue(element, "ObjectHandle");
-    this.allegianceHandle = getTagValue(element, "AllegianceHandle");
+    this.#allegianceHandle = getValueOrUndefined(element, "AllegianceHandle");
     this.initAssociations();
+  }
+
+  get allegianceHandle(): string | undefined {
+    return (
+      this.#allegianceHandle ??
+      getValueOrUndefined(this.element, "AllegianceHandle")
+    );
+  }
+
+  set allegianceHandle(allegianceHandle: string | null | undefined) {
+    this.#allegianceHandle = allegianceHandle ?? undefined;
+    setOrCreateTagValue(this.element, "AllegianceHandle", allegianceHandle);
   }
 
   get isSide(): boolean {

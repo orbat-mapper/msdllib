@@ -9,7 +9,7 @@ import {
 import { ForceSide, Unit } from "../index.js";
 import { loadTestScenario } from "./testutils.js";
 import { HostilityStatusCode, StandardIdentity } from "../lib/enums.js";
-import { getTagValue } from "../lib/domutils.js";
+import { getTagValue, getValueOrUndefined } from "../lib/domutils.js";
 
 describe("ForceSide class", () => {
   it("is defined", () => {
@@ -59,7 +59,7 @@ describe("ForceSide class", () => {
   it("detect side if no allegiance", () => {
     let element = parseFromString(FORCESIDE_TEMPLATE_IS_SIDE2);
     let forceSide = new ForceSide(element);
-    expect(forceSide.allegianceHandle).toBe("");
+    expect(forceSide.allegianceHandle).toBeUndefined();
     expect(forceSide.isSide).toBe(true);
   });
 
@@ -236,6 +236,46 @@ describe("ForceSide methods", () => {
       forceSide.countryCode = "CAN";
       expect(forceSide.countryCode).toBe("CAN");
       expect(getTagValue(forceSide.element, "CountryCode")).toBe("CAN");
+    });
+
+    it("should modify allegianceHandle", () => {
+      const forceSide = new ForceSide(
+        parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
+      );
+      expect(forceSide.allegianceHandle).toBe(
+        "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8",
+      );
+      forceSide.allegianceHandle = "new-allegiance-handle";
+      expect(forceSide.allegianceHandle).toBe("new-allegiance-handle");
+      expect(getTagValue(forceSide.element, "AllegianceHandle")).toBe(
+        "new-allegiance-handle",
+      );
+    });
+
+    it("should create allegianceHandle if not set", () => {
+      const forceSide = new ForceSide(
+        parseFromString(FORCESIDE_TEMPLATE_IS_SIDE2),
+      );
+      expect(forceSide.allegianceHandle).toBeUndefined();
+      forceSide.allegianceHandle = "new-allegiance-handle";
+      expect(forceSide.allegianceHandle).toBe("new-allegiance-handle");
+      expect(getTagValue(forceSide.element, "AllegianceHandle")).toBe(
+        "new-allegiance-handle",
+      );
+    });
+
+    it("should delete allegianceHandle if set to null", () => {
+      const forceSide = new ForceSide(
+        parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
+      );
+      expect(forceSide.allegianceHandle).toBe(
+        "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8",
+      );
+      forceSide.allegianceHandle = null;
+      expect(forceSide.allegianceHandle).toBeUndefined();
+      expect(
+        getValueOrUndefined(forceSide.element, "AllegianceHandle"),
+      ).toBeUndefined();
     });
   });
 });
