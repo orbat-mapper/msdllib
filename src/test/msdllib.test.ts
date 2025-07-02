@@ -1,11 +1,18 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import {
   EnumCommandRelationshipType,
+  EquipmentItem,
   ForceSide,
   MilitaryScenario,
   ScenarioId,
 } from "../index.js";
-import { EMPTY_SCENARIO, SCENARIO_ID_TYPE } from "./testdata.js";
+import {
+  EMPTY_SCENARIO,
+  EQUIPMENT_NETN,
+  parseFromString,
+  SCENARIO_ID_TYPE,
+  UNIT_TEMPLATE,
+} from "./testdata.js";
 import fs from "fs/promises";
 import {
   loadNetnTestScenario,
@@ -15,7 +22,12 @@ import {
 } from "./testutils.js";
 import { Unit } from "../lib/units.js";
 import type { MilitaryScenarioInputType } from "../lib/militaryscenario.js";
-import { createXMLElement, getTagElement } from "../lib/domutils.js";
+import {
+  createXMLElement,
+  getTagElement,
+  getTagValue,
+  xmlToString,
+} from "../lib/domutils.js";
 
 describe("MilitaryScenario class", () => {
   it("is defined", () => {
@@ -417,6 +429,137 @@ describe("MilitaryScenario.setForceRelation()", () => {
       expect(newUnit.isRoot).toBe(false);
       expect(newSubordinate.subordinates).toContain(newUnit);
       expect(newOriginalUnitParent?.subordinates).not.toContain(newUnit);
+    });
+  });
+});
+
+describe("Add/remove Unit", () => {
+  let scenario: MilitaryScenario;
+  let newUnit: Unit;
+  let initialUnitCount: number;
+
+  beforeEach(() => {
+    scenario = loadTestScenario();
+    newUnit = Unit.create();
+    newUnit.updateFromObject({ name: "New Unit" });
+    initialUnitCount = scenario.unitCount;
+  });
+
+  describe("adding a unit", () => {
+    beforeEach(() => {
+      scenario.addUnit(newUnit);
+    });
+    it("should increase the unit count by 1", () => {
+      expect(scenario.unitCount).toBe(initialUnitCount + 1);
+    });
+    it("should make the unit retrievable by ID", () => {
+      expect(scenario.getUnitById(newUnit.objectHandle)).toBeDefined();
+    });
+    it("should add the unit to the primary ForceSide", () => {
+      const forceSide = scenario.getForceSideById(
+        scenario.primarySide?.objectHandle || "",
+      );
+      const unitInForceSide = forceSide
+        ?.getAllUnits()
+        .find((u) => u.objectHandle === newUnit.objectHandle);
+      expect(unitInForceSide).toBeDefined();
+    });
+    it("should be in the generated MSDL xml file", () => {
+      let xml = scenario.toString();
+      expect(xml.includes(newUnit.objectHandle)).toBeTruthy();
+    });
+    describe("then removing the unit", () => {
+      beforeEach(() => {
+        scenario.removeUnit(newUnit.objectHandle);
+      });
+      it("should restore the original unit count", () => {
+        expect(scenario.unitCount).toBe(initialUnitCount);
+      });
+      it("should make the unit no longer retrievable by ID", () => {
+        expect(scenario.getUnitById(newUnit.objectHandle)).toBeUndefined();
+      });
+      it("should remove the unit from the ForceSide", () => {
+        const forceSide = scenario.getForceSideById(
+          scenario.primarySide?.objectHandle || "",
+        );
+        const unitInForceSide = forceSide
+          ?.getAllUnits()
+          .find((u) => u.objectHandle === newUnit.objectHandle);
+        expect(unitInForceSide).toBeUndefined();
+      });
+      it("should not be in the generated MSDL xml file", () => {
+        let xml = scenario.toString();
+        expect(xml.includes(newUnit.objectHandle)).toBeFalsy();
+      });
+    });
+  });
+});
+
+describe("Add/remove Equipment", () => {
+  let scenario: MilitaryScenario;
+  let newEquipm: EquipmentItem;
+  let initialEquipmentCount: number;
+
+  beforeEach(() => {
+    scenario = loadTestScenario();
+    newEquipm = EquipmentItem.create();
+    newEquipm.updateFromObject({ name: "New EQI" });
+    initialEquipmentCount = scenario.equipmentCount;
+  });
+
+  describe("adding an equipmentitem", () => {
+    beforeEach(() => {
+      scenario.addEquipmentItem(newEquipm);
+    });
+    it("should increase the equipmentitem count by 1", () => {
+      expect(scenario.equipmentCount).toBe(initialEquipmentCount + 1);
+    });
+    it("should make the equipmentitem retrievable by ID", () => {
+      expect(scenario.getEquipmentById(newEquipm.objectHandle)).toBeDefined();
+    });
+    it("should add the equipmentitem to the primary ForceSide", () => {
+      const forceSide = scenario.getForceSideById(
+        scenario.primarySide?.objectHandle || "",
+      );
+      const equipmentitemInForceSide = forceSide
+        ?.getEquipmentItems()
+        .find((u) => u.objectHandle === newEquipm.objectHandle);
+      expect(equipmentitemInForceSide).toBeDefined();
+      let relElm = getTagElement(newEquipm.element, "Relations");
+      expect(relElm).toBeDefined();
+      let holdingElm = getTagElement(relElm, "HoldingOrganization");
+      expect(holdingElm).toBeDefined();
+      expect(getTagValue(holdingElm, "OwnerChoice")).toBe("FORCE_SIDE");
+    });
+    it("should be in the generated MSDL xml file", () => {
+      let xml = scenario.toString();
+      expect(xml.includes(newEquipm.objectHandle)).toBeTruthy();
+    });
+    describe("then removing it", () => {
+      beforeEach(() => {
+        scenario.removeEquipmentItem(newEquipm.objectHandle);
+      });
+      it("should restore the original equipment count", () => {
+        expect(scenario.equipmentCount).toBe(initialEquipmentCount);
+      });
+      it("should make it no longer retrievable by ID", () => {
+        expect(
+          scenario.getEquipmentById(newEquipm.objectHandle),
+        ).toBeUndefined();
+      });
+      it("should remove it from the ForceSide", () => {
+        const forceSide = scenario.getForceSideById(
+          scenario.primarySide?.objectHandle || "",
+        );
+        const equipmentitemInForceSide = forceSide
+          ?.getEquipmentItems()
+          .find((u) => u.objectHandle === newEquipm.objectHandle);
+        expect(equipmentitemInForceSide).toBeUndefined();
+      });
+      it("should not be in the generated MSDL xml file", () => {
+        let xml = scenario.toString();
+        expect(xml.includes(newEquipm.objectHandle)).toBeFalsy();
+      });
     });
   });
 });

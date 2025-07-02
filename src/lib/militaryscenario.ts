@@ -3,6 +3,7 @@ import {
   createEmptyXMLElementFromTagName,
   getTagElement,
   getTagElements,
+  getTagValue,
 } from "./domutils.js";
 import { Unit } from "./units.js";
 import {
@@ -38,6 +39,11 @@ export interface MilitaryScenarioType {
   getForceSideById(objectHandle: string): ForceSide | undefined;
   getUnitOrForceSideById(objectHandle: string): Unit | ForceSide | undefined;
   getEquipmentById(objectHandle: string): EquipmentItem | undefined;
+
+  addUnit(unit: Unit): void;
+  addEquipmentItem(equipmentitem: EquipmentItem): void;
+  removeUnit(objectHandle: string): void;
+  removeEquipmentItem(objectHandle: string): void;
 
   getUnitHierarchy(unitOrObjectHandle: Unit | string): {
     forceSide: ForceSide;
@@ -192,6 +198,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     }
     this.scenarioId = new ScenarioId(scenarioIdElement);
   }
+
   private initializeForceSides() {
     this.forceSides = [];
     const forceSideEl = getTagElement(this.element, "ForceSides");
@@ -250,21 +257,25 @@ export class MilitaryScenario implements MilitaryScenarioType {
     let equipmentItemElements = getTagElements(equipmentEl, "EquipmentItem");
     for (let equipmentItemElement of equipmentItemElements) {
       const eq = new EquipmentItem(equipmentItemElement);
-      if (
-        eq.relations.organicSuperiorHandle ||
-        eq.relations.ownerChoice === "UNIT"
-      ) {
-        let unit = this.unitMap[eq.superiorHandle];
-        if (unit) {
-          unit.equipment.push(eq);
-        }
-      } else if (eq.relations.ownerChoice === "FORCE_SIDE") {
-        const side = this.forceSideMap[eq.relations.ownerHandle];
-        if (side) {
-          side.equipment.push(eq);
-        }
-      }
+      this.addEquipmentItemToOwner(eq);
       this.equipmentMap[eq.objectHandle] = eq;
+    }
+  }
+
+  private addEquipmentItemToOwner(eq: EquipmentItem) {
+    if (
+      eq.relations.organicSuperiorHandle ||
+      eq.relations.ownerChoice === "UNIT"
+    ) {
+      let unit = this.unitMap[eq.superiorHandle];
+      if (unit) {
+        unit.equipment.push(eq);
+      }
+    } else if (eq.relations.ownerChoice === "FORCE_SIDE") {
+      const side = this.forceSideMap[eq.relations.ownerHandle];
+      if (side) {
+        side.equipment.push(eq);
+      }
     }
   }
 
@@ -331,6 +342,112 @@ export class MilitaryScenario implements MilitaryScenarioType {
     }
   }
 
+  addUnit(unit: Unit): void {
+    this.unitMap[unit.objectHandle] = unit;
+    this.updateUnitHierarchy(unit);
+    this.addUnitToElement(unit);
+  }
+
+  addEquipmentItem(eq: EquipmentItem, superiorHandle?: string): void {
+    if (superiorHandle) {
+      const superior = this.getUnitOrForceSideById(superiorHandle);
+      if (!superior)
+        throw new Error(`Could not find superior ${superiorHandle}`);
+      eq.setHoldingOrganization(superior);
+    } else if (!superiorHandle && this.primarySide) {
+      // Set primary forceside as owner if no owner specified
+      eq.setHoldingOrganization(this.primarySide);
+    }
+    this.addEquipmentItemToOwner(eq);
+    this.equipmentMap[eq.objectHandle] = eq;
+    this.addEquipmentToElement(eq);
+  }
+
+  removeUnit(objectHandle: string): void {
+    const unit = this.getUnitById(objectHandle);
+    if (!unit)
+      throw new Error(`Cannot remove non-existing unit ${objectHandle}`);
+    this.removeUnitOrEquipmentFromSuperior(unit);
+    delete this.unitMap[objectHandle];
+    const idx = this.rootUnits.findIndex(
+      (u) => u.objectHandle === objectHandle,
+    );
+    if (idx >= 0) {
+      this.rootUnits.splice(idx, 1);
+    }
+    this.removeUnitFromElement(objectHandle);
+  }
+
+  removeEquipmentItem(objectHandle: string): void {
+    const equipment = this.getEquipmentById(objectHandle);
+    if (!equipment)
+      throw new Error(`Cannot remove non-existing equipment ${objectHandle}`);
+    this.removeUnitOrEquipmentFromSuperior(equipment);
+    delete this.equipmentMap[objectHandle];
+    this.removeEquipmentFromElement(objectHandle);
+  }
+
+  private updateUnitHierarchy(unit: Unit) {
+    if (!unit.superiorHandle) {
+      // Set primary forceside as owner if no owner specified
+      if (!this.primarySide) throw new Error("Primary ForceSide not set");
+      unit.setForceRelation(this.primarySide);
+    }
+    if (unit.isRoot) {
+      this.rootUnits.push(unit);
+      let forceSide = this.forceSideMap[unit.superiorHandle];
+      if (forceSide) {
+        forceSide.rootUnits.push(unit);
+      }
+    } else {
+      let parentUnit = this.unitMap[unit.superiorHandle];
+      if (parentUnit) {
+        parentUnit.subordinates.push(unit);
+      }
+    }
+  }
+
+  private addUnitToElement(unit: Unit) {
+    const organizationsEl = getTagElement(this.element, "Organizations");
+    const unitsEl = getTagElement(organizationsEl, "Units");
+    if (!unitsEl) throw new Error("No <Units> element found to add unit to");
+    unitsEl.appendChild(unit.element);
+  }
+
+  private removeUnitFromElement(objectHandle: string) {
+    const organizationsEl = getTagElement(this.element, "Organizations");
+    const unitsEl = getTagElement(organizationsEl, "Units");
+    if (!unitsEl)
+      throw new Error("No <Units> element found to remove unit from");
+    let unitElements = getTagElements(unitsEl, "Unit");
+    let unitToRemove = unitElements.find(
+      (u) => getTagValue(u, "ObjectHandle") === objectHandle,
+    );
+    if (unitToRemove) unitsEl?.removeChild(unitToRemove);
+  }
+
+  private addEquipmentToElement(equipment: EquipmentItem) {
+    const organizationsEl = getTagElement(this.element, "Organizations");
+    const equipmentsEl = getTagElement(organizationsEl, "Equipment");
+    if (!equipmentsEl)
+      throw new Error("No <Equipment> element found to add equipmentitem to");
+    equipmentsEl.appendChild(equipment.element);
+  }
+
+  private removeEquipmentFromElement(objectHandle: string) {
+    const organizationsEl = getTagElement(this.element, "Organizations");
+    const equipmentsEl = getTagElement(organizationsEl, "Equipment");
+    if (!equipmentsEl)
+      throw new Error(
+        "No <Equipment> element found to remove equipmentitem from",
+      );
+    let equipmentElements = getTagElements(equipmentsEl, "EquipmentItem");
+    let equipmentItemToRemove = equipmentElements.find(
+      (u) => getTagValue(u, "ObjectHandle") === objectHandle,
+    );
+    if (equipmentItemToRemove) equipmentsEl?.removeChild(equipmentItemToRemove);
+  }
+
   private detectNETN() {
     const netnElement =
       getTagElement(this.element, "EntityType") ??
@@ -357,19 +474,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
         : superiorOrObjectHandle;
     if (!superior) throw new Error("Superior not found");
 
-    // Remove from previous superior
-    const originalSuperior = unit.superiorHandle
-      ? this.getUnitOrForceSideById(unit.superiorHandle)
-      : undefined;
-    if (originalSuperior instanceof Unit) {
-      originalSuperior.subordinates = originalSuperior.subordinates.filter(
-        (u) => u.objectHandle !== unit.objectHandle,
-      );
-    } else if (originalSuperior instanceof ForceSide) {
-      originalSuperior.rootUnits = originalSuperior.rootUnits.filter(
-        (u) => u.objectHandle !== unit.objectHandle,
-      );
-    }
+    this.removeUnitOrEquipmentFromSuperior(unit);
 
     // Add to new superior
     if (superior instanceof Unit) {
@@ -380,6 +485,29 @@ export class MilitaryScenario implements MilitaryScenarioType {
       superior.rootUnits.push(unit);
     }
   }
+
+  private removeUnitOrEquipmentFromSuperior(item: Unit | EquipmentItem) {
+    // Remove from previous superior
+    const originalSuperior = item.superiorHandle
+      ? this.getUnitOrForceSideById(item.superiorHandle)
+      : undefined;
+    if (originalSuperior instanceof Unit) {
+      originalSuperior.subordinates = originalSuperior.subordinates.filter(
+        (u) => u.objectHandle !== item.objectHandle,
+      );
+      originalSuperior.equipment = originalSuperior.equipment.filter(
+        (u) => u.objectHandle !== item.objectHandle,
+      );
+    } else if (originalSuperior instanceof ForceSide) {
+      originalSuperior.rootUnits = originalSuperior.rootUnits.filter(
+        (u) => u.objectHandle !== item.objectHandle,
+      );
+      originalSuperior.equipment = originalSuperior.equipment.filter(
+        (u) => u.objectHandle !== item.objectHandle,
+      );
+    }
+  }
+
   toString() {
     if (!this.element) return "";
     const oSerializer = new XMLSerializer();

@@ -1,5 +1,6 @@
 import {
   createEmptyXMLElementFromTagName,
+  createXMLElement,
   getNumberValue,
   getTagElement,
   getTagValue,
@@ -19,6 +20,8 @@ import { EquipmentModel, type EquipmentModelType } from "./modelType.js";
 import { EquipmentItemDisposition, type DispositionType } from "./geo.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 import { v4 as uuidv4 } from "uuid";
+import { ForceSide } from "./forcesides.js";
+import { Unit } from "./units.js";
 
 export type EquipmentItemGeoJsonOptions = IdGeoJsonOptions;
 
@@ -73,6 +76,38 @@ export class EquipmentItem extends UnitEquipmentBase {
       ownerChoice: ownerType as ForceOwnerType,
       ownerHandle,
     };
+  }
+
+  setHoldingOrganization(superior: Unit | ForceSide): void {
+    if (!getTagElement(this.element, "Relations")) {
+      this.element.appendChild(createEmptyXMLElementFromTagName("Relations"));
+    }
+    let forceRelationElement = getTagElement(this.element, "Relations")!;
+    let holdingElement = getTagElement(
+      forceRelationElement,
+      "HoldingOrganization",
+    );
+    if (superior instanceof Unit) {
+      let unitRelation = createUnitRelation(superior.objectHandle);
+      holdingElement
+        ? holdingElement.replaceWith(unitRelation)
+        : forceRelationElement.appendChild(unitRelation);
+      // TODO: organic superior
+      this.relations = {
+        ownerChoice: "UNIT",
+        ownerHandle: superior.objectHandle,
+      };
+    } else if (superior instanceof ForceSide) {
+      let forceRelation = createForceRelation(superior.objectHandle);
+      holdingElement
+        ? holdingElement.replaceWith(forceRelation)
+        : forceRelationElement.appendChild(forceRelation);
+      // TODO: organic superior
+      this.relations = {
+        ownerChoice: "FORCE_SIDE",
+        ownerHandle: superior.objectHandle,
+      };
+    }
   }
 
   get disposition(): EquipmentItemDisposition | undefined {
@@ -248,4 +283,27 @@ export class EquipmentSymbolModifiers implements EquipmentSymbolModifiersType {
     this.towedSonarArray =
       towedSonarArray !== undefined ? towedSonarArray === "true" : undefined;
   }
+}
+
+function createUnitRelation(superiorHandle: string) {
+  return createXMLElement(
+    `<HoldingOrganization>
+  <OwnerChoice>UNIT</OwnerChoice>
+  <OwnerData>
+    <UnitOwnerHandle>${superiorHandle}</UnitOwnerHandle>
+  </OwnerData>
+</HoldingOrganization>`,
+  );
+}
+
+function createForceRelation(forceSideHandle: string) {
+  return createXMLElement(
+    `<HoldingOrganization>
+  <OwnerChoice>FORCE_SIDE</OwnerChoice>
+  <OwnerData>
+    <ForceOwnerHandle>${forceSideHandle}</ForceOwnerHandle>
+  </OwnerData>
+</HoldingOrganization>
+`,
+  );
 }
