@@ -138,6 +138,10 @@ export class ForceSide implements ForceSideType {
     return firstUnit.getAffiliation();
   }
 
+  getEquipmentItems(): EquipmentItem[] {
+    return this.equipment;
+  }
+
   getAllUnits(): Unit[] {
     let units: Unit[] = [];
     function addSubordinates(subordinates: Unit[]) {
@@ -198,6 +202,14 @@ export class ForceSide implements ForceSideType {
       }
       if (rootUnit.subordinates) {
         addSubordinates(rootUnit.subordinates);
+      }
+    }
+
+    if (includeEquipment) {
+      for (let equipment of this.equipment) {
+        if (includeEmptyLocations || equipment.location) {
+          features.push(equipment.toGeoJson(options));
+        }
       }
     }
     return { type: "FeatureCollection", features };
