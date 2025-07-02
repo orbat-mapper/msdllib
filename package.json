@@ -1,6 +1,6 @@
 {
   "name": "@orbat-mapper/msdllib",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "A library for manipulating Military Scenario Definition Language (MSDL) data",
   "keywords": [],
   "files": [
