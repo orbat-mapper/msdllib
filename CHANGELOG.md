@@ -1,17 +1,17 @@
 # @orbat-mapper/msdllib
 
-## 0.18.0
+## 0.18.0 2025-07-02
 
 ### Minor Changes
 
 - 8b19523: Add `MilitaryScenario.setUnitForceRelation(.)` method
 - 8b19523: Add `Unit.setForceRelation()` method
 - 6b1d617: Make `ForceSide.allegianceHandle` writable
-- daa5cbc: Add functions to militaryscenario:
-  addUnit(unit: Unit): void;
-  addEquipmentItem(equipmentitem: EquipmentItem): void;
-  removeUnit(objectHandle: string): void;
-  removeEquipmentItem(objectHandle: string): void;
+- daa5cbc: Add functions to `MilitaryScenario`:
+  - `addUnit(unit: Unit): void`
+  - `addEquipmentItem(equipmentitem: EquipmentItem): void`
+  - `removeUnit(objectHandle: string): void`
+  - `removeEquipmentItem(objectHandle: string): void`
 
 ## 0.17.0 2025-06-27
 
