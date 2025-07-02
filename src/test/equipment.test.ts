@@ -320,4 +320,11 @@ describe("New EquipmentItem", () => {
     });
     expect(equipment.location).toEqual([5.0, 54.0]);
   });
+  it("should update from a model", () => {
+    equipment.updateFromObject({
+      name: "Battery",
+      sidc: "SH-------------",
+    });
+    expect(equipment.name, "Relations").toBe("Battery");
+  });
 });
