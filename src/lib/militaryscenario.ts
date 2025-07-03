@@ -332,6 +332,12 @@ export class MilitaryScenario implements MilitaryScenarioType {
     return this.unitMap[objectHandle] ?? this.forceSideMap[objectHandle];
   }
 
+  getUnitOrEquipmentById(
+    objectHandle: string,
+  ): Unit | EquipmentItem | undefined {
+    return this.unitMap[objectHandle] ?? this.equipmentMap[objectHandle];
+  }
+
   private updateSidesRootUnits() {
     for (let side of this.sides) {
       for (let force of side.forces) {

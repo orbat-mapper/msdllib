@@ -188,6 +188,26 @@ describe("MilitaryScenario methods", () => {
       expect(forceSide).toBeInstanceOf(ForceSide);
       expect(forceSide.objectHandle).toBe(forceSideId);
     });
+
+    it("should have a getUnitOrEquipmentById method", () => {
+      expect(scenario.getUnitOrEquipmentById).toBeDefined();
+    });
+
+    it("getUnitOrEquipmentById should return a Unit for unit ids", () => {
+      const unitId = "7a81590c-febb-11e7-8be5-0ed5f89f718b";
+      let unit = scenario.getUnitOrEquipmentById(unitId)!;
+      expect(unit).toBeDefined();
+      expect(unit).toBeInstanceOf(Unit);
+      expect(unit.objectHandle).toBe(unitId);
+    });
+
+    it("getUnitOrEquipmentById should return an Equipment for equipment ids", () => {
+      const equipmentId = "f9ee8509-2dcd-11e2-be2b-000c294c9df8";
+      let equipment = scenario.getUnitOrEquipmentById(equipmentId)!;
+      expect(equipment).toBeDefined();
+      expect(equipment).toBeInstanceOf(EquipmentItem);
+      expect(equipment.objectHandle).toBe(equipmentId);
+    });
   });
 });
 
