@@ -1,5 +1,12 @@
 # @orbat-mapper/msdllib
 
+## 0.18.1
+
+### Patch Changes
+
+- 10c06b0: Add function to `MilitaryScenario`:
+  - `getUnitOrEquipmentById(objectHandle: string)`
+
 ## 0.18.0 2025-07-02
 
 ### Minor Changes
