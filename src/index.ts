@@ -15,3 +15,9 @@ export {
   EquipmentItemDisposition,
   type DispositionType,
 } from "./lib/geo.js";
+export {
+  UnitModel,
+  type UnitModelType,
+  type EquipmentModelType,
+  EquipmentModel,
+} from "./lib/modelType.js";
