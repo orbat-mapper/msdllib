@@ -73,13 +73,15 @@ export class UnitModel extends UnitEquipmentModelBase {
   }
 
   static fromModel(model: UnitModelType): UnitModel {
-    const modelType = new UnitModel(
-      createEmptyXMLElementFromTagName(UnitEquipmentModelBase.TAG_NAME),
-    );
+    const modelType = UnitModel.create();
     modelType.resolution = model.resolution;
     modelType.entityType = model.entityType;
     modelType.aggregateBased = model.aggregateBased;
     return modelType;
+  }
+
+  static create(): UnitModel {
+    return new UnitModel(createEmptyXMLElementFromTagName(UnitModel.TAG_NAME));
   }
 }
 
@@ -89,11 +91,15 @@ export class EquipmentModel extends UnitEquipmentModelBase {
   }
 
   static fromModel(model: UnitEquipmentModelBaseType): EquipmentModel {
-    const modelType = new EquipmentModel(
-      createEmptyXMLElementFromTagName(UnitEquipmentModelBase.TAG_NAME),
-    );
+    const modelType = EquipmentModel.create();
     modelType.resolution = model.resolution;
     modelType.entityType = model.entityType;
     return modelType;
+  }
+
+  static create(): EquipmentModel {
+    return new EquipmentModel(
+      createEmptyXMLElementFromTagName(EquipmentModel.TAG_NAME),
+    );
   }
 }
