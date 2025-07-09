@@ -5,26 +5,31 @@ import {
   setOrCreateTagValue,
 } from "./domutils.js";
 
+import {
+  type EnumEchelon,
+  type SymbologyStandard,
+  type CoordinateSystem
+} from "./enums.js";
+
 export interface MsdlOptionsType {
   MSDLVersion: string;
-  OrganizationDetails?: string;
-  ScenarioDataStandards?: string;
-  StandardName?: string;
+  AggregateBased? : string;
+  AggregateEchelon? : EnumEchelon | string;
+  StandardName?: SymbologyStandard | string;
   MajorVersion?: string;
   MinorVersion?:  string;
-  CoordinateSystemType?: string;
+  CoordinateSystemType?: CoordinateSystem | string;
   CoordinateSystemDatum?: string;
 }
-
 
 export class MsdlOptions implements MsdlOptionsType {
   static readonly TAG_NAME = "Options";
   #MSDLVersion = "";
-  #OrganizationDetails = "";
-  #ScenarioDataStandards = "";
+  #AggregateBased = "";
+  #AggregateEchelon = "";
   #StandardName = "";
   #MajorVersion = "";
-  #MinorVersion = "" ;
+  #MinorVersion = "";
   #CoordinateSystemType = "";
   #CoordinateSystemDatum = "";
   element: Element;
@@ -32,6 +37,8 @@ export class MsdlOptions implements MsdlOptionsType {
   constructor(element: Element) {
     this.element = element;
     this.#MSDLVersion = getTagValue(element, "MSDLVersion");
+    this.#AggregateBased = getTagValue(element, "AggregateBased");
+    this.#AggregateEchelon = getTagValue(element, "AggregateEchelon");
     this.#StandardName = getTagValue(element, "StandardName");
     this.#MajorVersion = getTagValue(element, "MajorVersion");
     this.#MinorVersion = getTagValue(element, "MinorVersion");
@@ -48,22 +55,22 @@ export class MsdlOptions implements MsdlOptionsType {
     setOrCreateTagValue(this.element, "MSDLVersion", MSDLVersion);
   }
 
-  get OrganizationDetails(): string {
-    return this.#OrganizationDetails ?? getTagValue(this.element, "OrganizationDetails");
+  get AggregateBased(): string {
+    return this.#AggregateBased ?? getTagValue(this.element, "AggregateBased");
   }
 
-  set OrganizationDetails(OrganizationDetails: string) {
-    this.#OrganizationDetails = OrganizationDetails;
-    setOrCreateTagValue(this.element, "OrganizationDetails", OrganizationDetails);
+  set AggregateBased(AggregateBased: string) {
+    this.#AggregateBased = AggregateBased;
+    setOrCreateTagValue(this.element, "AggregateBased", AggregateBased);
   }
 
-  get ScenarioDataStandards(): string {
-    return this.#ScenarioDataStandards ?? getTagValue(this.element, "ScenarioDataStandards");
+  get AggregateEchelon(): string {
+    return this.#AggregateEchelon ?? getTagValue(this.element, "AggregateEchelon");
   }
 
-  set ScenarioDataStandards(ScenarioDataStandards: string) {
-    this.#ScenarioDataStandards = ScenarioDataStandards;
-    setOrCreateTagValue(this.element, "MSDLVersion", ScenarioDataStandards);
+  set AggregateEchelon(AggregateEchelon: string) {
+    this.#AggregateEchelon = AggregateEchelon;
+    setOrCreateTagValue(this.element, "AggregateEchelon", AggregateEchelon);
   }
   
   get StandardName(): string {
@@ -112,17 +119,17 @@ export class MsdlOptions implements MsdlOptionsType {
   }
 
   toObject(): MsdlOptionsType {
-      return removeUndefinedValues({
-        MSDLVersion: this.MSDLVersion,
-        OrganizationDetails: this.OrganizationDetails,
-        ScenarioDataStandards: this.ScenarioDataStandards,
-        StandardName: this.StandardName,
-        MajorVersion: this.MajorVersion,
-        MinorVersion: this.MinorVersion,
-        CoordinateSystemType: this.CoordinateSystemType,
-        CoordinateSystemDatum: this.CoordinateSystemDatum,
-      });
-    }
+    return removeUndefinedValues({
+      MSDLVersion: this.MSDLVersion,
+      AggregateBased: this.AggregateBased,
+      AggregateEchelon: this.AggregateEchelon,
+      StandardName: this.StandardName,
+      MajorVersion: this.MajorVersion,
+      MinorVersion: this.MinorVersion,
+      CoordinateSystemType: this.CoordinateSystemType,
+      CoordinateSystemDatum: this.CoordinateSystemDatum,
+    });
+  }
   
   toString() {
     if (!this.element) return "";
