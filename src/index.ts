@@ -22,6 +22,8 @@ export {
   EquipmentItemDisposition,
   UnitDisposition,
   type DispositionType,
+  MsdlCoordinates,
+  type MsdlCoordinatesType,
 } from "./lib/geo.js";
 export {
   EquipmentModel,
@@ -29,4 +31,10 @@ export {
   type UnitModelType,
   type EquipmentModelType,
 } from "./lib/modelType.js";
+export {
+  Environment,
+  type EnvironmentType,
+  RectangleArea,
+  type RectangleAreaType,
+} from "./lib/environment.js";
 export { type UnitEquipmentInterface } from "./lib/common.js";

@@ -16,6 +16,7 @@ import { ForceSide } from "./forcesides.js";
 import { EquipmentItem } from "./equipment.js";
 import { Deployment } from "./deployment.js";
 import type { DropTarget } from "./types.js";
+import { Environment } from "./environment.js";
 
 export type SetUnitForceRelationTypeOptions = {
   commandRelationshipType?: EnumCommandRelationshipType;
@@ -29,6 +30,7 @@ export type SetUnitForceRelationTypeOptions = {
 export interface MilitaryScenarioType {
   scenarioId: ScenarioId;
   forceSides: ForceSide[];
+  environment?: Environment;
   unitMap: Record<string, Unit>;
   forceSideMap: Record<string, ForceSide>;
   equipmentMap: Record<string, EquipmentItem>;
@@ -82,6 +84,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
   forceSideMap: Record<string, ForceSide> = {};
   equipmentMap: Record<string, EquipmentItem> = {};
   deployment?: Deployment;
+  environment?: Environment;
   private _primarySide: ForceSide | null | undefined = null;
   private _isNETN = false;
 
@@ -208,6 +211,10 @@ export class MilitaryScenario implements MilitaryScenarioType {
       return;
     }
     this.scenarioId = new ScenarioId(scenarioIdElement);
+    const environmentEl = getTagElement(this.element, Environment.TAG_NAME);
+    if (environmentEl) {
+      this.environment = new Environment(environmentEl);
+    }
   }
 
   private initializeForceSides() {
