@@ -1,5 +1,18 @@
 # @orbat-mapper/msdllib
 
+## 0.19.0
+
+### Minor Changes
+
+- d750f85: - 0292f8e: Add functions to `MilitaryScenario`:
+  - `addForceSide(side: ForceSide): void`
+  - `removeForceSide(objectHandle: string): void;`
+
+### Patch Changes
+
+- d750f85: Add util function getOrCreateTagElement
+- 789d4b3: Export `UnitModel`, `UnitModelType`, `EquipmentModelType` and `EquipmentModel` types
+
 ## 0.18.1
 
 ### Patch Changes
