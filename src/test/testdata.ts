@@ -1,4 +1,5 @@
 import type { ScenarioIdType } from "../lib/scenarioid.js";
+import type { MsdlOptionsType } from "../lib/msdlOptions.js";
 
 export function parseFromString(xmlString: string): Element {
   let parser = new DOMParser();
@@ -13,6 +14,10 @@ export const SCENARIO_ID_TYPE: ScenarioIdType = {
   securityClassification: "SECRET",
   type: "MSDL",
   version: "1.0",
+};
+
+export const MSDL_OPTIONS_TYPE: MsdlOptionsType = {
+  MSDLVersion: "1.0.0"
 };
 
 export const EMPTY_SCENARIO = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
