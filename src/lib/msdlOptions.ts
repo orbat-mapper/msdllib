@@ -7,6 +7,8 @@ import {
 
 export interface MsdlOptionsType {
   MSDLVersion: string;
+  OrganizationDetails?: string;
+  ScenarioDataStandards?: string;
   StandardName?: string;
   MajorVersion?: string;
   MinorVersion?:  string;
@@ -18,6 +20,8 @@ export interface MsdlOptionsType {
 export class MsdlOptions implements MsdlOptionsType {
   static readonly TAG_NAME = "Options";
   #MSDLVersion = "";
+  #OrganizationDetails = "";
+  #ScenarioDataStandards = "";
   #StandardName = "";
   #MajorVersion = "";
   #MinorVersion = "" ;
@@ -44,6 +48,24 @@ export class MsdlOptions implements MsdlOptionsType {
     setOrCreateTagValue(this.element, "MSDLVersion", MSDLVersion);
   }
 
+  get OrganizationDetails(): string {
+    return this.#OrganizationDetails ?? getTagValue(this.element, "OrganizationDetails");
+  }
+
+  set OrganizationDetails(OrganizationDetails: string) {
+    this.#OrganizationDetails = OrganizationDetails;
+    setOrCreateTagValue(this.element, "OrganizationDetails", OrganizationDetails);
+  }
+
+  get ScenarioDataStandards(): string {
+    return this.#ScenarioDataStandards ?? getTagValue(this.element, "ScenarioDataStandards");
+  }
+
+  set ScenarioDataStandards(ScenarioDataStandards: string) {
+    this.#ScenarioDataStandards = ScenarioDataStandards;
+    setOrCreateTagValue(this.element, "MSDLVersion", ScenarioDataStandards);
+  }
+  
   get StandardName(): string {
     return this.#StandardName ?? getTagValue(this.element, "StandardName");
   }
@@ -92,6 +114,8 @@ export class MsdlOptions implements MsdlOptionsType {
   toObject(): MsdlOptionsType {
       return removeUndefinedValues({
         MSDLVersion: this.MSDLVersion,
+        OrganizationDetails: this.OrganizationDetails,
+        ScenarioDataStandards: this.ScenarioDataStandards,
         StandardName: this.StandardName,
         MajorVersion: this.MajorVersion,
         MinorVersion: this.MinorVersion,
