@@ -1,4 +1,3 @@
-// @ts-ignore
 import * as mgrs from "mgrs";
 // @ts-ignore
 import * as projector from "ecef-projector";
@@ -12,7 +11,6 @@ import {
   removeTagValue,
   removeUndefinedValues,
   setOrCreateTagValue,
-  xmlToString,
 } from "./domutils.js";
 import type {
   CoordinateChoice,
@@ -20,8 +18,7 @@ import type {
   LngLatTuple,
 } from "./types.js";
 
-export class MsdlLocation {
-  static readonly TAG_NAME = "Location";
+export class MsdlCoordinates {
   #location?: LngLatTuple | LngLatElevationTuple;
   #coordinateChoice?: CoordinateChoice;
   element: Element;
@@ -153,7 +150,7 @@ export class MsdlLocation {
   }
 
   private parseGDCLocation(): LngLatTuple | LngLatElevationTuple {
-    // Geodetic coordinates in fractional degress of latitude and longitude.
+    // Geodetic coordinates in fractional degrees of latitude and longitude.
     let gdcElement = getTagElement(this.element, "GDC");
     let latitude = Number(getTagValue(gdcElement, "Latitude"));
     let longitude = Number(getTagValue(gdcElement, "Longitude"));
@@ -213,12 +210,23 @@ export class MsdlLocation {
     return msdlLoc;
   }
 
-  static create(coordinateChoice: CoordinateChoice): MsdlLocation {
+  static createEmtpy(
+    coordinateChoice: CoordinateChoice,
+    tagName: string,
+  ): MsdlLocation {
     const msdlLocation = new MsdlLocation(
-      createEmptyXMLElementFromTagName(MsdlLocation.TAG_NAME),
+      createEmptyXMLElementFromTagName(tagName),
     );
     msdlLocation.coordinateChoice = coordinateChoice;
     return msdlLocation;
+  }
+}
+
+export class MsdlLocation extends MsdlCoordinates {
+  static readonly TAG_NAME = "Location";
+
+  static create(coordinateChoice: CoordinateChoice): MsdlLocation {
+    return MsdlCoordinates.createEmtpy(coordinateChoice, MsdlLocation.TAG_NAME);
   }
 }
 
@@ -234,7 +242,6 @@ export class DispositionBase {
   #directionOfMovement?: number;
   #speed?: number;
   #msdlLocation?: MsdlLocation;
-  // location: LngLatTuple | LngLatElevationTuple | undefined;
 
   constructor(element: Element) {
     this.element = element;
