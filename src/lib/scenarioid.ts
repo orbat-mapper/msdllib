@@ -123,10 +123,14 @@ export class ScenarioId implements ScenarioIdType {
   }
 
   static fromModel(model: ScenarioIdType): ScenarioId {
-    const scenarioId = new ScenarioId(
-      createEmptyXMLElementFromTagName(ScenarioId.TAG_NAME),
-    );
+    const scenarioId = ScenarioId.create();
     scenarioId.updateFromObject(model);
     return scenarioId;
+  }
+
+  static create(): ScenarioId {
+    return new ScenarioId(
+      createEmptyXMLElementFromTagName(ScenarioId.TAG_NAME),
+    );
   }
 }

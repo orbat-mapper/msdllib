@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, beforeAll } from "vitest";
 import {
   EnumCommandRelationshipType,
   EquipmentItem,
@@ -454,19 +454,15 @@ describe("MilitaryScenario.setForceRelation()", () => {
 });
 
 describe("Add/remove Unit", () => {
-  let scenario: MilitaryScenario;
-  let newUnit: Unit;
-  let initialUnitCount: number;
-
-  beforeEach(() => {
-    scenario = loadTestScenario();
-    newUnit = Unit.create();
-    newUnit.updateFromObject({ name: "New Unit" });
-    initialUnitCount = scenario.unitCount;
-  });
+  let scenario: MilitaryScenario = loadTestScenario();
+  let newUnit: Unit = Unit.create();
+  newUnit.updateFromObject({ name: "New Unit" });
+  let newEquipm: EquipmentItem = EquipmentItem.create();
+  newEquipm.updateFromObject({ name: "New EQI" });
+  let initialUnitCount: number = scenario.unitCount;
 
   describe("adding a unit", () => {
-    beforeEach(() => {
+    beforeAll(() => {
       scenario.addUnit(newUnit);
     });
     it("should increase the unit count by 1", () => {
@@ -488,47 +484,55 @@ describe("Add/remove Unit", () => {
       let xml = scenario.toString();
       expect(xml.includes(newUnit.objectHandle)).toBeTruthy();
     });
-    describe("then removing the unit", () => {
-      beforeEach(() => {
-        scenario.removeUnit(newUnit.objectHandle);
+    describe("then adding an equipment item to the unit", () => {
+      beforeAll(() => {
+        scenario.addEquipmentItem(newEquipm, newUnit.objectHandle);
       });
-      it("should restore the original unit count", () => {
-        expect(scenario.unitCount).toBe(initialUnitCount);
+      it("should add the equipment to the unit", () => {
+        expect(newUnit.equipment.includes(newEquipm)).toBe(true);
       });
-      it("should make the unit no longer retrievable by ID", () => {
-        expect(scenario.getUnitById(newUnit.objectHandle)).toBeUndefined();
-      });
-      it("should remove the unit from the ForceSide", () => {
-        const forceSide = scenario.getForceSideById(
-          scenario.primarySide?.objectHandle || "",
-        );
-        const unitInForceSide = forceSide
-          ?.getAllUnits()
-          .find((u) => u.objectHandle === newUnit.objectHandle);
-        expect(unitInForceSide).toBeUndefined();
-      });
-      it("should not be in the generated MSDL xml file", () => {
-        let xml = scenario.toString();
-        expect(xml.includes(newUnit.objectHandle)).toBeFalsy();
+      describe("then removing the unit", () => {
+        beforeAll(() => {
+          scenario.removeUnit(newUnit.objectHandle);
+        });
+        it("should restore the original unit count", () => {
+          expect(scenario.unitCount).toBe(initialUnitCount);
+        });
+        it("should make the unit no longer retrievable by ID", () => {
+          expect(scenario.getUnitById(newUnit.objectHandle)).toBeUndefined();
+        });
+        it("should remove the unit from the ForceSide", () => {
+          const forceSide = scenario.getForceSideById(
+            scenario.primarySide?.objectHandle || "",
+          );
+          const unitInForceSide = forceSide
+            ?.getAllUnits()
+            .find((u) => u.objectHandle === newUnit.objectHandle);
+          expect(unitInForceSide).toBeUndefined();
+        });
+        it("should remove the added equipment item", () => {
+          expect(
+            scenario.getEquipmentById(newEquipm.objectHandle),
+          ).toBeUndefined();
+        });
+        it("unit & equipment should not be in the MSDL xml file", () => {
+          let xml = scenario.toString();
+          expect(xml.includes(newUnit.objectHandle)).toBeFalsy();
+          expect(xml.includes(newEquipm.objectHandle)).toBeFalsy();
+        });
       });
     });
   });
 });
 
 describe("Add/remove Equipment", () => {
-  let scenario: MilitaryScenario;
-  let newEquipm: EquipmentItem;
-  let initialEquipmentCount: number;
-
-  beforeEach(() => {
-    scenario = loadTestScenario();
-    newEquipm = EquipmentItem.create();
-    newEquipm.updateFromObject({ name: "New EQI" });
-    initialEquipmentCount = scenario.equipmentCount;
-  });
+  let scenario: MilitaryScenario = loadTestScenario();
+  let newEquipm: EquipmentItem = EquipmentItem.create();
+  newEquipm.updateFromObject({ name: "New EQI" });
+  let initialEquipmentCount: number = scenario.equipmentCount;
 
   describe("adding an equipmentitem", () => {
-    beforeEach(() => {
+    beforeAll(() => {
       scenario.addEquipmentItem(newEquipm);
     });
     it("should increase the equipmentitem count by 1", () => {
@@ -556,7 +560,7 @@ describe("Add/remove Equipment", () => {
       expect(xml.includes(newEquipm.objectHandle)).toBeTruthy();
     });
     describe("then removing it", () => {
-      beforeEach(() => {
+      beforeAll(() => {
         scenario.removeEquipmentItem(newEquipm.objectHandle);
       });
       it("should restore the original equipment count", () => {
@@ -571,8 +575,9 @@ describe("Add/remove Equipment", () => {
         const forceSide = scenario.getForceSideById(
           scenario.primarySide?.objectHandle || "",
         );
-        const equipmentitemInForceSide = forceSide
-          ?.getEquipmentItems()
+        expect(forceSide).toBeDefined();
+        const equipmentitemInForceSide = forceSide!
+          .getEquipmentItems()
           .find((u) => u.objectHandle === newEquipm.objectHandle);
         expect(equipmentitemInForceSide).toBeUndefined();
       });
@@ -580,6 +585,77 @@ describe("Add/remove Equipment", () => {
         let xml = scenario.toString();
         expect(xml.includes(newEquipm.objectHandle)).toBeFalsy();
       });
+    });
+  });
+});
+
+describe("Add/remove ForceSide", () => {
+  let scenario: MilitaryScenario = loadTestScenario();
+  let newForceSide: ForceSide = ForceSide.create();
+  newForceSide.updateFromObject({ name: "New ForceSide" });
+  let initialSideCount: number = scenario.forceSideCount;
+  let newUnit: Unit = Unit.create();
+
+  describe("adding a ForceSide", () => {
+    beforeAll(() => {
+      scenario.addForceSide(newForceSide);
+    });
+    it("should increase the side count by 1", () => {
+      expect(scenario.forceSideCount).toBe(initialSideCount + 1);
+    });
+    it("should make the side retrievable by ID", () => {
+      expect(
+        scenario.getForceSideById(newForceSide.objectHandle),
+      ).toBeDefined();
+    });
+    it("should be in the generated MSDL xml file", () => {
+      let xml = scenario.toString();
+      expect(xml.includes(newForceSide.objectHandle)).toBeTruthy();
+    });
+    describe("then adding a unit to that side", () => {
+      beforeAll(() => {
+        scenario.addUnit(newUnit);
+        scenario.setUnitForceRelation(newUnit, newForceSide, {
+          commandRelationshipType: "ATTACHED",
+        });
+      });
+      it("should add it to the side's root units", () => {
+        expect(newForceSide.rootUnits.includes(newUnit)).toBe(true);
+      });
+    });
+    describe("then removing the side", () => {
+      beforeAll(() => {
+        scenario.removeForceSide(newForceSide.objectHandle);
+      });
+      it("should restore the original side count", () => {
+        expect(scenario.forceSideCount).toBe(initialSideCount);
+      });
+      it("should make the side no longer retrievable by ID", () => {
+        expect(
+          scenario.getForceSideById(newForceSide.objectHandle),
+        ).toBeUndefined();
+      });
+      it("should remove the added unit as well", () => {
+        expect(scenario.getUnitById(newUnit.objectHandle)).toBeUndefined();
+      });
+      it("should not be in the generated MSDL xml file", () => {
+        let xml = scenario.toString();
+        console.log(newForceSide.objectHandle);
+        console.log(xml);
+        expect(xml.includes(newForceSide.objectHandle)).toBeFalsy();
+      });
+    });
+  });
+
+  describe("removing all ForceSides", () => {
+    beforeAll(() => {
+      for (const side of scenario.forceSides) {
+        scenario.removeForceSide(side.objectHandle);
+      }
+    });
+    it("should remove all sides from the scenario", () => {
+      expect(scenario.forceSideCount).toBe(0);
+      expect(scenario.forceSides.length).toBe(0);
     });
   });
 });

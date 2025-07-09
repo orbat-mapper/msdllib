@@ -1,6 +1,7 @@
 import { ScenarioId, type ScenarioIdType } from "./scenarioid.js";
 import {
   createEmptyXMLElementFromTagName,
+  getOrCreateTagElement,
   getTagElement,
   getTagElements,
   getTagValue,
@@ -44,6 +45,8 @@ export interface MilitaryScenarioType {
   addEquipmentItem(equipmentitem: EquipmentItem): void;
   removeUnit(objectHandle: string): void;
   removeEquipmentItem(objectHandle: string): void;
+  addForceSide(side: ForceSide): void;
+  removeForceSide(objectHandle: string): void;
 
   getUnitHierarchy(unitOrObjectHandle: Unit | string): {
     forceSide: ForceSide;
@@ -112,6 +115,10 @@ export class MilitaryScenario implements MilitaryScenarioType {
     return Object.keys(this.equipmentMap).length;
   }
 
+  get forceSideCount() {
+    return Object.keys(this.forceSideMap).length;
+  }
+
   getUnitParent(unit: Unit): Unit | ForceSide | undefined {
     return (
       this.unitMap[unit.superiorHandle] ??
@@ -170,18 +177,22 @@ export class MilitaryScenario implements MilitaryScenarioType {
   static createFromModel(msdlInputType: MilitaryScenarioInputType) {
     if (!msdlInputType?.scenarioId || !msdlInputType?.scenarioId.name)
       throw new TypeError("Invalid MSDL input");
-    const milScen = new MilitaryScenario(
-      createEmptyXMLElementFromTagName(MilitaryScenario.TAG_NAME),
-      {
-        isNETN: msdlInputType.isNETN,
-      },
-    );
+    const milScen = MilitaryScenario.create(msdlInputType.isNETN);
     milScen.scenarioId = ScenarioId.fromModel(msdlInputType.scenarioId);
     milScen.element!.appendChild(milScen.scenarioId.element);
     milScen.element!.appendChild(
       createEmptyXMLElementFromTagName("ForceSides"),
     );
     return milScen;
+  }
+
+  static create(isNETN: boolean): MilitaryScenario {
+    return new MilitaryScenario(
+      createEmptyXMLElementFromTagName(MilitaryScenario.TAG_NAME),
+      {
+        isNETN,
+      },
+    );
   }
 
   private initializeDeployment() {
@@ -276,6 +287,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
       if (side) {
         side.equipment.push(eq);
       }
+    } else {
+      this.equipment.push(eq);
     }
   }
 
@@ -382,6 +395,23 @@ export class MilitaryScenario implements MilitaryScenarioType {
       this.rootUnits.splice(idx, 1);
     }
     this.removeUnitFromElement(objectHandle);
+    this.removeSubordinatesOf(objectHandle);
+  }
+
+  private removeSubordinatesOf(objectHandle: string) {
+    for (const unit of Object.values(this.unitMap)) {
+      if (
+        unit.forceRelationChoice === "UNIT" &&
+        unit.superiorHandle === objectHandle
+      ) {
+        this.removeUnit(unit.objectHandle);
+      }
+    }
+    for (const eq of Object.values(this.equipmentMap)) {
+      if (eq.superiorHandle === objectHandle) {
+        this.removeEquipmentItem(eq.objectHandle);
+      }
+    }
   }
 
   removeEquipmentItem(objectHandle: string): void {
@@ -391,6 +421,66 @@ export class MilitaryScenario implements MilitaryScenarioType {
     this.removeUnitOrEquipmentFromSuperior(equipment);
     delete this.equipmentMap[objectHandle];
     this.removeEquipmentFromElement(objectHandle);
+  }
+
+  addForceSide(side: ForceSide): void {
+    this.forceSides.push(side);
+    this.forceSideMap[side.objectHandle] = side;
+    this.addForceSideToElement(side);
+    if (this.forceSides.length === 1) {
+      this.primarySide = this.forceSides[0]!;
+    }
+  }
+
+  removeForceSide(objectHandle: string): void {
+    const side = this.getForceSideById(objectHandle);
+    if (!side)
+      throw new Error(`Cannot remove non-existing force side ${objectHandle}`);
+    this.removeUnitsOfForceSide(side);
+    delete this.forceSideMap[objectHandle];
+    this.forceSides = this.forceSides.filter(
+      (s) => s.objectHandle !== objectHandle,
+    );
+    this.removeForceSideFromElement(objectHandle);
+  }
+
+  private addForceSideToElement(side: ForceSide) {
+    const sidesEl = getTagElement(this.element, "ForceSides");
+    if (!sidesEl)
+      throw new Error("No <ForceSides> element found to add equipmentitem to");
+    sidesEl.appendChild(side.element);
+  }
+
+  private removeForceSideFromElement(objectHandle: string) {
+    const sidesEl = getTagElement(this.element, "ForceSides");
+    if (!sidesEl)
+      throw new Error(
+        "No <ForceSides> element found to remove force side from",
+      );
+    let sideElements = getTagElements(sidesEl, ForceSide.TAG_NAME);
+    let sideToRemove = sideElements.find(
+      (u) => getTagValue(u, "ObjectHandle") === objectHandle,
+    );
+    if (sideToRemove) sidesEl.removeChild(sideToRemove);
+  }
+
+  private detectNETN() {
+    const netnElement =
+      getTagElement(this.element, "EntityType") ??
+      getTagElement(this.element, "Holdings") ??
+      getTagElement(this.element, "Deployment");
+    this._isNETN = !!netnElement;
+  }
+
+  private removeUnitsOfForceSide(side: ForceSide) {
+    for (const unit of Object.values(this.unitMap)) {
+      if (
+        unit.forceRelationChoice === "FORCE_SIDE" &&
+        unit.superiorHandle === side.objectHandle
+      ) {
+        this.removeUnit(unit.objectHandle);
+      }
+    }
   }
 
   private updateUnitHierarchy(unit: Unit) {
@@ -414,14 +504,20 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private addUnitToElement(unit: Unit) {
-    const organizationsEl = getTagElement(this.element, "Organizations");
-    const unitsEl = getTagElement(organizationsEl, "Units");
+    if (!this.element) throw new Error("MilitaryScenario element is undefined");
+    const organizationsEl = getOrCreateTagElement(
+      this.element,
+      "Organizations",
+    );
+    const unitsEl = getOrCreateTagElement(organizationsEl, "Units");
     if (!unitsEl) throw new Error("No <Units> element found to add unit to");
     unitsEl.appendChild(unit.element);
   }
 
   private removeUnitFromElement(objectHandle: string) {
     const organizationsEl = getTagElement(this.element, "Organizations");
+    if (!organizationsEl)
+      throw new Error("No <Organizations> element found to remove unit from");
     const unitsEl = getTagElement(organizationsEl, "Units");
     if (!unitsEl)
       throw new Error("No <Units> element found to remove unit from");
@@ -429,11 +525,13 @@ export class MilitaryScenario implements MilitaryScenarioType {
     let unitToRemove = unitElements.find(
       (u) => getTagValue(u, "ObjectHandle") === objectHandle,
     );
-    if (unitToRemove) unitsEl?.removeChild(unitToRemove);
+    if (unitToRemove) unitsEl.removeChild(unitToRemove);
   }
 
   private addEquipmentToElement(equipment: EquipmentItem) {
     const organizationsEl = getTagElement(this.element, "Organizations");
+    if (!organizationsEl)
+      throw new Error("No <Organizations> element found to remove unit from");
     const equipmentsEl = getTagElement(organizationsEl, "Equipment");
     if (!equipmentsEl)
       throw new Error("No <Equipment> element found to add equipmentitem to");
@@ -442,6 +540,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
   private removeEquipmentFromElement(objectHandle: string) {
     const organizationsEl = getTagElement(this.element, "Organizations");
+    if (!organizationsEl)
+      throw new Error("No <Organizations> element found to remove unit from");
     const equipmentsEl = getTagElement(organizationsEl, "Equipment");
     if (!equipmentsEl)
       throw new Error(
@@ -451,15 +551,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     let equipmentItemToRemove = equipmentElements.find(
       (u) => getTagValue(u, "ObjectHandle") === objectHandle,
     );
-    if (equipmentItemToRemove) equipmentsEl?.removeChild(equipmentItemToRemove);
-  }
-
-  private detectNETN() {
-    const netnElement =
-      getTagElement(this.element, "EntityType") ??
-      getTagElement(this.element, "Holdings") ??
-      getTagElement(this.element, "Deployment");
-    this._isNETN = !!netnElement;
+    if (equipmentItemToRemove) equipmentsEl.removeChild(equipmentItemToRemove);
   }
 
   setUnitForceRelation(

@@ -235,10 +235,12 @@ export class Holding implements HoldingType {
   }
 
   static fromModel(model: HoldingType): Holding {
-    const holdingType = new Holding(
-      createEmptyXMLElementFromTagName(Holding.TAG_NAME),
-    );
+    const holdingType = Holding.create();
     holdingType.updateFromObject(model);
     return holdingType;
+  }
+
+  static create(): Holding {
+    return new Holding(createEmptyXMLElementFromTagName(Holding.TAG_NAME));
   }
 }

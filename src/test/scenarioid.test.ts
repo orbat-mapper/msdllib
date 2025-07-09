@@ -42,6 +42,12 @@ describe("ScenarioId", () => {
     expect(sid.element).toBe(element);
   });
 
+  it("create from scratch", () => {
+    let sid = ScenarioId.create();
+    expect(sid).toBeInstanceOf(ScenarioId);
+    expect(sid.element).toBeInstanceOf(Element);
+  });
+
   it("read data", () => {
     let element = parseFromString(SCENARIO_ID_TEMPLATE);
     let sid = new ScenarioId(element);

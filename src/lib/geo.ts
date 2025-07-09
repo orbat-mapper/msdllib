@@ -315,9 +315,7 @@ export class UnitDisposition extends DispositionBase {
   }
 
   static fromModel(model: Partial<DispositionType>): UnitDisposition {
-    const disposition = new UnitDisposition(
-      createEmptyXMLElementFromTagName(UnitDisposition.TAG_NAME),
-    );
+    const disposition = UnitDisposition.create();
     disposition.updateFromObject(model);
     return disposition;
   }
@@ -335,9 +333,7 @@ export class EquipmentItemDisposition extends DispositionBase {
   }
 
   static fromModel(model: Partial<DispositionType>): EquipmentItemDisposition {
-    const disposition = new EquipmentItemDisposition(
-      createEmptyXMLElementFromTagName(EquipmentItemDisposition.TAG_NAME),
-    );
+    const disposition = EquipmentItemDisposition.create();
     disposition.updateFromObject(model);
     return disposition;
   }
