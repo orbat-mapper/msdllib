@@ -17,8 +17,14 @@ import type {
   LngLatElevationTuple,
   LngLatTuple,
 } from "./types.js";
+import type { Feature, Point, Position } from "geojson";
 
-export class MsdlCoordinates {
+export interface MsdlCoordinatesType {
+  coordinateChoice?: CoordinateChoice;
+  location?: LngLatTuple | LngLatElevationTuple;
+}
+
+export class MsdlCoordinates implements MsdlCoordinatesType {
   #location?: LngLatTuple | LngLatElevationTuple;
   #coordinateChoice?: CoordinateChoice;
   element: Element;
@@ -29,6 +35,7 @@ export class MsdlCoordinates {
       this.element,
       "CoordinateChoice",
     ) as CoordinateChoice;
+
     this.parseLocation();
   }
 
@@ -204,8 +211,10 @@ export class MsdlCoordinates {
 
   static createGDCLocation(
     lngLat: LngLatTuple | LngLatElevationTuple,
+    options: { tagName?: string } = {},
   ): MsdlLocation {
-    const msdlLoc = MsdlLocation.create("GDC");
+    const tagName = options.tagName ?? "Location";
+    const msdlLoc = MsdlCoordinates.createEmtpy("GDC", tagName);
     msdlLoc.location = lngLat;
     return msdlLoc;
   }
@@ -220,12 +229,36 @@ export class MsdlCoordinates {
     msdlLocation.coordinateChoice = coordinateChoice;
     return msdlLocation;
   }
+
+  toObject(): MsdlCoordinatesType {
+    return removeUndefinedValues({
+      coordinateChoice: this.coordinateChoice,
+      location: this.location,
+    });
+  }
+
+  toGeoJson(): Feature<Point> {
+    if (!this.location) {
+      throw new Error("Location is not set");
+    }
+    const [lng, lat, elevation] = this.location;
+    const coordinates: Position =
+      elevation !== undefined ? [lng, lat, elevation] : [lng, lat];
+    return {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates,
+      },
+      properties: {},
+    };
+  }
 }
 
 export class MsdlLocation extends MsdlCoordinates {
   static readonly TAG_NAME = "Location";
 
-  static create(coordinateChoice: CoordinateChoice): MsdlLocation {
+  static create(coordinateChoice: CoordinateChoice) {
     return MsdlCoordinates.createEmtpy(coordinateChoice, MsdlLocation.TAG_NAME);
   }
 }
