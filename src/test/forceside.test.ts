@@ -4,12 +4,15 @@ import {
   FORCESIDE_TEMPLATE_IS_SIDE,
   FORCESIDE_TEMPLATE_IS_SIDE2,
   parseFromString,
-  UNIT_ATTACHED,
 } from "./testdata.js";
-import { ForceSide, Unit } from "../index.js";
+import { ForceSide } from "../index.js";
 import { loadTestScenario } from "./testutils.js";
 import { HostilityStatusCode, StandardIdentity } from "../lib/enums.js";
-import { getTagValue, getValueOrUndefined } from "../lib/domutils.js";
+import {
+  getTagElement,
+  getTagValue,
+  getValueOrUndefined,
+} from "../lib/domutils.js";
 
 describe("ForceSide class", () => {
   it("is defined", () => {
@@ -313,5 +316,32 @@ describe("ForceSide serialization", () => {
       expect(forceSide.militaryService).toBeUndefined();
       expect(forceSide.countryCode).toBe("CAN");
     });
+  });
+});
+describe("New ForceSide", () => {
+  const side = ForceSide.create();
+  it("should be created from scratch", () => {
+    expect(side).toBeInstanceOf(ForceSide);
+    expect(side.objectHandle).toBeTypeOf("string");
+    expect(side.objectHandle.length).toBe(36);
+  });
+  it("should only have required element tags", () => {
+    expect(side).toBeInstanceOf(ForceSide);
+    expect(getTagElement(side.element, "ObjectHandle")).toBeDefined();
+    expect(getTagElement(side.element, "Name")).toBeUndefined();
+  });
+});
+
+describe("New ForceSide from model", () => {
+  const side = ForceSide.fromModel({ name: "Force1", countryCode: "NLD" });
+  it("should have correct fields", () => {
+    expect(side).toBeInstanceOf(ForceSide);
+    expect(side.name).toBe("Force1");
+    expect(side.countryCode).toBe("NLD");
+  });
+  it("should only have required element tags", () => {
+    expect(side).toBeInstanceOf(ForceSide);
+    expect(getTagElement(side.element, "ObjectHandle")).toBeDefined();
+    expect(getTagElement(side.element, "Name")).toBeUndefined();
   });
 });

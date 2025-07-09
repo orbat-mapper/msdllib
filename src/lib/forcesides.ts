@@ -6,6 +6,7 @@ import {
 } from "./enums.js";
 import { Unit } from "./units.js";
 import {
+  createEmptyXMLElementFromTagName,
   getTagElements,
   getTagValue,
   getValueOrUndefined,
@@ -14,6 +15,7 @@ import {
 } from "./domutils.js";
 import type { IdGeoJsonOptions, TacticalJson } from "./common.js";
 import type { EquipmentItem } from "./equipment.js";
+import { v4 as uuidv4 } from "uuid";
 
 export interface ForceSideType {
   objectHandle: string;
@@ -27,8 +29,10 @@ export interface ForceSideType {
 
 export type ForceSideTypeUpdate = Omit<
   ForceSideType,
-  "objectHandle" | "allegianceHandle" | "rootUnits" | "equipment"
+  "allegianceHandle" | "rootUnits" | "equipment"
 >;
+
+export type ForceSideTypeInput = Omit<ForceSideTypeUpdate, "objectHandle">;
 
 export interface AssociationType {
   affiliateHandle: string;
@@ -43,7 +47,7 @@ type SideGeoJsonOptions = {
 
 export class ForceSide implements ForceSideType {
   static readonly TAG_NAME = "ForceSide";
-  objectHandle: string;
+  #objectHandle: string;
   #name: string;
   #militaryService?: MilitaryService;
   #countryCode?: string;
@@ -62,9 +66,18 @@ export class ForceSide implements ForceSideType {
       "MilitaryService",
     ) as MilitaryService;
     this.#countryCode = getValueOrUndefined(element, "CountryCode");
-    this.objectHandle = getTagValue(element, "ObjectHandle");
+    this.#objectHandle = getTagValue(element, "ObjectHandle");
     this.#allegianceHandle = getValueOrUndefined(element, "AllegianceHandle");
     this.initAssociations();
+  }
+
+  get objectHandle(): string {
+    return this.#objectHandle ?? getTagValue(this.element, "ObjectHandle");
+  }
+
+  set objectHandle(objectHandle: string) {
+    this.#objectHandle = objectHandle;
+    setOrCreateTagValue(this.element, "ObjectHandle", objectHandle);
   }
 
   get allegianceHandle(): string | undefined {
@@ -227,6 +240,7 @@ export class ForceSide implements ForceSideType {
 
   toObject(): ForceSideTypeUpdate {
     return removeUndefinedValues({
+      objectHandle: this.objectHandle,
       name: this.name,
       militaryService: this.militaryService,
       countryCode: this.countryCode,
@@ -241,5 +255,19 @@ export class ForceSide implements ForceSideType {
         console.warn(`Property ${key} does not exist.`);
       }
     });
+  }
+
+  static fromModel(model: ForceSideTypeInput): ForceSide {
+    const forceSide = ForceSide.create();
+    forceSide.updateFromObject(model);
+    return forceSide;
+  }
+
+  static create(): ForceSide {
+    const side: ForceSide = new ForceSide(
+      createEmptyXMLElementFromTagName(ForceSide.TAG_NAME),
+    );
+    side.objectHandle = uuidv4();
+    return side;
   }
 }
