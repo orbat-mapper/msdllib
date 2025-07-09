@@ -117,6 +117,14 @@ export function getTagElement(
   return el;
 }
 
+export function getOrCreateTagElement(
+  element: Element,
+  tagName: string,
+): Element {
+  let el = element.getElementsByTagNameNS(MSDL_NS, tagName)[0];
+  return el || createEmptyXMLElementFromTagName(tagName);
+}
+
 export function getTagElements(
   element: Element | undefined,
   tagName: string,
