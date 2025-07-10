@@ -17,7 +17,14 @@ export const SCENARIO_ID_TYPE: ScenarioIdType = {
 };
 
 export const MSDL_OPTIONS_TYPE: MsdlOptionsType = {
-  MSDLVersion: "1.0.0"
+  MSDLVersion: "1.0.4",
+  AggregateBased: "false",
+  AggregateEchelon: "TEAM",
+  StandardName: "Name",
+  MajorVersion: "2",
+  MinorVersion: "1",
+  CoordinateSystemType: "GCC",
+  CoordinateSystemDatum: "",
 };
 
 export const EMPTY_SCENARIO = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

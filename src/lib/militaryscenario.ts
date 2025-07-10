@@ -226,7 +226,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
   private initializeMsdlOptions() {
     const optionsElement = getTagElement(this.element, MsdlOptions.TAG_NAME);
-    if (!optionsElement) {;
+    if (!optionsElement) {
       return;
     }
     this.msdlOptions = new MsdlOptions(optionsElement);
