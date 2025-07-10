@@ -208,7 +208,8 @@ export const SymbologyStandard = {
   NATO_APP: "NATO_APP",
 } as const;
 
-export type SymbologyStandard  = (typeof SymbologyStandard)[keyof typeof SymbologyStandard];  
+export type SymbologyStandard =
+  (typeof SymbologyStandard)[keyof typeof SymbologyStandard];
 
 export const CoordinateSystem = {
   MGRS: "MGRS",
@@ -217,4 +218,5 @@ export const CoordinateSystem = {
   GCC: "GCC",
 } as const;
 
-export type CoordinateSystem  = (typeof CoordinateSystem)[keyof typeof CoordinateSystem];  
+export type CoordinateSystem =
+  (typeof CoordinateSystem)[keyof typeof CoordinateSystem];

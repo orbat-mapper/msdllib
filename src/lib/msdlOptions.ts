@@ -8,16 +8,16 @@ import {
 import {
   type EnumEchelon,
   type SymbologyStandard,
-  type CoordinateSystem
+  type CoordinateSystem,
 } from "./enums.js";
 
 export interface MsdlOptionsType {
   MSDLVersion: string;
-  AggregateBased? : string;
-  AggregateEchelon? : EnumEchelon | string;
+  AggregateBased?: string;
+  AggregateEchelon?: EnumEchelon | string;
   StandardName?: SymbologyStandard | string;
   MajorVersion?: string;
-  MinorVersion?:  string;
+  MinorVersion?: string;
   CoordinateSystemType?: CoordinateSystem | string;
   CoordinateSystemDatum?: string;
 }
@@ -65,14 +65,16 @@ export class MsdlOptions implements MsdlOptionsType {
   }
 
   get AggregateEchelon(): string {
-    return this.#AggregateEchelon ?? getTagValue(this.element, "AggregateEchelon");
+    return (
+      this.#AggregateEchelon ?? getTagValue(this.element, "AggregateEchelon")
+    );
   }
 
   set AggregateEchelon(AggregateEchelon: string) {
     this.#AggregateEchelon = AggregateEchelon;
     setOrCreateTagValue(this.element, "AggregateEchelon", AggregateEchelon);
   }
-  
+
   get StandardName(): string {
     return this.#StandardName ?? getTagValue(this.element, "StandardName");
   }
@@ -91,31 +93,45 @@ export class MsdlOptions implements MsdlOptionsType {
     setOrCreateTagValue(this.element, "MajorVersion", MajorVersion);
   }
 
-  get MinorVersion (): string {
-    return this.#MinorVersion  ?? getTagValue(this.element, "MinorVersion");
+  get MinorVersion(): string {
+    return this.#MinorVersion ?? getTagValue(this.element, "MinorVersion");
   }
 
-  set MinorVersion (MinorVersion : string) {
-    this.#MinorVersion = MinorVersion ;
-    setOrCreateTagValue(this.element, "MinorVersion", MinorVersion );
+  set MinorVersion(MinorVersion: string) {
+    this.#MinorVersion = MinorVersion;
+    setOrCreateTagValue(this.element, "MinorVersion", MinorVersion);
   }
 
-  get CoordinateSystemType (): string {
-    return this.#CoordinateSystemType ?? getTagValue(this.element, "CoordinateSystemType");
+  get CoordinateSystemType(): string {
+    return (
+      this.#CoordinateSystemType ??
+      getTagValue(this.element, "CoordinateSystemType")
+    );
   }
 
-  set CoordinateSystemType (CoordinateSystemType : string) {
-    this.#CoordinateSystemType  = CoordinateSystemType ;
-    setOrCreateTagValue(this.element, "CoordinateSystemType", CoordinateSystemType );
+  set CoordinateSystemType(CoordinateSystemType: string) {
+    this.#CoordinateSystemType = CoordinateSystemType;
+    setOrCreateTagValue(
+      this.element,
+      "CoordinateSystemType",
+      CoordinateSystemType,
+    );
   }
 
-  get CoordinateSystemDatum (): string {
-    return this.#CoordinateSystemDatum ?? getTagValue(this.element, "CoordinateSystemDatum");
+  get CoordinateSystemDatum(): string {
+    return (
+      this.#CoordinateSystemDatum ??
+      getTagValue(this.element, "CoordinateSystemDatum")
+    );
   }
 
-  set CoordinateSystemDatum (CoordinateSystemDatum : string) {
-    this.#CoordinateSystemDatum  = CoordinateSystemDatum ;
-    setOrCreateTagValue(this.element, "CoordinateSystemDatum", CoordinateSystemDatum );
+  set CoordinateSystemDatum(CoordinateSystemDatum: string) {
+    this.#CoordinateSystemDatum = CoordinateSystemDatum;
+    setOrCreateTagValue(
+      this.element,
+      "CoordinateSystemDatum",
+      CoordinateSystemDatum,
+    );
   }
 
   toObject(): MsdlOptionsType {
@@ -130,7 +146,7 @@ export class MsdlOptions implements MsdlOptionsType {
       CoordinateSystemDatum: this.CoordinateSystemDatum,
     });
   }
-  
+
   toString() {
     if (!this.element) return "";
     const oSerializer = new XMLSerializer();
@@ -153,5 +169,11 @@ export class MsdlOptions implements MsdlOptionsType {
     );
     msdlOptions.updateFromObject(model);
     return msdlOptions;
+  }
+
+  static create(): MsdlOptions {
+    return new MsdlOptions(
+      createEmptyXMLElementFromTagName(MsdlOptions.TAG_NAME),
+    );
   }
 }
