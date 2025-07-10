@@ -11,6 +11,7 @@ import {
   EQUIPMENT_NETN,
   parseFromString,
   SCENARIO_ID_TYPE,
+  MSDL_OPTIONS_TYPE,
   UNIT_TEMPLATE,
 } from "./testdata.js";
 import fs from "fs/promises";
@@ -298,10 +299,12 @@ describe("Create a MilitaryScenario", () => {
   const scenarioInput: MilitaryScenarioInputType = {
     isNETN: false,
     scenarioId: SCENARIO_ID_TYPE,
+    msdlOptions: MSDL_OPTIONS_TYPE
   };
   const scenarioInputNetn: MilitaryScenarioInputType = {
     isNETN: true,
     scenarioId: SCENARIO_ID_TYPE,
+    msdlOptions: MSDL_OPTIONS_TYPE
   };
   it("should create a plain MSDL scenario from input", () => {
     let scenario = MilitaryScenario.createFromModel(scenarioInput);
