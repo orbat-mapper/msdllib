@@ -168,3 +168,10 @@ export function removeTagValue(parent: Element, tagName: string): void {
     el.parentNode?.removeChild(el);
   }
 }
+
+export function removeTagValues(parent: Element, tagName: string): void {
+  let els = parent.getElementsByTagNameNS(MSDL_NS, tagName);
+  for (const el of els) {
+    el.parentNode?.removeChild(el);
+  }
+}
