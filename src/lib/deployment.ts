@@ -18,14 +18,32 @@ export interface DeploymentType {
 export class Deployment {
   static readonly TAG_NAME = "Deployment";
   element: Element;
-  federates: Federate[] = [];
+  #federates: Federate[] = [];
 
   constructor(element: Element) {
     this.element = element;
     const federateElements = getTagElements(element, "Federate");
     for (const federateElement of federateElements) {
-      this.federates.push(new Federate(federateElement));
+      this.#federates.push(new Federate(federateElement));
     }
+  }
+
+  get federates(): Federate[] {
+    return this.#federates;
+  }
+
+  set federates(federates: (FederateType | Federate)[]) {
+    this.#federates.length = 0;
+    for (const fed of federates) {
+      let federateInstance =
+        fed instanceof Federate ? fed : Federate.fromModel(fed);
+      this.#federates.push(federateInstance);
+      this.element.appendChild(federateInstance.element);
+    }
+  }
+
+  addFederate(fed: Federate | FederateType) {
+    this.federates = [...this.#federates, fed];
   }
 
   updateFromObject(data: Partial<DeploymentType>) {
@@ -52,6 +70,11 @@ export class Deployment {
   }
 }
 
+export type FederateTypeInput = Omit<
+  FederateType,
+  "units" | "equipment" | "objectHandle"
+>;
+
 export interface FederateType {
   objectHandle: string;
   name: string;
@@ -62,14 +85,14 @@ export interface FederateType {
 export class Federate {
   static readonly TAG_NAME = "Federate";
   element: Element;
-  objectHandle: string;
+  #objectHandle: string;
   #name?: string;
   #units: string[] = [];
   #equipment: string[] = [];
 
   constructor(element: Element) {
     this.element = element;
-    this.objectHandle = getTagValue(element, "ObjectHandle");
+    this.#objectHandle = getTagValue(element, "ObjectHandle");
     this.#name = getValueOrUndefined(element, "Name");
     const unitsElements = getTagElement(element, "Units");
     for (const unitElement of getTagElements(unitsElements, "Unit")) {
@@ -84,6 +107,15 @@ export class Federate {
       const objectHandle = getTagValue(equipmentElement, "ObjectHandle");
       objectHandle && this.equipment.push(objectHandle);
     }
+  }
+
+  get objectHandle(): string {
+    return this.#objectHandle ?? getTagValue(this.element, "ObjectHandle");
+  }
+
+  set objectHandle(objectHandle: string) {
+    this.#objectHandle = objectHandle;
+    setOrCreateTagValue(this.element, "ObjectHandle", objectHandle);
   }
 
   get name() {
@@ -137,6 +169,12 @@ export class Federate {
         console.warn(`Property ${key} does not exist.`);
       }
     });
+  }
+
+  toString() {
+    if (!this.element) return "";
+    const oSerializer = new XMLSerializer();
+    return oSerializer.serializeToString(this.element);
   }
 
   static fromModel(model: Partial<FederateType>): Federate {
