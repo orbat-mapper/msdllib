@@ -9,7 +9,10 @@ import { StandardIdentity } from "./enums.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 import { setCharAt } from "./symbology.js";
 import { Holding } from "./holdings.js";
-import { type EquipmentItemDisposition, type UnitDisposition } from "./geo.js";
+import {
+  type EquipmentItemDisposition,
+  type UnitDisposition,
+} from "./disposition.js";
 
 export const HOLDINGS_ELEMENT_TAG = "Holdings";
 export const HOLDING_ELEMENT_TAG = "Holding";
