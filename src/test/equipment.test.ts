@@ -3,7 +3,8 @@ import { EQUIPMENT_TEMPLATE, parseFromString } from "./testdata.js";
 
 import { EquipmentItem, EquipmentSymbolModifiers } from "../lib/equipment.js";
 import { getTagElement, getTagValue } from "../lib/domutils.js";
-import { EquipmentItemDisposition } from "../lib/geo.js";
+
+import { EquipmentItemDisposition } from "../lib/disposition.js";
 
 const EQUIPMENT_NO_NAME_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseFromString } from "./testdata.js";
-import { MsdlCoordinates } from "../lib/geo.js";
+import { MsdlCoordinates, type MsdlCoordinatesType } from "../lib/geo.js";
 import { createXMLElement, xmlToString } from "../lib/domutils.js";
 
 const LOCATION_GDC_TEMPLATE = `
@@ -280,4 +280,69 @@ describe("MSDL Coordinates write", () => {
   //       }
   //     });
   //   });
+});
+
+describe("MsdlCoordinates serialization", () => {
+  it("should serialize to XML", () => {
+    let element = parseFromString(LOCATION_GDC_TEMPLATE);
+    let loc = new MsdlCoordinates(element);
+    let xmlString = xmlToString(loc.element);
+    expect(xmlString).toContain("<Location>");
+    expect(xmlString).toContain("<CoordinateChoice>GDC</CoordinateChoice>");
+    expect(xmlString).toContain("<Latitude>58.54383</Latitude>");
+    expect(xmlString).toContain("<Longitude>15.038887</Longitude>");
+    expect(xmlString).toContain("<ElevationAGL>141.03737</ElevationAGL>");
+  });
+
+  it("should serialize to object", () => {
+    let element = parseFromString(LOCATION_GDC_TEMPLATE);
+    let loc = new MsdlCoordinates(element);
+    let json = loc.toObject();
+    expect(json.coordinateChoice).toBe("GDC");
+    expect(json.location.length).toBe(3);
+    expect(json.location[0]).toBeCloseTo(15.038887, 5);
+    expect(json.location[1]).toBeCloseTo(58.54383, 5);
+    expect(json.location[2]).toBe(141.03737);
+  });
+
+  it("should deserialize from object", () => {
+    const locObj = {
+      coordinateChoice: "GDC",
+      location: [15.038887, 58.54383, 141.03737],
+    } as MsdlCoordinatesType;
+    const loc = MsdlCoordinates.fromModel(locObj);
+    expect(loc).toBeInstanceOf(MsdlCoordinates);
+    expect(loc.element.tagName).toBe("Location");
+    expect(loc.coordinateChoice).toBe("GDC");
+    expect(loc.location?.length).toBe(3);
+    expect(loc.location?.[0]).toBeCloseTo(15.038887, 5);
+    expect(loc.location?.[1]).toBeCloseTo(58.54383, 5);
+    expect(loc.location?.[2]).toBe(141.03737);
+  });
+
+  it("should deserialize from object with custom tag name", () => {
+    const locObj = {
+      coordinateChoice: "GDC",
+      location: [15.038887, 58.54383, 141.03737],
+    } as MsdlCoordinatesType;
+    const loc = MsdlCoordinates.fromModel(locObj, "CustomTag");
+    expect(loc).toBeInstanceOf(MsdlCoordinates);
+    expect(loc.element.tagName).toBe("CustomTag");
+    expect(loc.coordinateChoice).toBe("GDC");
+  });
+});
+
+describe("MsdlCoordinates updating", () => {
+  it("should update from object", () => {
+    const loc = new MsdlCoordinates(parseFromString(LOCATION_GDC_TEMPLATE));
+    loc.updateFromObject({ location: [60, 70] });
+    expect(loc.location?.length).toBe(2);
+    expect(loc.location?.[0]).toBeCloseTo(60.0, 5);
+    expect(loc.location?.[1]).toBeCloseTo(70.0, 5);
+    // Ensure elevation is removed
+    const xmlString = xmlToString(loc.element);
+    expect(xmlString).not.toContain("<ElevationAGL>");
+    expect(xmlString).toContain("<Longitude>60</Longitude>");
+    expect(xmlString).toContain("<Latitude>70</Latitude>");
+  });
 });

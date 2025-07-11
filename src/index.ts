@@ -19,11 +19,9 @@ export * from "./lib/enums.js";
 export * from "./lib/types.js";
 export * from "./lib/enumValues.js";
 export {
-  EquipmentItemDisposition,
-  UnitDisposition,
-  type DispositionType,
   MsdlCoordinates,
   type MsdlCoordinatesType,
+  MsdlLocation,
 } from "./lib/geo.js";
 export {
   EquipmentModel,
@@ -38,3 +36,8 @@ export {
   type RectangleAreaType,
 } from "./lib/environment.js";
 export { type UnitEquipmentInterface } from "./lib/common.js";
+export {
+  EquipmentItemDisposition,
+  UnitDisposition,
+} from "./lib/disposition.js";
+export type { DispositionType } from "./lib/disposition.js";
