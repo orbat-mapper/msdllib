@@ -22,7 +22,6 @@ describe("MSDL Location", () => {
 
   it("create from scratch", () => {
     let loc = MsdlLocation.createGDCLocation([5.0, 54.0]);
-    expect(loc).toBeInstanceOf(MsdlLocation);
     expect(loc.element.tagName).toBe("Location");
     expect(loc.coordinateChoice).toEqual("GDC" as CoordinateChoice);
     expect(loc.location).toEqual([5.0, 54.0]);

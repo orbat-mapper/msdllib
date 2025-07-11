@@ -44,7 +44,6 @@ export class DispositionBase {
       return;
     }
     if (!this.#msdlLocation) {
-      console.warn("MsdlLocation is not initialized");
       this.#msdlLocation = MsdlLocation.createGDCLocation(loc);
     }
     this.#msdlLocation.location = loc;
