@@ -3,6 +3,7 @@ import { Deployment, Federate, type FederateType } from "../lib/deployment.js";
 import { createXMLElement, xmlToString } from "../lib/domutils.js";
 import { loadTestScenario } from "./testutils.js";
 import { v4 as uuidv4 } from "uuid";
+import type { MilitaryScenario } from "../lib/militaryscenario.js";
 const DEPLOYMENT_ELEMENT_SAMPLE = `<Deployment>
     <Federate>
         <Name>SIM A</Name>
@@ -111,11 +112,20 @@ describe("Federate class", () => {
     expect(Federate).toBeDefined();
   });
 
-  it("can be created from scratch", () => {
+  describe("created from scratch", () => {
     const fed = Federate.create();
-    expect(fed).toBeDefined();
-    expect(fed).toBeInstanceOf(Federate);
-    expect(fed.objectHandle).toBeTypeOf("string");
+    it("should be defined", () => {
+      expect(fed).toBeDefined();
+      expect(fed).toBeInstanceOf(Federate);
+      expect(fed.objectHandle).toBeTypeOf("string");
+    });
+    it("should have xml elements", () => {
+      const xml = fed.toString();
+      expect(xml.includes("<Federate>")).toBe(true);
+      expect(
+        xml.includes(`<ObjectHandle>${fed.objectHandle}</ObjectHandle>`),
+      ).toBe(true);
+    });
   });
 
   describe("when created from a model", () => {
@@ -230,10 +240,42 @@ describe("Federate class", () => {
 });
 
 describe("MilitaryScenario Deployment", () => {
+  let scenario: MilitaryScenario;
+  beforeEach(() => {
+    scenario = loadTestScenario("/data/SimpleScenarioNETN.xml");
+  });
   it("should parse a Deployment element if present", () => {
-    let scenario = loadTestScenario("/data/SimpleScenarioNETN.xml");
     expect(scenario.deployment).toBeInstanceOf(Deployment);
     expect(scenario.deployment?.federates.length).toBeGreaterThan(0);
     expect(scenario.deployment?.federates[0]?.name).toBe("SIM A");
+  });
+
+  it("should add a Federate", () => {
+    const fed = Federate.create();
+    fed.name = "NewFederate";
+    scenario.addFederate(fed);
+    expect(scenario.deployment).toBeInstanceOf(Deployment);
+    expect(
+      scenario.deployment?.federates.find((f) => f.name === fed.name),
+    ).toBeDefined();
+  });
+
+  describe("when removing Deployment", () => {
+    beforeEach(() => {
+      scenario = loadTestScenario("/data/SimpleScenarioNETN.xml");
+      delete scenario.deployment;
+    });
+    it("should remove the Deployment", () => {
+      expect(scenario.deployment).toBeUndefined();
+    });
+    describe("when adding a Federate", () => {
+      it("should alse create a Deployment", () => {
+        const fed = Federate.create();
+        fed.name = "NewFederate";
+        scenario.addFederate(fed);
+        expect(scenario.deployment).toBeInstanceOf(Deployment);
+        expect(scenario.deployment?.federates.length).toBeGreaterThan(0);
+      });
+    });
   });
 });

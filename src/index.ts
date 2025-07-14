@@ -13,7 +13,12 @@ export {
   type ForceSideTypeUpdate,
   type ForceSideTypeInput,
 } from "./lib/forcesides.js";
-export { Federate, type FederateType, Deployment } from "./lib/deployment.js";
+export {
+  Federate,
+  type FederateType,
+  type FederateTypeInput,
+  Deployment,
+} from "./lib/deployment.js";
 export { Holding, type HoldingType } from "./lib/holdings.js";
 export * from "./lib/enums.js";
 export * from "./lib/types.js";
