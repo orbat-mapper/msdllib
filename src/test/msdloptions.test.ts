@@ -17,26 +17,10 @@ const MSDL_OPTIONS_TEMPLATE = `<Options xmlns="urn:sisostds:scenario:military:da
             <CoordinateSystemDatum>WGS84</CoordinateSystemDatum>
           </CoordinateDataStandard>
         </ScenarioDataStandards>
-        <AggregateBased>value</AggregateBased>
-        <AggregateEchelon>FRONT</AggregateEchelon>
-    </Options>`;
-
-const MSDL_OPTIONS_TEMPLATE_MISSING = `<Options xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
-                  xmlns:modelID="http://www.sisostds.org/schemas/modelID">
-        <MSDLVersion>1.0.2</MSDLVersion>
-        <ScenarioDataStandards>
-            <SymbologyDataStandard>
-              <StandardName>MILSTD_2525B</StandardName>
-              <MajorVersion>2</MajorVersion>
-              <MinorVersion>3</MinorVersion>
-            </SymbologyDataStandard>
-          <CoordinateDataStandard>
-            <CoordinateSystemType>GDC</CoordinateSystemType>
-            <CoordinateSystemDatum>WGS84</CoordinateSystemDatum>
-          </CoordinateDataStandard>
-        </ScenarioDataStandards>
-        <AggregateBased>value</AggregateBased>
-        <AggregateEchelon>FRONT</AggregateEchelon>
+        <OrganizationDetail>
+          <AggregateBased>value</AggregateBased>
+          <AggregateEchelon>FRONT</AggregateEchelon>
+        </OrganizationDetail>
     </Options>`;
 
 describe("MSDLOptions", () => {
@@ -60,63 +44,63 @@ describe("MSDLOptions", () => {
   it("read data", () => {
     let element = parseFromString(MSDL_OPTIONS_TEMPLATE);
     let options = new MsdlOptions(element);
-    expect(options.MSDLVersion).toBe("1.0.2");
-    expect(options.AggregateBased).toBe("value");
-    expect(options.AggregateEchelon).toBe("FRONT");
-    expect(options.StandardName).toBe("MILSTD_2525B");
-    expect(options.MajorVersion).toBe("2");
-    expect(options.MinorVersion).toBe("3");
-    expect(options.CoordinateSystemType).toBe("GDC");
-    expect(options.CoordinateSystemDatum).toBe("WGS84");
+    expect(options.msdlVersion).toBe("1.0.2");
+    expect(options.aggregateBased).toBe("value");
+    expect(options.aggregateEchelon).toBe("FRONT");
+    expect(options.standardName).toBe("MILSTD_2525B");
+    expect(options.majorVersion).toBe("2");
+    expect(options.minorVersion).toBe("3");
+    expect(options.coordinateSystemType).toBe("GDC");
+    expect(options.coordinateSystemDatum).toBe("WGS84");
   });
 
   describe("when writing data", () => {
     it("should set the MSDLVersion in the XML element", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       expect(getTagValue(options.element, "MSDLVersion")).toBe("1.0.2");
-      options.MSDLVersion = "New Version";
+      options.msdlVersion = "New Version";
       expect(getTagValue(options.element, "MSDLVersion")).toBe("New Version");
     });
 
     it("should set the AggregateBased in the XML element", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       expect(getTagValue(options.element, "AggregateBased")).toBe("value");
-      options.AggregateBased = "New value";
+      options.aggregateBased = "New value";
       expect(getTagValue(options.element, "AggregateBased")).toBe("New value");
     });
 
     it("should set the AggregateEchelon in the XML element", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       expect(getTagValue(options.element, "AggregateEchelon")).toBe("FRONT");
-      options.AggregateEchelon = "REGION";
+      options.aggregateEchelon = "REGION";
       expect(getTagValue(options.element, "AggregateEchelon")).toBe("REGION");
     });
 
     it("should set the StandardName in the XML element", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       expect(getTagValue(options.element, "StandardName")).toBe("MILSTD_2525B");
-      options.StandardName = "3.2.1";
+      options.standardName = "3.2.1";
       expect(getTagValue(options.element, "StandardName")).toBe("3.2.1");
     });
 
     it("should set the MajorVersion in the XML element", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       expect(getTagValue(options.element, "MajorVersion")).toBe("2");
-      options.MajorVersion = "1.0";
+      options.majorVersion = "1.0";
       expect(getTagValue(options.element, "MajorVersion")).toBe("1.0");
     });
 
     it("should set the MinorVersion in the XML element", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       expect(getTagValue(options.element, "MinorVersion")).toBe("3");
-      options.MinorVersion = "2.1";
+      options.minorVersion = "2.1";
       expect(getTagValue(options.element, "MinorVersion")).toBe("2.1");
     });
 
     it("should set the CoordinateSystemType in the XML element", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       expect(getTagValue(options.element, "CoordinateSystemType")).toBe("GDC");
-      options.CoordinateSystemType = "MGRS";
+      options.coordinateSystemType = "MGRS";
       expect(getTagValue(options.element, "CoordinateSystemType")).toBe("MGRS");
     });
 
@@ -125,7 +109,7 @@ describe("MSDLOptions", () => {
       expect(getTagValue(options.element, "CoordinateSystemDatum")).toBe(
         "WGS84",
       );
-      options.CoordinateSystemDatum = "New Datum";
+      options.coordinateSystemDatum = "New Datum";
       expect(getTagValue(options.element, "CoordinateSystemDatum")).toBe(
         "New Datum",
       );
@@ -138,14 +122,14 @@ describe("MsdlOptions serialization", () => {
     it("should return an object with the correct properties", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       const obj = options.toObject();
-      expect(obj.MSDLVersion).toBe("1.0.2");
-      expect(obj.AggregateBased).toBe("value");
-      expect(obj.AggregateEchelon).toBe("FRONT");
-      expect(obj.StandardName).toBe("MILSTD_2525B");
-      expect(obj.MajorVersion).toBe("2");
-      expect(obj.MinorVersion).toBe("3");
-      expect(obj.CoordinateSystemType).toBe("GDC");
-      expect(obj.CoordinateSystemDatum).toBe("WGS84");
+      expect(obj.msdlVersion).toBe("1.0.2");
+      expect(obj.organizationDetail?.aggregateBased).toBe("value");
+      expect(obj.organizationDetail?.aggregateEchelon).toBe("FRONT");
+      expect(obj.scenarioDataStandards?.symbologyDataStandard?.standardName).toBe("MILSTD_2525B");
+      expect(obj.scenarioDataStandards?.symbologyDataStandard?.majorVersion).toBe("2");
+      expect(obj.scenarioDataStandards?.symbologyDataStandard?.minorVersion).toBe("3");
+      expect(obj.scenarioDataStandards?.coordinateDataStandard?.coordinateSystemType).toBe("GDC");
+      expect(obj.scenarioDataStandards?.coordinateDataStandard?.coordinateSystemDatum).toBe("WGS84");
     });
   });
 
@@ -153,38 +137,46 @@ describe("MsdlOptions serialization", () => {
     it("should update properties from an object", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       const updateData = {
-        MSDLVersion: "2.1.1",
-        AggregateBased: "true",
-        AggregateEchelon: "GROUP",
-        StandardName: "Standard",
-        MajorVersion: "3",
-        MinorVersion: "4",
-        CoordinateSystemType: "UTM",
-        CoordinateSystemDatum: "WGS",
+      msdlVersion: "2.1.1",
+        organizationDetail: {
+          aggregateBased: "true",
+          aggregateEchelon: "GROUP"
+        },
+        scenarioDataStandards: {
+          symbologyDataStandard: {
+            standardName: "Standard",
+            majorVersion: "3",
+            minorVersion: "4"
+          },
+          coordinateDataStandard: {
+            coordinateSystemType: "UTM",
+            coordinateSystemDatum: "WGS"
+          }
+        }
       };
       options.updateFromObject(updateData);
-      expect(options.MSDLVersion).toBe("2.1.1");
-      expect(options.AggregateBased).toBe("true");
-      expect(options.AggregateEchelon).toBe("GROUP");
-      expect(options.StandardName).toBe("Standard");
-      expect(options.MajorVersion).toBe("3");
-      expect(options.MinorVersion).toBe("4");
-      expect(options.CoordinateSystemType).toBe("UTM");
-      expect(options.CoordinateSystemDatum).toBe("WGS");
+      expect(options.msdlVersion).toBe("2.1.1");
+      expect(options.aggregateBased).toBe("true");
+      expect(options.aggregateEchelon).toBe("GROUP");
+      expect(options.standardName).toBe("Standard");
+      expect(options.majorVersion).toBe("3");
+      expect(options.minorVersion).toBe("4");
+      expect(options.coordinateSystemType).toBe("UTM");
+      expect(options.coordinateSystemDatum).toBe("WGS");
     });
 
     it("should remove undefined properties", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       const updateData = {
-        StandardName: undefined,
-        CoordinateSystemType: undefined,
+        scenarioDataStandards: { symbologyDataStandard: { standardName: undefined, }},
+        coordinateSystemType: undefined,
       };
       options.updateFromObject(updateData);
-      expect(options.MSDLVersion).toBe("1.0.2");
-      expect(options.CoordinateSystemDatum).toBe("WGS84");
+      expect(options.msdlVersion).toBe("1.0.2");
+      expect(options.coordinateSystemDatum).toBe("WGS84");
 
-      expect(options.StandardName).toBe("");
-      expect(options.CoordinateSystemType).toBe("");
+      expect(options.standardName).toBe("");
+      expect(options.coordinateSystemType).toBe("");
       const standardNameElements = options.element.getElementsByTagNameNS(
         "*",
         "StandardName",
@@ -199,36 +191,36 @@ describe("MsdlOptions serialization", () => {
   describe("fromModel", () => {
     it("should create an instance from an object", () => {
       const options = MsdlOptions.fromModel(MSDL_OPTIONS_TYPE);
-      expect(options.MSDLVersion).toBe(MSDL_OPTIONS_TYPE.MSDLVersion);
-      expect(options.AggregateBased).toBe(MSDL_OPTIONS_TYPE.AggregateBased);
-      expect(options.AggregateEchelon).toBe(MSDL_OPTIONS_TYPE.AggregateEchelon);
-      expect(options.StandardName).toBe(MSDL_OPTIONS_TYPE.StandardName);
-      expect(options.MajorVersion).toBe(MSDL_OPTIONS_TYPE.MajorVersion);
-      expect(options.MinorVersion).toBe(MSDL_OPTIONS_TYPE.MinorVersion);
-      expect(options.CoordinateSystemType).toBe(
-        MSDL_OPTIONS_TYPE.CoordinateSystemType,
+      expect(options.msdlVersion).toBe(MSDL_OPTIONS_TYPE.msdlVersion);
+      expect(options.aggregateBased).toBe(MSDL_OPTIONS_TYPE.organizationDetail?.aggregateBased);
+      expect(options.aggregateEchelon).toBe(MSDL_OPTIONS_TYPE.organizationDetail?.aggregateEchelon);
+      expect(options.standardName).toBe(MSDL_OPTIONS_TYPE.scenarioDataStandards?.symbologyDataStandard?.standardName);
+      expect(options.majorVersion).toBe(MSDL_OPTIONS_TYPE.scenarioDataStandards?.symbologyDataStandard?.majorVersion);
+      expect(options.minorVersion).toBe(MSDL_OPTIONS_TYPE.scenarioDataStandards?.symbologyDataStandard?.minorVersion);
+      expect(options.coordinateSystemType).toBe(
+        MSDL_OPTIONS_TYPE.scenarioDataStandards?.coordinateDataStandard?.coordinateSystemType,
       );
-      expect(options.CoordinateSystemDatum).toBe(
-        MSDL_OPTIONS_TYPE.CoordinateSystemDatum,
+      expect(options.coordinateSystemDatum).toBe(
+        MSDL_OPTIONS_TYPE.scenarioDataStandards?.coordinateDataStandard?.coordinateSystemDatum,
       );
     });
     it("should be the same after serializing to xml back and forth", () => {
       const optionsBefore = MsdlOptions.fromModel(MSDL_OPTIONS_TYPE);
       const xmlString = optionsBefore.toString();
       const optionsAfter = new MsdlOptions(parseFromString(xmlString));
-      expect(optionsBefore.MSDLVersion).toBe(optionsAfter.MSDLVersion);
-      expect(optionsBefore.AggregateBased).toBe(optionsAfter.AggregateBased);
-      expect(optionsBefore.AggregateEchelon).toBe(
-        optionsAfter.AggregateEchelon,
+      expect(optionsBefore.msdlVersion).toBe(optionsAfter.msdlVersion);
+      expect(optionsBefore.aggregateBased).toBe(optionsAfter.aggregateBased);
+      expect(optionsBefore.aggregateEchelon).toBe(
+        optionsAfter.aggregateEchelon,
       );
-      expect(optionsBefore.StandardName).toBe(optionsAfter.StandardName);
-      expect(optionsBefore.MajorVersion).toBe(optionsAfter.MajorVersion);
-      expect(optionsBefore.MinorVersion).toBe(optionsAfter.MinorVersion);
-      expect(optionsBefore.CoordinateSystemType).toBe(
-        optionsAfter.CoordinateSystemType,
+      expect(optionsBefore.standardName).toBe(optionsAfter.standardName);
+      expect(optionsBefore.majorVersion).toBe(optionsAfter.majorVersion);
+      expect(optionsBefore.minorVersion).toBe(optionsAfter.minorVersion);
+      expect(optionsBefore.coordinateSystemType).toBe(
+        optionsAfter.coordinateSystemType,
       );
-      expect(optionsBefore.CoordinateSystemDatum).toBe(
-        optionsAfter.CoordinateSystemDatum,
+      expect(optionsBefore.coordinateSystemDatum).toBe(
+        optionsAfter.coordinateSystemDatum,
       );
     });
   });

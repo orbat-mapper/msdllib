@@ -17,14 +17,22 @@ export const SCENARIO_ID_TYPE: ScenarioIdType = {
 };
 
 export const MSDL_OPTIONS_TYPE: MsdlOptionsType = {
-  MSDLVersion: "1.0.4",
-  AggregateBased: "false",
-  AggregateEchelon: "TEAM",
-  StandardName: "Name",
-  MajorVersion: "2",
-  MinorVersion: "1",
-  CoordinateSystemType: "GCC",
-  CoordinateSystemDatum: "",
+  msdlVersion: "1.0.4",
+  organizationDetail: {
+    aggregateBased: "false",
+    aggregateEchelon: "TEAM"
+  },
+  scenarioDataStandards: {
+    symbologyDataStandard: {
+      standardName: "Name",
+      majorVersion: "2",
+      minorVersion: "1"
+    },
+    coordinateDataStandard: {
+      coordinateSystemType: "GCC",
+      coordinateSystemDatum: ""
+    }
+  }
 };
 
 export const EMPTY_SCENARIO = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

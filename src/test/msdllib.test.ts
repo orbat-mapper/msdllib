@@ -76,7 +76,7 @@ describe("MilitaryScenario class", () => {
     expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
     expect(scenario.scenarioId.name).toBe("Empty scenario");
     expect(scenario.msdlOptions).toBeInstanceOf(MsdlOptions);
-    expect(scenario.msdlOptions.MSDLVersion).toBe("MSDL Standard Nov 2008");
+    expect(scenario.msdlOptions.msdlVersion).toBe("MSDL Standard Nov 2008");
   });
 });
 
@@ -90,7 +90,7 @@ describe("Simple scenario", () => {
     expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
     expect(scenario.scenarioId.name).toBe("Simple scenario");
     expect(scenario.msdlOptions).toBeInstanceOf(MsdlOptions);
-    expect(scenario.msdlOptions.MSDLVersion).toBe("1.2.3-2025");
+    expect(scenario.msdlOptions.msdlVersion).toBe("1.2.3-2025");
   });
 
   it("default primary force side ", () => {
@@ -315,8 +315,8 @@ describe("Create a MilitaryScenario", () => {
     let scenario = MilitaryScenario.createFromModel(scenarioInput);
     expect(scenario.isNETN).toBe(false);
     expect(scenario.scenarioId.name).toBe(SCENARIO_ID_TYPE.name);
-    expect(scenario.msdlOptions.MSDLVersion).toBe(
-      MSDL_OPTIONS_TYPE.MSDLVersion,
+    expect(scenario.msdlOptions.msdlVersion).toBe(
+      MSDL_OPTIONS_TYPE.msdlVersion,
     );
     expect(scenario.forceSides.length).toBe(0);
     expect(scenario.rootUnits.length).toBe(0);
@@ -326,8 +326,8 @@ describe("Create a MilitaryScenario", () => {
     let scenario = MilitaryScenario.createFromModel(scenarioInputNetn);
     expect(scenario.isNETN).toBe(true);
     expect(scenario.scenarioId.name).toBe(SCENARIO_ID_TYPE.name);
-    expect(scenario.msdlOptions.MSDLVersion).toBe(
-      MSDL_OPTIONS_TYPE.MSDLVersion,
+    expect(scenario.msdlOptions.msdlVersion).toBe(
+      MSDL_OPTIONS_TYPE.msdlVersion,
     );
   });
   it("should throw an error on incomplete input", () => {
@@ -337,7 +337,7 @@ describe("Create a MilitaryScenario", () => {
     expect(() =>
       MilitaryScenario.createFromModel({
         scenarioId: { modificationDate: "" },
-        msdlOptions: { StandardName: "" },
+        msdlOptions: { scenarioDataStandards: { symbologyDataStandard: { standardName: "Name", }}},
         isNETN: false,
       } as MilitaryScenarioInputType),
     ).toThrow(TypeError);
