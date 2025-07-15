@@ -5,7 +5,6 @@ import { toLatLon } from "utm";
 
 import {
   createEmptyXMLElementFromTagName,
-  getNumberValue,
   getTagElement,
   getTagValue,
   removeTagValue,
@@ -20,18 +19,18 @@ import type {
 import type { Feature, Point, Position } from "geojson";
 
 export interface MsdlCoordinatesType {
-  coordinateChoice?: CoordinateChoice;
-  location?: LngLatTuple | LngLatElevationTuple;
+  coordinateChoice: CoordinateChoice;
+  location: LngLatTuple | LngLatElevationTuple | number[];
 }
 
 export class MsdlCoordinates implements MsdlCoordinatesType {
-  #location?: LngLatTuple | LngLatElevationTuple;
-  #coordinateChoice?: CoordinateChoice;
+  #location!: LngLatTuple | LngLatElevationTuple;
+  #coordinateChoice: CoordinateChoice;
   element: Element;
 
   constructor(element: Element) {
     this.element = element;
-    this.coordinateChoice = getTagValue(
+    this.#coordinateChoice = getTagValue(
       this.element,
       "CoordinateChoice",
     ) as CoordinateChoice;
@@ -39,7 +38,7 @@ export class MsdlCoordinates implements MsdlCoordinatesType {
     this.parseLocation();
   }
 
-  get coordinateChoice(): CoordinateChoice | undefined {
+  get coordinateChoice(): CoordinateChoice {
     return (
       this.#coordinateChoice ??
       (getTagValue(this.element, "CoordinateChoice") as CoordinateChoice)
@@ -52,7 +51,7 @@ export class MsdlCoordinates implements MsdlCoordinatesType {
     if (this.#location) this.writeLocation(this.#location);
   }
 
-  get location(): LngLatTuple | LngLatElevationTuple | undefined {
+  get location(): LngLatTuple | LngLatElevationTuple {
     return this.#location;
   }
 
@@ -67,10 +66,6 @@ export class MsdlCoordinates implements MsdlCoordinatesType {
       this.writeGDCLocation(loc);
     } else if (this.coordinateChoice === "MGRS") {
       this.writeMGRSLocation(loc);
-      // } else if (this.coordinateChoice === "GCC") {
-      //   this.#location = this.writeGCCLocation();
-      // } else if (this.coordinateChoice === "UTM") {
-      //   this.#location = this.writeUTMLocation();
     } else {
       console.warn(`Unhandled coordinate choice ${this.coordinateChoice}`);
     }
@@ -130,7 +125,7 @@ export class MsdlCoordinates implements MsdlCoordinatesType {
       this.#location = this.parseUTMLocation();
     } else {
       // console.warn(`Unhandled coordinate choice ${this.coordinateChoice}`);
-      this.#location = undefined;
+      //this.#location = undefined;
     }
   }
 
@@ -170,13 +165,6 @@ export class MsdlCoordinates implements MsdlCoordinatesType {
     }
   }
 
-  // private setGDCLocation(latlng: L.LatLng) {
-  //     let gdcElement = getTagElement(this.element, "GDC");
-  //     setTagValue(gdcElement, 'Latitude', latlng.lat.toString());
-  //     setTagValue(gdcElement, 'Longitude', latlng.lng.toString());
-  //     setTagValue(gdcElement, "ElevationAGL", latlng.alt ? latlng.alt.toString() : "");
-  // }
-
   private parseGCCLocation(): LngLatElevationTuple {
     let gccElement = getTagElement(this.element, "GCC");
     let X = Number(getTagValue(gccElement, "X"));
@@ -212,28 +200,49 @@ export class MsdlCoordinates implements MsdlCoordinatesType {
   static createGDCLocation(
     lngLat: LngLatTuple | LngLatElevationTuple,
     options: { tagName?: string } = {},
-  ): MsdlLocation {
+  ) {
     const tagName = options.tagName ?? "Location";
-    const msdlLoc = MsdlCoordinates.createEmtpy("GDC", tagName);
+    const msdlLoc = MsdlCoordinates.create("GDC", tagName);
     msdlLoc.location = lngLat;
     return msdlLoc;
   }
 
-  static createEmtpy(
+  static fromModel(
+    model: MsdlCoordinatesType,
+    tagName = MsdlLocation.TAG_NAME,
+  ): MsdlLocation {
+    const msdlCoordinates = new MsdlCoordinates(
+      createEmptyXMLElementFromTagName(tagName),
+    );
+    msdlCoordinates.updateFromObject(model);
+    return msdlCoordinates as MsdlLocation;
+  }
+
+  static create(
     coordinateChoice: CoordinateChoice,
     tagName: string,
   ): MsdlLocation {
-    const msdlLocation = new MsdlLocation(
+    const msdlCoordinates = new MsdlCoordinates(
       createEmptyXMLElementFromTagName(tagName),
     );
-    msdlLocation.coordinateChoice = coordinateChoice;
-    return msdlLocation;
+    msdlCoordinates.coordinateChoice = coordinateChoice;
+    return msdlCoordinates;
   }
 
   toObject(): MsdlCoordinatesType {
     return removeUndefinedValues({
       coordinateChoice: this.coordinateChoice,
       location: this.location,
+    });
+  }
+
+  updateFromObject(data: Partial<MsdlCoordinatesType>) {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key in this) {
+        (this as any)[key] = value;
+      } else {
+        console.warn(`Property ${key} does not exist on MsdlCoordinates.`);
+      }
     });
   }
 
@@ -258,129 +267,7 @@ export class MsdlCoordinates implements MsdlCoordinatesType {
 export class MsdlLocation extends MsdlCoordinates {
   static readonly TAG_NAME = "Location";
 
-  static create(coordinateChoice: CoordinateChoice) {
-    return MsdlCoordinates.createEmtpy(coordinateChoice, MsdlLocation.TAG_NAME);
-  }
-}
-
-export type DispositionType = {
-  directionOfMovement?: number;
-  location?: LngLatTuple | LngLatElevationTuple;
-  speed?: number;
-};
-
-export class DispositionBase {
-  static readonly TAG_NAME = "Disposition";
-  element: Element;
-  #directionOfMovement?: number;
-  #speed?: number;
-  #msdlLocation?: MsdlLocation;
-
-  constructor(element: Element) {
-    this.element = element;
-    this.#directionOfMovement = getNumberValue(element, "DirectionOfMovement");
-    this.#speed = getNumberValue(element, "Speed");
-    let locationElement = getTagElement(element, MsdlLocation.TAG_NAME);
-    if (locationElement) {
-      this.#msdlLocation = new MsdlLocation(locationElement);
-    }
-    // this.location = this.#msdlLocation?.location;
-  }
-
-  get location(): LngLatTuple | LngLatElevationTuple | undefined {
-    return this.#msdlLocation?.location;
-  }
-
-  set location(loc: LngLatTuple | LngLatElevationTuple | undefined) {
-    if (!loc) {
-      this.#msdlLocation = undefined;
-      removeTagValue(this.element, MsdlLocation.TAG_NAME);
-      return;
-    }
-    if (!this.#msdlLocation) {
-      console.warn("MsdlLocation is not initialized");
-      this.#msdlLocation = MsdlLocation.createGDCLocation(loc);
-    }
-    this.#msdlLocation.location = loc;
-    this.element.appendChild(this.#msdlLocation.element);
-  }
-
-  get directionOfMovement(): number | undefined {
-    return (
-      this.#directionOfMovement ??
-      getNumberValue(this.element, "DirectionOfMovement")
-    );
-  }
-
-  set directionOfMovement(direction: number | undefined) {
-    this.#directionOfMovement = direction;
-    setOrCreateTagValue(
-      this.element,
-      "DirectionOfMovement",
-      direction?.toString(),
-    );
-  }
-
-  get speed(): number | undefined {
-    return this.#speed ?? getNumberValue(this.element, "Speed");
-  }
-
-  set speed(speed: number | undefined) {
-    this.#speed = speed;
-    setOrCreateTagValue(this.element, "Speed", speed?.toString());
-  }
-
-  toObject(): DispositionType {
-    return removeUndefinedValues({
-      directionOfMovement: this.directionOfMovement,
-      speed: this.speed,
-      location: this.location,
-    });
-  }
-
-  updateFromObject(data: Partial<DispositionType>) {
-    Object.entries(data).forEach(([key, value]) => {
-      if (key in this) {
-        (this as any)[key] = value;
-      } else {
-        console.warn(`Property ${key} does not exist.`);
-      }
-    });
-  }
-}
-
-export class UnitDisposition extends DispositionBase {
-  constructor(element: Element) {
-    super(element);
-  }
-
-  static fromModel(model: Partial<DispositionType>): UnitDisposition {
-    const disposition = UnitDisposition.create();
-    disposition.updateFromObject(model);
-    return disposition;
-  }
-
-  static create(): UnitDisposition {
-    return new UnitDisposition(
-      createEmptyXMLElementFromTagName(UnitDisposition.TAG_NAME),
-    );
-  }
-}
-
-export class EquipmentItemDisposition extends DispositionBase {
-  constructor(element: Element) {
-    super(element);
-  }
-
-  static fromModel(model: Partial<DispositionType>): EquipmentItemDisposition {
-    const disposition = EquipmentItemDisposition.create();
-    disposition.updateFromObject(model);
-    return disposition;
-  }
-
-  static create(): EquipmentItemDisposition {
-    return new EquipmentItemDisposition(
-      createEmptyXMLElementFromTagName(EquipmentItemDisposition.TAG_NAME),
-    );
+  static override create(coordinateChoice: CoordinateChoice) {
+    return MsdlCoordinates.create(coordinateChoice, MsdlLocation.TAG_NAME);
   }
 }

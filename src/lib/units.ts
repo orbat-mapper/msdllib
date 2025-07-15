@@ -25,9 +25,9 @@ import {
 import { setCharAt } from "./symbology.js";
 import { ForceSide } from "./forcesides.js";
 import { UnitModel, type UnitModelType } from "./modelType.js";
-import { UnitDisposition, type DispositionType } from "./geo.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 import { v4 as uuidv4 } from "uuid";
+import { type DispositionType, UnitDisposition } from "./disposition.js";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 

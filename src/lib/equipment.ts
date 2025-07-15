@@ -17,11 +17,14 @@ import {
 } from "./common.js";
 import { ForceOwnerType } from "./enums.js";
 import { EquipmentModel, type EquipmentModelType } from "./modelType.js";
-import { EquipmentItemDisposition, type DispositionType } from "./geo.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 import { v4 as uuidv4 } from "uuid";
 import { ForceSide } from "./forcesides.js";
 import { Unit } from "./units.js";
+import {
+  type DispositionType,
+  EquipmentItemDisposition,
+} from "./disposition.js";
 
 export type EquipmentItemGeoJsonOptions = IdGeoJsonOptions;
 

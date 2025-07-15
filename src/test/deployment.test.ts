@@ -1,7 +1,9 @@
-import { describe, it, expect } from "vitest";
-import { Deployment, Federate } from "../lib/deployment.js";
-import { createXMLElement } from "../lib/domutils.js";
+import { describe, it, expect, beforeEach } from "vitest";
+import { Deployment, Federate, type FederateType } from "../lib/deployment.js";
+import { createXMLElement, xmlToString } from "../lib/domutils.js";
 import { loadTestScenario } from "./testutils.js";
+import { v4 as uuidv4 } from "uuid";
+import type { MilitaryScenario } from "../lib/militaryscenario.js";
 const DEPLOYMENT_ELEMENT_SAMPLE = `<Deployment>
     <Federate>
         <Name>SIM A</Name>
@@ -110,6 +112,109 @@ describe("Federate class", () => {
     expect(Federate).toBeDefined();
   });
 
+  describe("created from scratch", () => {
+    const fed = Federate.create();
+    it("should be defined", () => {
+      expect(fed).toBeDefined();
+      expect(fed).toBeInstanceOf(Federate);
+      expect(fed.objectHandle).toBeTypeOf("string");
+    });
+    it("should have xml elements", () => {
+      const xml = fed.toString();
+      expect(xml.includes("<Federate>")).toBe(true);
+      expect(
+        xml.includes(`<ObjectHandle>${fed.objectHandle}</ObjectHandle>`),
+      ).toBe(true);
+    });
+  });
+
+  describe("when created from a model", () => {
+    const uuid = uuidv4();
+    const fedType: Partial<FederateType> = {
+      name: "Sim1",
+      equipment: ["equip1"],
+    };
+    let fed: Federate;
+    beforeEach(() => {
+      fed = Federate.fromModel(fedType);
+    });
+    it("should be instantiated", () => {
+      expect(fed).toBeInstanceOf(Federate);
+      expect(fed.objectHandle).toBeTypeOf("string");
+      expect(fed.name).toBe("Sim1");
+      expect(fed.equipment).toHaveLength(1);
+      expect(fed.units).toHaveLength(0);
+    });
+    it("should also have an xml element", () => {
+      const xml = xmlToString(fed.element);
+      expect(xml.includes(">Sim1<"));
+      expect(xml.includes(Federate.TAG_NAME));
+      expect(xml.includes("<ObjectHandle>"));
+      expect(xml.includes("<Units>"));
+      expect(xml.includes("<Equipment>"));
+      expect(xml.includes("<EquipmentItem>"));
+    });
+    describe("when updating the model units", () => {
+      beforeEach(() => {
+        fed = Federate.fromModel(fedType);
+        fed.units = [uuid];
+      });
+      it("should update the model", () => {
+        expect(fed.units).toHaveLength(1);
+      });
+      it("should update the xml", () => {
+        const xml = xmlToString(fed.element);
+        expect(xml.includes("<Units>")).toBe(true);
+        expect(xml.includes(`<Unit>${uuid}</Unit>`)).toBe(true);
+      });
+      describe("that can also be removed", () => {
+        beforeEach(() => {
+          fed.units = [];
+        });
+        it("from the model", () => {
+          expect(fed.units).toHaveLength(0);
+        });
+        it("from the xml", () => {
+          const xml = xmlToString(fed.element);
+          expect(xml.includes("<Units>")).toBeFalsy();
+          expect(xml.includes(`<Unit>${uuid}</Unit>`)).toBeFalsy();
+        });
+      });
+    });
+
+    describe("when updating the model equipment", () => {
+      beforeEach(() => {
+        fed = Federate.fromModel(fedType);
+        fed.equipment = [uuid];
+      });
+      it("should update the model", () => {
+        expect(fed.equipment).toHaveLength(1);
+      });
+      it("should update the xml", () => {
+        const xml = xmlToString(fed.element);
+        expect(xml.includes("<Equipment>")).toBe(true);
+        expect(xml.includes(`<EquipmentItem>${uuid}</EquipmentItem>`)).toBe(
+          true,
+        );
+      });
+      describe("that can also be removed", () => {
+        beforeEach(() => {
+          fed.equipment = [];
+        });
+        it("from the model", () => {
+          expect(fed.equipment).toHaveLength(0);
+        });
+        it("from the xml", () => {
+          const xml = xmlToString(fed.element);
+          expect(xml.includes("<Equipment>")).toBeFalsy();
+          expect(
+            xml.includes(`<EquipmentItem>${uuid}</EquipmentItem>`),
+          ).toBeFalsy();
+        });
+      });
+    });
+  });
+
   it("can be created from an XML string", () => {
     const federateElement = createXMLElement(`
       <Federate>
@@ -135,10 +240,42 @@ describe("Federate class", () => {
 });
 
 describe("MilitaryScenario Deployment", () => {
+  let scenario: MilitaryScenario;
+  beforeEach(() => {
+    scenario = loadTestScenario("/data/SimpleScenarioNETN.xml");
+  });
   it("should parse a Deployment element if present", () => {
-    let scenario = loadTestScenario("/data/SimpleScenarioNETN.xml");
     expect(scenario.deployment).toBeInstanceOf(Deployment);
     expect(scenario.deployment?.federates.length).toBeGreaterThan(0);
     expect(scenario.deployment?.federates[0]?.name).toBe("SIM A");
+  });
+
+  it("should add a Federate", () => {
+    const fed = Federate.create();
+    fed.name = "NewFederate";
+    scenario.addFederate(fed);
+    expect(scenario.deployment).toBeInstanceOf(Deployment);
+    expect(
+      scenario.deployment?.federates.find((f) => f.name === fed.name),
+    ).toBeDefined();
+  });
+
+  describe("when removing Deployment", () => {
+    beforeEach(() => {
+      scenario = loadTestScenario("/data/SimpleScenarioNETN.xml");
+      delete scenario.deployment;
+    });
+    it("should remove the Deployment", () => {
+      expect(scenario.deployment).toBeUndefined();
+    });
+    describe("when adding a Federate", () => {
+      it("should alse create a Deployment", () => {
+        const fed = Federate.create();
+        fed.name = "NewFederate";
+        scenario.addFederate(fed);
+        expect(scenario.deployment).toBeInstanceOf(Deployment);
+        expect(scenario.deployment?.federates.length).toBeGreaterThan(0);
+      });
+    });
   });
 });

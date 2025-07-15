@@ -1,5 +1,29 @@
 # @orbat-mapper/msdllib
 
+## 0.21.0
+
+### Minor Changes
+
+- cc701c9: Add the following methods to `MsdlCoordinates`:
+  - `toObject(): MsdlCoordinatesType`
+  - `updateFromObject(model: Partial<MsdlCoordinatesType>): void`
+  - `MsdlCoordinates.fromModel(model: MsdlCoordinatesType, tagName?): MsdlCoordinates` (static method)
+
+## 0.20.0
+
+### Minor Changes
+
+- 159e75f: Add read support for the `Environment` element (`scenarioTime` and `areaOfInterest`)
+- 8add1e0: Add `toObject()` and `toGeoJson()` methods to `MsdlCoordinates` class
+
+### Patch Changes
+
+- 0b7a80e: - Add writable `units` and `equipment` fields to `Federate` classes
+  - Add static `create` and `fromModel` functions to `Deployment` and `Federate`
+  - Add tests for `Deployment` and `Federate` classes
+  - Remove unused class `FederateItem`
+- 9c7a17e: Add generic `MsdlCoordinates` class to represent the `CoordinatesType` from MSDL
+
 ## 0.19.0
 
 ### Minor Changes

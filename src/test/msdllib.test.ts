@@ -658,8 +658,6 @@ describe("Add/remove ForceSide", () => {
       });
       it("should not be in the generated MSDL xml file", () => {
         let xml = scenario.toString();
-        console.log(newForceSide.objectHandle);
-        console.log(xml);
         expect(xml.includes(newForceSide.objectHandle)).toBeFalsy();
       });
     });

@@ -16,7 +16,8 @@ import {
 } from "../lib/enums.js";
 import { getTagElement, getTagValue } from "../lib/domutils.js";
 import { ForceSide } from "../lib/forcesides.js";
-import { UnitDisposition } from "../lib/geo.js";
+
+import { UnitDisposition } from "../lib/disposition.js";
 
 describe("MSDL Unit", () => {
   it("should be defined", () => {

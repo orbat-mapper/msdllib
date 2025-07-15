@@ -15,7 +15,7 @@ import {
 } from "./enums.js";
 import { ForceSide } from "./forcesides.js";
 import { EquipmentItem } from "./equipment.js";
-import { Deployment } from "./deployment.js";
+import { Deployment, Federate } from "./deployment.js";
 import type { DropTarget } from "./types.js";
 import { Environment } from "./environment.js";
 
@@ -484,6 +484,20 @@ export class MilitaryScenario implements MilitaryScenarioType {
       (u) => getTagValue(u, "ObjectHandle") === objectHandle,
     );
     if (sideToRemove) sidesEl.removeChild(sideToRemove);
+  }
+
+  addFederate(fed: Federate): void {
+    this.assertDeployment();
+    this.deployment!.addFederate(fed);
+  }
+
+  private assertDeployment() {
+    if (!this.element) return;
+    const deploymentEl = getOrCreateTagElement(
+      this.element,
+      Deployment.TAG_NAME,
+    );
+    this.deployment = new Deployment(deploymentEl);
   }
 
   private detectNETN() {
