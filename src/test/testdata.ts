@@ -20,19 +20,19 @@ export const MSDL_OPTIONS_TYPE: MsdlOptionsType = {
   msdlVersion: "1.0.4",
   organizationDetail: {
     aggregateBased: "false",
-    aggregateEchelon: "TEAM"
+    aggregateEchelon: "TEAM",
   },
   scenarioDataStandards: {
     symbologyDataStandard: {
       standardName: "Name",
       majorVersion: "2",
-      minorVersion: "1"
+      minorVersion: "1",
     },
     coordinateDataStandard: {
       coordinateSystemType: "GCC",
-      coordinateSystemDatum: ""
-    }
-  }
+      coordinateSystemDatum: "",
+    },
+  },
 };
 
 export const EMPTY_SCENARIO = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

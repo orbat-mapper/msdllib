@@ -337,7 +337,11 @@ describe("Create a MilitaryScenario", () => {
     expect(() =>
       MilitaryScenario.createFromModel({
         scenarioId: { modificationDate: "" },
-        msdlOptions: { scenarioDataStandards: { symbologyDataStandard: { standardName: "Name", }}},
+        msdlOptions: {
+          scenarioDataStandards: {
+            symbologyDataStandard: { standardName: "Name" },
+          },
+        },
         isNETN: false,
       } as MilitaryScenarioInputType),
     ).toThrow(TypeError);

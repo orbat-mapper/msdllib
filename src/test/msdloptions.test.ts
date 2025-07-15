@@ -125,11 +125,22 @@ describe("MsdlOptions serialization", () => {
       expect(obj.msdlVersion).toBe("1.0.2");
       expect(obj.organizationDetail?.aggregateBased).toBe("value");
       expect(obj.organizationDetail?.aggregateEchelon).toBe("FRONT");
-      expect(obj.scenarioDataStandards?.symbologyDataStandard?.standardName).toBe("MILSTD_2525B");
-      expect(obj.scenarioDataStandards?.symbologyDataStandard?.majorVersion).toBe("2");
-      expect(obj.scenarioDataStandards?.symbologyDataStandard?.minorVersion).toBe("3");
-      expect(obj.scenarioDataStandards?.coordinateDataStandard?.coordinateSystemType).toBe("GDC");
-      expect(obj.scenarioDataStandards?.coordinateDataStandard?.coordinateSystemDatum).toBe("WGS84");
+      expect(
+        obj.scenarioDataStandards?.symbologyDataStandard?.standardName,
+      ).toBe("MILSTD_2525B");
+      expect(
+        obj.scenarioDataStandards?.symbologyDataStandard?.majorVersion,
+      ).toBe("2");
+      expect(
+        obj.scenarioDataStandards?.symbologyDataStandard?.minorVersion,
+      ).toBe("3");
+      expect(
+        obj.scenarioDataStandards?.coordinateDataStandard?.coordinateSystemType,
+      ).toBe("GDC");
+      expect(
+        obj.scenarioDataStandards?.coordinateDataStandard
+          ?.coordinateSystemDatum,
+      ).toBe("WGS84");
     });
   });
 
@@ -137,22 +148,22 @@ describe("MsdlOptions serialization", () => {
     it("should update properties from an object", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       const updateData = {
-      msdlVersion: "2.1.1",
+        msdlVersion: "2.1.1",
         organizationDetail: {
           aggregateBased: "true",
-          aggregateEchelon: "GROUP"
+          aggregateEchelon: "GROUP",
         },
         scenarioDataStandards: {
           symbologyDataStandard: {
             standardName: "Standard",
             majorVersion: "3",
-            minorVersion: "4"
+            minorVersion: "4",
           },
           coordinateDataStandard: {
             coordinateSystemType: "UTM",
-            coordinateSystemDatum: "WGS"
-          }
-        }
+            coordinateSystemDatum: "WGS",
+          },
+        },
       };
       options.updateFromObject(updateData);
       expect(options.msdlVersion).toBe("2.1.1");
@@ -168,7 +179,9 @@ describe("MsdlOptions serialization", () => {
     it("should remove undefined properties", () => {
       const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
       const updateData = {
-        scenarioDataStandards: { symbologyDataStandard: { standardName: undefined, }},
+        scenarioDataStandards: {
+          symbologyDataStandard: { standardName: undefined },
+        },
         coordinateSystemType: undefined,
       };
       options.updateFromObject(updateData);
@@ -192,16 +205,31 @@ describe("MsdlOptions serialization", () => {
     it("should create an instance from an object", () => {
       const options = MsdlOptions.fromModel(MSDL_OPTIONS_TYPE);
       expect(options.msdlVersion).toBe(MSDL_OPTIONS_TYPE.msdlVersion);
-      expect(options.aggregateBased).toBe(MSDL_OPTIONS_TYPE.organizationDetail?.aggregateBased);
-      expect(options.aggregateEchelon).toBe(MSDL_OPTIONS_TYPE.organizationDetail?.aggregateEchelon);
-      expect(options.standardName).toBe(MSDL_OPTIONS_TYPE.scenarioDataStandards?.symbologyDataStandard?.standardName);
-      expect(options.majorVersion).toBe(MSDL_OPTIONS_TYPE.scenarioDataStandards?.symbologyDataStandard?.majorVersion);
-      expect(options.minorVersion).toBe(MSDL_OPTIONS_TYPE.scenarioDataStandards?.symbologyDataStandard?.minorVersion);
+      expect(options.aggregateBased).toBe(
+        MSDL_OPTIONS_TYPE.organizationDetail?.aggregateBased,
+      );
+      expect(options.aggregateEchelon).toBe(
+        MSDL_OPTIONS_TYPE.organizationDetail?.aggregateEchelon,
+      );
+      expect(options.standardName).toBe(
+        MSDL_OPTIONS_TYPE.scenarioDataStandards?.symbologyDataStandard
+          ?.standardName,
+      );
+      expect(options.majorVersion).toBe(
+        MSDL_OPTIONS_TYPE.scenarioDataStandards?.symbologyDataStandard
+          ?.majorVersion,
+      );
+      expect(options.minorVersion).toBe(
+        MSDL_OPTIONS_TYPE.scenarioDataStandards?.symbologyDataStandard
+          ?.minorVersion,
+      );
       expect(options.coordinateSystemType).toBe(
-        MSDL_OPTIONS_TYPE.scenarioDataStandards?.coordinateDataStandard?.coordinateSystemType,
+        MSDL_OPTIONS_TYPE.scenarioDataStandards?.coordinateDataStandard
+          ?.coordinateSystemType,
       );
       expect(options.coordinateSystemDatum).toBe(
-        MSDL_OPTIONS_TYPE.scenarioDataStandards?.coordinateDataStandard?.coordinateSystemDatum,
+        MSDL_OPTIONS_TYPE.scenarioDataStandards?.coordinateDataStandard
+          ?.coordinateSystemDatum,
       );
     });
     it("should be the same after serializing to xml back and forth", () => {

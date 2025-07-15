@@ -173,7 +173,7 @@ export class MsdlOptions implements MsdlOptionsType {
     Object.entries(data).forEach(([key, value]) => {
       if (key in this) {
         (this as any)[key] = value;
-      } else if (value !== null && typeof value === 'object'){
+      } else if (value !== null && typeof value === "object") {
         this.updateFromObject(value as any);
       } else {
         console.warn(`Property ${key} does not exist.`);
