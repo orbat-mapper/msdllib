@@ -1,5 +1,5 @@
 ---
-"@orbat-mapper/msdllib": patch
+"@orbat-mapper/msdllib": minor
 ---
 
-Add `MilitaryScenario.msdlOptions:MsdlOptions` attribute 
+Add `MilitaryScenario.msdlOptions:MsdlOptions` attribute
