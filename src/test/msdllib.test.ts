@@ -5,12 +5,14 @@ import {
   ForceSide,
   MilitaryScenario,
   ScenarioId,
+  MsdlOptions,
 } from "../index.js";
 import {
   EMPTY_SCENARIO,
   EQUIPMENT_NETN,
   parseFromString,
   SCENARIO_ID_TYPE,
+  MSDL_OPTIONS_TYPE,
   UNIT_TEMPLATE,
 } from "./testdata.js";
 import fs from "fs/promises";
@@ -73,6 +75,8 @@ describe("MilitaryScenario class", () => {
     expect(scenario.forceSides.length).toBe(0);
     expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
     expect(scenario.scenarioId.name).toBe("Empty scenario");
+    expect(scenario.msdlOptions).toBeInstanceOf(MsdlOptions);
+    expect(scenario.msdlOptions.msdlVersion).toBe("MSDL Standard Nov 2008");
   });
 });
 
@@ -85,6 +89,8 @@ describe("Simple scenario", () => {
     expect(scenario.forceSides.length).toBe(3);
     expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
     expect(scenario.scenarioId.name).toBe("Simple scenario");
+    expect(scenario.msdlOptions).toBeInstanceOf(MsdlOptions);
+    expect(scenario.msdlOptions.msdlVersion).toBe("1.2.3-2025");
   });
 
   it("default primary force side ", () => {
@@ -298,15 +304,20 @@ describe("Create a MilitaryScenario", () => {
   const scenarioInput: MilitaryScenarioInputType = {
     isNETN: false,
     scenarioId: SCENARIO_ID_TYPE,
+    msdlOptions: MSDL_OPTIONS_TYPE,
   };
   const scenarioInputNetn: MilitaryScenarioInputType = {
     isNETN: true,
     scenarioId: SCENARIO_ID_TYPE,
+    msdlOptions: MSDL_OPTIONS_TYPE,
   };
   it("should create a plain MSDL scenario from input", () => {
     let scenario = MilitaryScenario.createFromModel(scenarioInput);
     expect(scenario.isNETN).toBe(false);
     expect(scenario.scenarioId.name).toBe(SCENARIO_ID_TYPE.name);
+    expect(scenario.msdlOptions.msdlVersion).toBe(
+      MSDL_OPTIONS_TYPE.msdlVersion,
+    );
     expect(scenario.forceSides.length).toBe(0);
     expect(scenario.rootUnits.length).toBe(0);
     expect(scenario.equipment.length).toBe(0);
@@ -315,6 +326,9 @@ describe("Create a MilitaryScenario", () => {
     let scenario = MilitaryScenario.createFromModel(scenarioInputNetn);
     expect(scenario.isNETN).toBe(true);
     expect(scenario.scenarioId.name).toBe(SCENARIO_ID_TYPE.name);
+    expect(scenario.msdlOptions.msdlVersion).toBe(
+      MSDL_OPTIONS_TYPE.msdlVersion,
+    );
   });
   it("should throw an error on incomplete input", () => {
     expect(() =>
@@ -323,6 +337,11 @@ describe("Create a MilitaryScenario", () => {
     expect(() =>
       MilitaryScenario.createFromModel({
         scenarioId: { modificationDate: "" },
+        msdlOptions: {
+          scenarioDataStandards: {
+            symbologyDataStandard: { standardName: "Name" },
+          },
+        },
         isNETN: false,
       } as MilitaryScenarioInputType),
     ).toThrow(TypeError);
@@ -332,7 +351,10 @@ describe("Create a MilitaryScenario", () => {
     const xml = createXMLElement(scenario.toString());
     let scenarioId = getTagElement(xml, "ScenarioID");
     expect(scenarioId).toBeDefined();
+    let msdlOptions = getTagElement(xml, "Options");
+    expect(msdlOptions).toBeDefined();
     expect(getTagElement(scenarioId, "name")).toBeDefined();
+    expect(getTagElement(msdlOptions, "MSDLVersion")).toBeDefined();
     expect(getTagElement(xml, "ForceSides")).toBeDefined();
   });
 });

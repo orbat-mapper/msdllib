@@ -4,6 +4,7 @@ export {
   type MilitaryScenarioInputType,
 } from "./lib/militaryscenario.js";
 export { ScenarioId, type ScenarioIdType } from "./lib/scenarioid.js";
+export { MsdlOptions, type MsdlOptionsType } from "./lib/msdlOptions.js";
 export { Unit } from "./lib/units.js";
 export { EquipmentItem } from "./lib/equipment.js";
 export {

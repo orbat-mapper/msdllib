@@ -202,3 +202,21 @@ export const ModelResolutionType = {
 
 export type ModelResolutionType =
   (typeof ModelResolutionType)[keyof typeof ModelResolutionType];
+
+export const SymbologyStandard = {
+  MILSTD_2525B: "MILSTD_2525B",
+  NATO_APP: "NATO_APP",
+} as const;
+
+export type SymbologyStandard =
+  (typeof SymbologyStandard)[keyof typeof SymbologyStandard];
+
+export const CoordinateSystem = {
+  MGRS: "MGRS",
+  GDC: "GDC",
+  UTM: "UTM",
+  GCC: "GCC",
+} as const;
+
+export type CoordinateSystem =
+  (typeof CoordinateSystem)[keyof typeof CoordinateSystem];

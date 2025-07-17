@@ -1,4 +1,5 @@
 import { ScenarioId, type ScenarioIdType } from "./scenarioid.js";
+import { MsdlOptions, type MsdlOptionsType } from "./msdlOptions.js";
 import {
   createEmptyXMLElementFromTagName,
   getOrCreateTagElement,
@@ -29,6 +30,7 @@ export type SetUnitForceRelationTypeOptions = {
  */
 export interface MilitaryScenarioType {
   scenarioId: ScenarioId;
+  msdlOptions: MsdlOptionsType;
   forceSides: ForceSide[];
   environment?: Environment;
   unitMap: Record<string, Unit>;
@@ -70,12 +72,14 @@ export interface MilitaryScenarioType {
 
 export interface MilitaryScenarioInputType {
   scenarioId: ScenarioIdType;
+  msdlOptions: MsdlOptionsType;
   isNETN: boolean;
 }
 
 export class MilitaryScenario implements MilitaryScenarioType {
   static readonly TAG_NAME = "MilitaryScenario";
   scenarioId!: ScenarioId;
+  msdlOptions!: MsdlOptions;
   forceSides: ForceSide[] = [];
   equipment: EquipmentItem[] = [];
   rootUnits: Unit[] = [];
@@ -92,6 +96,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     this.element = element;
     if (element) {
       this.initializeMetaInfo();
+      this.initializeMsdlOptions();
       this.initializeForceSides();
       this.initializeUnits();
       this.initializeEquipment();
@@ -182,7 +187,9 @@ export class MilitaryScenario implements MilitaryScenarioType {
       throw new TypeError("Invalid MSDL input");
     const milScen = MilitaryScenario.create(msdlInputType.isNETN);
     milScen.scenarioId = ScenarioId.fromModel(msdlInputType.scenarioId);
+    milScen.msdlOptions = MsdlOptions.fromModel(msdlInputType.msdlOptions);
     milScen.element!.appendChild(milScen.scenarioId.element);
+    milScen.element!.appendChild(milScen.msdlOptions.element);
     milScen.element!.appendChild(
       createEmptyXMLElementFromTagName("ForceSides"),
     );
@@ -215,6 +222,14 @@ export class MilitaryScenario implements MilitaryScenarioType {
     if (environmentEl) {
       this.environment = new Environment(environmentEl);
     }
+  }
+
+  private initializeMsdlOptions() {
+    const optionsElement = getTagElement(this.element, MsdlOptions.TAG_NAME);
+    if (!optionsElement) {
+      return;
+    }
+    this.msdlOptions = new MsdlOptions(optionsElement);
   }
 
   private initializeForceSides() {
