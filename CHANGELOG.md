@@ -1,5 +1,16 @@
 # @orbat-mapper/msdllib
 
+## 0.22.0
+
+### Minor Changes
+
+- 75e9538: Add `MilitaryScenario.msdlOptions:MsdlOptions` attribute
+
+### Patch Changes
+
+- 1937cad: - Add function `addFederate` to `MilitaryScenario`
+  - Add `.prettierrc.json`
+
 ## 0.21.0
 
 ### Minor Changes
