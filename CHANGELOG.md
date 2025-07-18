@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.23.0
+
+### Minor Changes
+
+- ea61a3e: Add `recursive` option to `Unit.setAffiliation(.)`
+
 ## 0.22.1
 
 ### Patch Changes
