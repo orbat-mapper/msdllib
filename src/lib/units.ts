@@ -18,6 +18,7 @@ import {
 import { EquipmentItem } from "./equipment.js";
 import {
   type IdGeoJsonOptions,
+  type SetAffiliationOptions,
   type TacticalJson,
   UnitEquipmentBase,
   type UnitEquipmentInterface,
@@ -174,10 +175,18 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     return feature;
   }
 
-  override setAffiliation(s: StandardIdentity) {
+  override setAffiliation(
+    s: StandardIdentity,
+    options?: SetAffiliationOptions,
+  ): void {
     this.sidc = setCharAt(this.sidc, 1, s);
     for (let equipment of this.equipment) {
       equipment.setAffiliation(s);
+    }
+    if (options?.recursive) {
+      for (let subordinate of this.subordinates) {
+        subordinate.setAffiliation(s, options);
+      }
     }
   }
 

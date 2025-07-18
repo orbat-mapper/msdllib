@@ -26,6 +26,9 @@ export type TacticalJson = {
 };
 
 export type UnitOrEquipmentType = "unit" | "equipment";
+export type SetAffiliationOptions = {
+  recursive?: boolean;
+};
 
 export type UnitEquipmentInterface = {
   objectHandle: string;
@@ -39,7 +42,7 @@ export type UnitEquipmentInterface = {
   sidc: string;
   holdings: Holding[];
   disposition?: UnitDisposition | EquipmentItemDisposition;
-  setAffiliation(s: StandardIdentity): void;
+  setAffiliation(s: StandardIdentity, options?: SetAffiliationOptions): void;
   getAffiliation(): StandardIdentity;
   toString(): string;
 };
