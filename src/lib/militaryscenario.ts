@@ -6,6 +6,7 @@ import {
   getTagElement,
   getTagElements,
   getTagValue,
+  removeTagValue,
 } from "./domutils.js";
 import { Unit } from "./units.js";
 import {
@@ -374,21 +375,15 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   getFederateById(objectHandle: string): Federate | undefined {
-    return this.deployment?.federates.find(
-      (f) => f.objectHandle === objectHandle,
-    );
+    return this.deployment?.getFederateById(objectHandle);
   }
 
   getFederateOfUnit(objectHandle: string): Federate | undefined {
-    return this.deployment?.federates.find((f) =>
-      f.units.includes(objectHandle),
-    );
+    return this.deployment?.getFederateOfUnit(objectHandle);
   }
 
   getFederateOfEquipment(objectHandle: string): Federate | undefined {
-    return this.deployment?.federates.find((f) =>
-      f.equipment.includes(objectHandle),
-    );
+    return this.deployment?.getFederateOfEquipment(objectHandle);
   }
 
   private updateSidesRootUnits() {
@@ -507,6 +502,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
   addFederate(fed: Federate): void {
     this.assertDeployment();
     this.deployment!.addFederate(fed);
+    this.updateDeploymentElement();
   }
 
   private assertDeployment() {
@@ -518,7 +514,13 @@ export class MilitaryScenario implements MilitaryScenarioType {
     this.deployment = new Deployment(deploymentEl);
   }
 
+  private updateDeploymentElement() {
+    removeTagValue(this.element!, Deployment.TAG_NAME);
+    this.element!.appendChild(this.deployment!.element);
+  }
+
   assignUnitToFederate(unitHandle: string, federateHandle: string) {
+    if (!this.deployment) return;
     const unit = this.getUnitById(unitHandle);
     const federate = this.getFederateById(federateHandle);
     if (!unit) {
@@ -527,9 +529,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
     if (!federate) {
       throw new Error(`Federate ${federateHandle} not found`);
     }
-    const oldFederate = this.getFederateOfUnit(unitHandle);
-    if (oldFederate) oldFederate.removeUnit(unitHandle);
-    federate.addUnit(unitHandle);
+    this.deployment.assignUnitToFederate(federateHandle, unitHandle);
+    this.updateDeploymentElement();
   }
 
   assignEquipmentItemToFederate(
@@ -547,13 +548,14 @@ export class MilitaryScenario implements MilitaryScenarioType {
     const oldFederate = this.getFederateOfEquipment(equipmentItemHandle);
     if (oldFederate) oldFederate.removeEquipmentItem(equipmentItemHandle);
     federate.addEquipmentItem(equipmentItemHandle);
+    this.updateDeploymentElement();
   }
 
   private detectNETN() {
     const netnElement =
       getTagElement(this.element, "EntityType") ??
       getTagElement(this.element, "Holdings") ??
-      getTagElement(this.element, "Deployment");
+      getTagElement(this.element, Deployment.TAG_NAME);
     this._isNETN = !!netnElement;
   }
 
