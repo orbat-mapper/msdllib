@@ -145,6 +145,32 @@ export function createEmptyXMLElementFromTagName(tagName: string): Element {
   return doc.documentElement;
 }
 
+export function createXMLElementWithValue(
+  tagName: string,
+  value: string | number | boolean,
+): Element {
+  let parser = new DOMParser();
+  let doc = parser.parseFromString(
+    `<${tagName}>${value}</${tagName}>`,
+    "text/xml",
+  );
+  return doc.documentElement;
+}
+
+export function addChildElementWithValue(
+  parent: Element,
+  tagName: string,
+  value: string | number | boolean,
+): void {
+  let child = createXMLElementWithValue(tagName, value);
+  parent.appendChild(child);
+}
+
+export function addEmptyChildElement(parent: Element, tagName: string): void {
+  let child = createEmptyXMLElementFromTagName(tagName);
+  parent.appendChild(child);
+}
+
 export function xmlToString(element: Element): string {
   let serializer = new XMLSerializer();
   return serializer.serializeToString(element);
