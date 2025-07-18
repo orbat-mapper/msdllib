@@ -373,6 +373,18 @@ export class MilitaryScenario implements MilitaryScenarioType {
     return this.unitMap[objectHandle] ?? this.equipmentMap[objectHandle];
   }
 
+  getFederateById(objectHandle: string): Federate | undefined {
+    return this.deployment?.federates.find(
+      (f) => f.objectHandle === objectHandle,
+    );
+  }
+
+  getFederateOfUnit(objectHandle: string): Federate | undefined {
+    return this.deployment?.federates.find((f) =>
+      f.units.includes(objectHandle),
+    );
+  }
+
   private updateSidesRootUnits() {
     for (let side of this.sides) {
       for (let force of side.forces) {
@@ -498,6 +510,20 @@ export class MilitaryScenario implements MilitaryScenarioType {
       Deployment.TAG_NAME,
     );
     this.deployment = new Deployment(deploymentEl);
+  }
+
+  assignUnitToFederate(unitHandle: string, federateHandle: string) {
+    const unit = this.getUnitById(unitHandle);
+    const federate = this.getFederateById(federateHandle);
+    if (!unit) {
+      throw new Error(`Unit ${unitHandle} not found`);
+    }
+    if (!federate) {
+      throw new Error(`Federate ${federateHandle} not found`);
+    }
+    const oldFederate = this.getFederateOfUnit(unitHandle);
+    if (oldFederate) oldFederate.removeUnit(unitHandle)
+    federate.addUnit(unitHandle);
   }
 
   private detectNETN() {

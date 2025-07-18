@@ -17,6 +17,7 @@ import {
 } from "./testdata.js";
 import fs from "fs/promises";
 import {
+  countXmlTagOccurrences,
   loadNetnTestScenario,
   loadNetnTestScenarioAsString,
   loadTestScenario,
@@ -28,7 +29,6 @@ import {
   createXMLElement,
   getTagElement,
   getTagValue,
-  xmlToString,
 } from "../lib/domutils.js";
 
 describe("MilitaryScenario class", () => {
@@ -297,6 +297,72 @@ describe("MilitaryScenario with NETN", () => {
     const str = scenario.toString();
     const originalScenario = loadNetnTestScenarioAsString();
     expect(str.replace(/\s+/g, "")).toBe(originalScenario.replace(/\s+/g, ""));
+  });
+
+  describe("its deployment", () => {
+    const unitHQ = "7a81590c-febb-11e7-8be5-0ed5f89f718b";
+    const simB = "e3f1c2d4-5b6a-4c7d-8e9f-0a1b2c3d4e5f";
+    const simC = "9b8c7d6e-5f4a-3b2c-1d0e-9f8e7d6c5b4a";
+    let scenario: MilitaryScenario;
+    beforeAll(() => {
+      scenario = loadNetnTestScenario();
+    });
+    it("should list 3 federates", () => {
+      expect(scenario.deployment?.federates).toHaveLength(3);
+    });
+    it("should have unit HQ at SIM B", () => {
+      const federate = scenario.getFederateOfUnit(unitHQ);
+      expect(federate).toBeDefined();
+      expect(federate?.name).toBe("SIM B");
+      const xml = federate?.toString();
+      expect(xml?.includes(unitHQ)).toBeTruthy();
+    });
+    it("SIM B should have 2 units", () => {
+      const federate = scenario.getFederateById(simB);
+      expect(federate).toBeDefined();
+      expect(federate?.units).toHaveLength(2);
+      const xml = federate?.toString() || "";
+      expect(countXmlTagOccurrences(xml, "Unit")).toBe(2);
+    });
+    it("SIM C should have 4 units", () => {
+      const federate = scenario.getFederateById(simC);
+      expect(federate).toBeDefined();
+      expect(federate?.units).toHaveLength(4);
+      const xml = federate?.toString() || "";
+      expect(countXmlTagOccurrences(xml, "Unit")).toBe(4);
+    });
+    describe("when moving unit HQ to SIM C", () => {
+      beforeAll(() => {
+        scenario.assignUnitToFederate(unitHQ, simC);
+      });
+      it("should have unit HQ at SIM C", () => {
+        const federate = scenario.getFederateOfUnit(unitHQ);
+        expect(federate).toBeDefined();
+        expect(federate?.name).toBe("SIM C");
+        const xml = federate?.toString();
+        expect(xml?.includes(unitHQ)).toBeTruthy();
+      });
+      it("should not have unit HQ at SIM B", () => {
+        const federate = scenario.getFederateById(simB);
+        expect(federate?.units).not.toContain(unitHQ);
+        const xml = federate?.toString();
+        expect(xml?.includes(unitHQ)).toBeFalsy();
+      });
+      it("SIM B should have 1 unit", () => {
+        const federate = scenario.getFederateById(simB);
+        expect(federate).toBeDefined();
+        expect(federate?.units).toHaveLength(1);
+        const xml = federate?.toString() || "";
+        expect(countXmlTagOccurrences(xml, "Unit")).toBe(1);
+      });
+      it("SIM C should have 5 units", () => {
+        const federate = scenario.getFederateById(simC);
+        expect(federate).toBeDefined();
+        expect(federate?.units).toHaveLength(5);
+        const xml = federate?.toString() || "";
+        expect(countXmlTagOccurrences(xml, "Unit")).toBe(5);
+      });
+    });
   });
 });
 

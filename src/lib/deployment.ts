@@ -1,13 +1,12 @@
 // NETN Deployment element
 import { v4 as uuidv4 } from "uuid";
 import {
+  addChildElementWithValue,
   createEmptyXMLElementFromTagName,
-  getOrCreateTagElement,
   getTagElement,
   getTagElements,
   getTagValue,
   getValueOrUndefined,
-  removeTagValues,
   setOrCreateTagValue,
 } from "./domutils.js";
 
@@ -159,6 +158,45 @@ export class Federate {
       setOrCreateTagValue(equipmentEl, "EquipmentItem", eq);
     }
     this.element.appendChild(equipmentEl);
+  }
+
+  addUnit(unitHandle: string) {
+    if (this.units.includes(unitHandle)) {
+      return console.warn(
+        `Federate ${this.name} already contains ${unitHandle}`,
+      );
+    }
+    if (!this.units || this.units.length === 0) {
+      this.units = [unitHandle];
+    } else {
+      this.units.push(unitHandle);
+      let unitsEl = getTagElement(this.element, "Units");
+      if (!unitsEl)
+        throw new Error(`Units element is undefined in federate ${this.name}`);
+      addChildElementWithValue(unitsEl, "Unit", unitHandle);
+    }
+  }
+
+  removeUnit(unitHandle: string) {
+    if (!this.units.includes(unitHandle)) {
+      return console.warn(
+        `Federate ${this.name} does not contain ${unitHandle}`,
+      );
+    }
+    const unitIdx = this.units.findIndex((u) => u === unitHandle);
+    this.units.splice(unitIdx, 1);
+    const unitsEl = getTagElement(this.element, "Units");
+    if (!unitsEl)
+      throw new Error(`Units element is undefined in federate ${this.name}`);
+    const unitElements = getTagElements(unitsEl, "Unit");
+    const unitToRemove = unitElements.find((el) =>
+      el.textContent?.includes(unitHandle),
+    );
+    if (unitToRemove) {
+      unitsEl.removeChild(unitToRemove);
+    } else {
+      console.warn(`Could not remove unit ${unitHandle} from xml`);
+    }
   }
 
   updateFromObject(data: Partial<FederateType>) {

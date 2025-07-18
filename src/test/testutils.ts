@@ -30,3 +30,8 @@ export function loadNetnTestScenarioAsString(
   let data = fs.readFileSync(__dirname + fileName, { encoding: "utf-8" });
   return data.toString();
 }
+
+export function countXmlTagOccurrences(xml: string, tagName: string): number {
+  const regex = new RegExp(`<${tagName}(\\s[^>]*)?>`, "gi");
+  return (xml.match(regex) || []).length;
+}
