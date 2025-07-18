@@ -199,6 +199,45 @@ export class Federate {
     }
   }
 
+    addEquipmentItem(equipmentItemHandle: string) {
+    if (this.equipment.includes(equipmentItemHandle)) {
+      return console.warn(
+        `Federate ${this.name} already contains ${equipmentItemHandle}`,
+      );
+    }
+    if (!this.equipment || this.equipment.length === 0) {
+      this.equipment = [equipmentItemHandle];
+    } else {
+      this.equipment.push(equipmentItemHandle);
+      let equipmentEl = getTagElement(this.element, "Equipment");
+      if (!equipmentEl)
+        throw new Error(`Equipment element is undefined in federate ${this.name}`);
+      addChildElementWithValue(equipmentEl, "EquipmentItem", equipmentItemHandle);
+    }
+  }
+
+  removeEquipmentItem(equipmentItemHandle: string) {
+    if (!this.equipment.includes(equipmentItemHandle)) {
+      return console.warn(
+        `Federate ${this.name} does not contain ${equipmentItemHandle}`,
+      );
+    }
+    const equipmentItemIdx = this.equipment.findIndex((u) => u === equipmentItemHandle);
+    this.equipment.splice(equipmentItemIdx, 1);
+    const equipmentEl = getTagElement(this.element, "Equipment");
+    if (!equipmentEl)
+      throw new Error(`Equipment element is undefined in federate ${this.name}`);
+    const equipmentItemElements = getTagElements(equipmentEl, "EquipmentItem");
+    const equipmentItemToRemove = equipmentItemElements.find((el) =>
+      el.textContent?.includes(equipmentItemHandle),
+    );
+    if (equipmentItemToRemove) {
+      equipmentEl.removeChild(equipmentItemToRemove);
+    } else {
+      console.warn(`Could not remove EquipmentItem ${equipmentItemHandle} from xml`);
+    }
+  }
+
   updateFromObject(data: Partial<FederateType>) {
     Object.entries(data).forEach(([key, value]) => {
       if (key in this) {
