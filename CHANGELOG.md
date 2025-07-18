@@ -1,5 +1,35 @@
 # @orbat-mapper/msdllib
 
+## 0.22.1
+
+### Patch Changes
+
+- 135a312: Add functionality to assign a unit to another federate in a NETN deployment.
+
+  `Federate` class:
+  - `addUnit(unitHandle: string): void`
+  - `removeUnit(unitHandle: string): void`
+
+  `MilitaryScenario` class:
+  - `assignUnitToFederate(unitHandle: string, federateHandle: string): void`
+  - `getFederateById(objectHandle: string): Federate | undefined`
+  - `getFederateOfUnit(objectHandle: string): Federate | undefined`
+
+- 135a312: Add functionality to assign equipment to federates in a NETN deployment.
+
+  `Federate` class:
+  - `addEquipmentItem(equipmentItemHandle: string): void`
+  - `removeEquipmentItem(equipmentItemHandle: string): void`
+
+  `MilitaryScenario` class:
+  - `getFederateOfEquipment(objectHandle: string): Federate | undefined`
+  - `assignEquipmentItemToFederate(equipmentItemHandle: string, federateHandle: string): void`
+
+- 135a312: Add functions to `domutils.ts`:
+  - `createXMLElementWithValue(tagName: string, value: string | number | boolean): Element`
+  - `addChildElementWithValue(parent: Element, tagName: string, value: string | number | boolean): void`
+  - `addEmptyChildElement(parent: Element, tagName: string): void`
+
 ## 0.22.0
 
 ### Minor Changes
