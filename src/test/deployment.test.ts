@@ -165,7 +165,9 @@ describe("Federate class", () => {
       it("should update the xml", () => {
         const xml = xmlToString(fed.element);
         expect(xml.includes("<Units>")).toBe(true);
-        expect(xml.includes(`<Unit>${uuid}</Unit>`)).toBe(true);
+        expect(
+          xml.includes(`<Unit><ObjectHandle>${uuid}</ObjectHandle></Unit>`),
+        ).toBe(true);
       });
       describe("that can also be removed", () => {
         beforeEach(() => {
@@ -177,7 +179,9 @@ describe("Federate class", () => {
         it("from the xml", () => {
           const xml = xmlToString(fed.element);
           expect(xml.includes("<Units>")).toBeFalsy();
-          expect(xml.includes(`<Unit>${uuid}</Unit>`)).toBeFalsy();
+          expect(
+            xml.includes(`<Unit><ObjectHandle>${uuid}</ObjectHandle></Unit>`),
+          ).toBeFalsy();
         });
       });
     });
@@ -193,9 +197,11 @@ describe("Federate class", () => {
       it("should update the xml", () => {
         const xml = xmlToString(fed.element);
         expect(xml.includes("<Equipment>")).toBe(true);
-        expect(xml.includes(`<EquipmentItem>${uuid}</EquipmentItem>`)).toBe(
-          true,
-        );
+        expect(
+          xml.includes(
+            `<EquipmentItem><ObjectHandle>${uuid}</ObjectHandle></EquipmentItem>`,
+          ),
+        ).toBe(true);
       });
       describe("that can also be removed", () => {
         beforeEach(() => {
@@ -208,7 +214,9 @@ describe("Federate class", () => {
           const xml = xmlToString(fed.element);
           expect(xml.includes("<Equipment>")).toBeFalsy();
           expect(
-            xml.includes(`<EquipmentItem>${uuid}</EquipmentItem>`),
+            xml.includes(
+              `<EquipmentItem><ObjectHandle>${uuid}</ObjectHandle></EquipmentItem>`,
+            ),
           ).toBeFalsy();
         });
       });
