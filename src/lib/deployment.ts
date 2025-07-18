@@ -262,6 +262,26 @@ export class Federate {
     this.equipment = this.#equipment.filter((u) => u !== equipmentHandle);
   }
 
+  addAllUnits(units: string[]) {
+    this.units = [...new Set([...this.#units, ...units])];
+  }
+
+  addAllEquipment(equipment: string[]) {
+    this.equipment = [...new Set([...this.#equipment, ...equipment])];
+  }
+
+  removeAllUnits() {
+    const removed = this.#units.splice(0);
+    this.units = [];
+    return removed;
+  }
+
+  removeAllEquipment() {
+    const removed = this.#equipment.splice(0);
+    this.equipment = [];
+    return removed;
+  }
+
   updateFromObject(data: Partial<FederateType>) {
     Object.entries(data).forEach(([key, value]) => {
       if (key in this) {
