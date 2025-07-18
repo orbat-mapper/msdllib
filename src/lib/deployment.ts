@@ -199,7 +199,7 @@ export class Federate {
     }
   }
 
-    addEquipmentItem(equipmentItemHandle: string) {
+  addEquipmentItem(equipmentItemHandle: string) {
     if (this.equipment.includes(equipmentItemHandle)) {
       return console.warn(
         `Federate ${this.name} already contains ${equipmentItemHandle}`,
@@ -211,8 +211,14 @@ export class Federate {
       this.equipment.push(equipmentItemHandle);
       let equipmentEl = getTagElement(this.element, "Equipment");
       if (!equipmentEl)
-        throw new Error(`Equipment element is undefined in federate ${this.name}`);
-      addChildElementWithValue(equipmentEl, "EquipmentItem", equipmentItemHandle);
+        throw new Error(
+          `Equipment element is undefined in federate ${this.name}`,
+        );
+      addChildElementWithValue(
+        equipmentEl,
+        "EquipmentItem",
+        equipmentItemHandle,
+      );
     }
   }
 
@@ -222,11 +228,15 @@ export class Federate {
         `Federate ${this.name} does not contain ${equipmentItemHandle}`,
       );
     }
-    const equipmentItemIdx = this.equipment.findIndex((u) => u === equipmentItemHandle);
+    const equipmentItemIdx = this.equipment.findIndex(
+      (u) => u === equipmentItemHandle,
+    );
     this.equipment.splice(equipmentItemIdx, 1);
     const equipmentEl = getTagElement(this.element, "Equipment");
     if (!equipmentEl)
-      throw new Error(`Equipment element is undefined in federate ${this.name}`);
+      throw new Error(
+        `Equipment element is undefined in federate ${this.name}`,
+      );
     const equipmentItemElements = getTagElements(equipmentEl, "EquipmentItem");
     const equipmentItemToRemove = equipmentItemElements.find((el) =>
       el.textContent?.includes(equipmentItemHandle),
@@ -234,7 +244,9 @@ export class Federate {
     if (equipmentItemToRemove) {
       equipmentEl.removeChild(equipmentItemToRemove);
     } else {
-      console.warn(`Could not remove EquipmentItem ${equipmentItemHandle} from xml`);
+      console.warn(
+        `Could not remove EquipmentItem ${equipmentItemHandle} from xml`,
+      );
     }
   }
 
