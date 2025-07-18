@@ -46,7 +46,7 @@ export interface MilitaryScenarioType {
   getEquipmentById(objectHandle: string): EquipmentItem | undefined;
 
   addUnit(unit: Unit): void;
-  addEquipmentItem(equipmentitem: EquipmentItem): void;
+  addEquipmentItem(equipmentItem: EquipmentItem): void;
   removeUnit(objectHandle: string): void;
   removeEquipmentItem(objectHandle: string): void;
   addForceSide(side: ForceSide): void;
@@ -373,6 +373,24 @@ export class MilitaryScenario implements MilitaryScenarioType {
     return this.unitMap[objectHandle] ?? this.equipmentMap[objectHandle];
   }
 
+  getFederateById(objectHandle: string): Federate | undefined {
+    return this.deployment?.federates.find(
+      (f) => f.objectHandle === objectHandle,
+    );
+  }
+
+  getFederateOfUnit(objectHandle: string): Federate | undefined {
+    return this.deployment?.federates.find((f) =>
+      f.units.includes(objectHandle),
+    );
+  }
+
+  getFederateOfEquipment(objectHandle: string): Federate | undefined {
+    return this.deployment?.federates.find((f) =>
+      f.equipment.includes(objectHandle),
+    );
+  }
+
   private updateSidesRootUnits() {
     for (let side of this.sides) {
       for (let force of side.forces) {
@@ -469,7 +487,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
   private addForceSideToElement(side: ForceSide) {
     const sidesEl = getTagElement(this.element, "ForceSides");
     if (!sidesEl)
-      throw new Error("No <ForceSides> element found to add equipmentitem to");
+      throw new Error("No <ForceSides> element found to add equipmentItem to");
     sidesEl.appendChild(side.element);
   }
 
@@ -498,6 +516,37 @@ export class MilitaryScenario implements MilitaryScenarioType {
       Deployment.TAG_NAME,
     );
     this.deployment = new Deployment(deploymentEl);
+  }
+
+  assignUnitToFederate(unitHandle: string, federateHandle: string) {
+    const unit = this.getUnitById(unitHandle);
+    const federate = this.getFederateById(federateHandle);
+    if (!unit) {
+      throw new Error(`Unit ${unitHandle} not found`);
+    }
+    if (!federate) {
+      throw new Error(`Federate ${federateHandle} not found`);
+    }
+    const oldFederate = this.getFederateOfUnit(unitHandle);
+    if (oldFederate) oldFederate.removeUnit(unitHandle);
+    federate.addUnit(unitHandle);
+  }
+
+  assignEquipmentItemToFederate(
+    equipmentItemHandle: string,
+    federateHandle: string,
+  ) {
+    const equipmentItem = this.getEquipmentById(equipmentItemHandle);
+    const federate = this.getFederateById(federateHandle);
+    if (!equipmentItem) {
+      throw new Error(`EquipmentItem ${equipmentItemHandle} not found`);
+    }
+    if (!federate) {
+      throw new Error(`Federate ${federateHandle} not found`);
+    }
+    const oldFederate = this.getFederateOfEquipment(equipmentItemHandle);
+    if (oldFederate) oldFederate.removeEquipmentItem(equipmentItemHandle);
+    federate.addEquipmentItem(equipmentItemHandle);
   }
 
   private detectNETN() {
@@ -570,7 +619,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
       throw new Error("No <Organizations> element found to remove unit from");
     const equipmentsEl = getTagElement(organizationsEl, "Equipment");
     if (!equipmentsEl)
-      throw new Error("No <Equipment> element found to add equipmentitem to");
+      throw new Error("No <Equipment> element found to add equipmentItem to");
     equipmentsEl.appendChild(equipment.element);
   }
 
@@ -581,7 +630,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     const equipmentsEl = getTagElement(organizationsEl, "Equipment");
     if (!equipmentsEl)
       throw new Error(
-        "No <Equipment> element found to remove equipmentitem from",
+        "No <Equipment> element found to remove equipmentItem from",
       );
     let equipmentElements = getTagElements(equipmentsEl, "EquipmentItem");
     let equipmentItemToRemove = equipmentElements.find(
