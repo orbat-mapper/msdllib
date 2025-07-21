@@ -799,3 +799,81 @@ describe("Add/remove ForceSide", () => {
     });
   });
 });
+
+describe("MilitaryScenario.getItemHierarchy", () => {
+  it("should return a hierarchy of equipment, units and forcesides", () => {
+    let scenario = loadTestScenario();
+    let { hierarchy, forceSide } = scenario.getItemHierarchy(
+      "f9ee8509-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(hierarchy).toBeDefined();
+    expect(hierarchy.length).toBe(2);
+    expect(hierarchy[0]).toBeInstanceOf(Unit);
+    expect(hierarchy[1]).toBeInstanceOf(Unit);
+    const rootUnit = hierarchy[0] as Unit;
+    expect(rootUnit.label).toBe("HQ");
+    const parentUnit = hierarchy[1] as Unit;
+    expect(parentUnit.label).toBe("1th");
+    expect(forceSide).toBeInstanceOf(Array);
+    expect(forceSide.length).toBe(1);
+    const side = forceSide[0]!;
+    expect(side).toBeInstanceOf(ForceSide);
+    expect(side.name).toBe("Friendly");
+  });
+
+  it("should include itself if the includeItem option is true", () => {
+    let scenario = loadTestScenario();
+    let { hierarchy, forceSide } = scenario.getItemHierarchy(
+      "f9ee8509-2dcd-11e2-be2b-000c294c9df8",
+      { includeItem: true },
+    );
+    expect(hierarchy).toBeDefined();
+    expect(hierarchy.length).toBe(3);
+    expect(hierarchy[0]).toBeInstanceOf(Unit);
+    expect(hierarchy[1]).toBeInstanceOf(Unit);
+    expect(hierarchy[2]).toBeInstanceOf(EquipmentItem);
+    const equipment = hierarchy[2] as EquipmentItem;
+    expect(equipment.label).toBe("111");
+  });
+
+  it("should accept a Unit, EquipmentItem and ForceSide as input", () => {
+    let scenario = loadTestScenario();
+    const unit = scenario.getUnitById("7a81590c-febb-11e7-8be5-0ed5f89f718b")!;
+    expect(unit.label).toBe("HQ");
+    let { hierarchy, forceSide } = scenario.getItemHierarchy(unit, {
+      includeItem: true,
+    });
+
+    expect(hierarchy).toBeDefined();
+    expect(hierarchy.length).toBe(1);
+    const equipment = scenario.getEquipmentById(
+      "f9ee8509-2dcd-11e2-be2b-000c294c9df8",
+    )!;
+    expect(equipment.label).toBe("111");
+    const res = scenario.getItemHierarchy(equipment, { includeItem: true });
+    expect(res.hierarchy.length).toBe(3);
+    const fs = scenario.getForceSideById(
+      "e7aebc43-2dcd-11e2-be2b-000c294c9df8",
+    )!;
+    expect(fs.name).toBe("Army");
+    const res2 = scenario.getItemHierarchy(fs, { includeItem: true });
+    expect(res2.hierarchy.length).toBe(0);
+    expect(res2.forceSide.length).toBe(2);
+  });
+
+  it("should return side and force if available", () => {
+    const scenario = loadTestScenario();
+    const rootUnit = scenario.getUnitById(
+      "7a815ba0-febb-11e7-8be5-0ed5f89f718b",
+    )!;
+    expect(rootUnit?.label).toBe("HQ2");
+    const { hierarchy, forceSide } = scenario.getItemHierarchy(rootUnit);
+    expect(hierarchy.length).toBe(0);
+    expect(forceSide).toBeInstanceOf(Array);
+    expect(forceSide.length).toBe(2);
+    expect(forceSide[0]?.name).toBe("Hostile");
+    expect(forceSide[1]?.name).toBe("Army");
+    expect(forceSide[0]?.isSide).toBe(true);
+    expect(forceSide[1]?.isSide).toBe(false);
+  });
+});
