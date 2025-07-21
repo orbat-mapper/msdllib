@@ -103,6 +103,20 @@ describe("ForceSide class", () => {
     expect(gjson.type).toBe("FeatureCollection");
     expect(gjson.features.length).toBe(0);
   });
+
+  it("has a superiorHandle getter", () => {
+    let element = parseFromString(FORCESIDE_TEMPLATE_IS_FORCE);
+    let forceSide = new ForceSide(element);
+    expect(forceSide.superiorHandle).toBe(
+      "e7ad0e8d-2dcd-11e2-be2b-000c294c9df8",
+    );
+  });
+
+  it("should return superiorHandle as undefined if isSide", () => {
+    let element = parseFromString(FORCESIDE_TEMPLATE_IS_SIDE);
+    let forceSide = new ForceSide(element);
+    expect(forceSide.superiorHandle).toBeUndefined();
+  });
 });
 
 describe("Side relations", () => {
