@@ -131,6 +131,12 @@ export class ForceSide implements ForceSideType {
     setOrCreateTagValue(this.element, "CountryCode", countryCode);
   }
 
+  get superiorHandle() {
+    if (!this.isSide) {
+      return this.allegianceHandle;
+    }
+  }
+
   setAffiliation(s: StandardIdentity) {
     function helper(unit: Unit) {
       unit.setAffiliation(s);

@@ -53,11 +53,6 @@ export interface MilitaryScenarioType {
   addForceSide(side: ForceSide): void;
   removeForceSide(objectHandle: string): void;
 
-  getUnitHierarchy(unitOrObjectHandle: Unit | string): {
-    forceSide: ForceSide;
-    hierarchy: Unit[];
-  };
-
   setUnitForceRelation(
     unitOrObjectHandle: Unit | string,
     superiorOrObjectHandle: Unit | string,
@@ -67,6 +62,18 @@ export interface MilitaryScenarioType {
     unitOrObjectHandle: Unit | string,
     superiorOrObjectHandle: ForceSide | string,
   ): void;
+
+  getItemParent(
+    item: Unit | EquipmentItem | ForceSide,
+  ): Unit | EquipmentItem | ForceSide | undefined;
+
+  getItemHierarchy(
+    itemOrObjectHandle: Unit | EquipmentItem | ForceSide | string,
+    options?: { includeItem?: boolean },
+  ): {
+    forceSide: ForceSide[];
+    hierarchy: (Unit | EquipmentItem | ForceSide)[];
+  };
 
   toString(): string;
 }
@@ -128,6 +135,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     return Object.keys(this.forceSideMap).length;
   }
 
+  /** @deprecated Use getItemParent instead */
   getUnitParent(unit: Unit): Unit | ForceSide | undefined {
     return (
       this.unitMap[unit.superiorHandle] ??
@@ -135,6 +143,24 @@ export class MilitaryScenario implements MilitaryScenarioType {
     );
   }
 
+  getItemParent(
+    item: Unit | EquipmentItem | ForceSide,
+  ): Unit | EquipmentItem | ForceSide | undefined {
+    if (item instanceof Unit) {
+      return this.getUnitParent(item);
+    } else if (item instanceof EquipmentItem) {
+      return (
+        this.unitMap[item.superiorHandle] ??
+        this.forceSideMap[item.superiorHandle]
+      );
+    } else if (item instanceof ForceSide) {
+      const superiorHandle = item.superiorHandle;
+      if (superiorHandle) return this.forceSideMap[item.superiorHandle];
+    }
+    return undefined;
+  }
+
+  /** @deprecated */
   getUnitHierarchy(unitOrObjectHandle: Unit | string) {
     let unit: Unit | undefined;
     if (typeof unitOrObjectHandle === "string") {
@@ -160,6 +186,52 @@ export class MilitaryScenario implements MilitaryScenarioType {
     }
 
     helper(unit);
+
+    return { forceSide, hierarchy };
+  }
+
+  getItemHierarchy(
+    itemOrObjectHandle: Unit | EquipmentItem | ForceSide | string,
+    { includeItem = false }: { includeItem?: boolean } = {},
+  ) {
+    let item: Unit | EquipmentItem | ForceSide | undefined;
+    if (typeof itemOrObjectHandle === "string") {
+      item =
+        this.getUnitOrForceSideById(itemOrObjectHandle) ||
+        this.getEquipmentById(itemOrObjectHandle);
+    } else {
+      item = itemOrObjectHandle;
+    }
+    if (!item) {
+      throw new Error("Item not found");
+    }
+
+    let that = this;
+    let hierarchy: (Unit | EquipmentItem | ForceSide)[] = [];
+    let forceSide: ForceSide[] = [];
+    if (includeItem) {
+      if (item instanceof Unit || item instanceof EquipmentItem) {
+        hierarchy.push(item);
+      } else if (item instanceof ForceSide) {
+        forceSide.push(item);
+      }
+    }
+
+    function helper(item: Unit | EquipmentItem | ForceSide) {
+      let p = that.getItemParent(item);
+      if (p instanceof Unit || p instanceof EquipmentItem) {
+        hierarchy.push(p);
+      } else if (p instanceof ForceSide) {
+        forceSide.push(p);
+      }
+      if (p) {
+        helper(p);
+      }
+    }
+
+    helper(item);
+    hierarchy.reverse();
+    forceSide.reverse();
 
     return { forceSide, hierarchy };
   }
