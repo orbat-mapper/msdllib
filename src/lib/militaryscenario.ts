@@ -623,6 +623,40 @@ export class MilitaryScenario implements MilitaryScenarioType {
     this.updateDeploymentElement();
   }
 
+  assignAllUnitsToFederate(
+    fromFederateHandle: string,
+    toFederateHandle: string,
+  ) {
+    const fromFederate = this.getFederateById(fromFederateHandle);
+    const toFederate = this.getFederateById(toFederateHandle);
+    if (!toFederate) {
+      throw new Error(`Unit ${toFederateHandle} not found`);
+    }
+    if (!fromFederate) {
+      throw new Error(`Federate ${fromFederateHandle} not found`);
+    }
+    const units = fromFederate.removeAllUnits();
+    toFederate.addAllUnits(units);
+    this.updateDeploymentElement();
+  }
+
+  assignAllEquipmentToFederate(
+    fromFederateHandle: string,
+    toFederateHandle: string,
+  ) {
+    const fromFederate = this.getFederateById(fromFederateHandle);
+    const toFederate = this.getFederateById(toFederateHandle);
+    if (!toFederate) {
+      throw new Error(`Unit ${toFederateHandle} not found`);
+    }
+    if (!fromFederate) {
+      throw new Error(`Federate ${fromFederateHandle} not found`);
+    }
+    const equipment = fromFederate.removeAllEquipment();
+    toFederate.addAllEquipment(equipment);
+    this.updateDeploymentElement();
+  }
+
   private detectNETN() {
     const netnElement =
       getTagElement(this.element, "EntityType") ??

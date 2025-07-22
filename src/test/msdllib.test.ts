@@ -364,6 +364,38 @@ describe("MilitaryScenario with NETN", () => {
         expect(countXmlTagOccurrences(xml, "Unit")).toBe(1);
       });
     });
+    describe("when moving all units to SIM C", () => {
+      beforeAll(() => {
+        scenario.assignAllUnitsToFederate(simB, simC);
+      });
+      it("SIM C should have unit HQ", () => {
+        const federate = scenario.getFederateOfUnit(unitHQ);
+        expect(federate).toBeDefined();
+        expect(federate?.name).toBe("SIM C");
+        const xml = federate?.toString();
+        expect(xml?.includes(unitHQ)).toBeTruthy();
+      });
+      it("SIM B should not have unit HQ", () => {
+        const federate = scenario.getFederateById(simB);
+        expect(federate?.units).not.toContain(unitHQ);
+        const xml = federate?.toString();
+        expect(xml?.includes(unitHQ)).toBeFalsy();
+      });
+      it("SIM C should have 6 units", () => {
+        const federate = scenario.getFederateById(simC);
+        expect(federate).toBeDefined();
+        expect(federate?.units).toHaveLength(6);
+        const xml = federate?.toString() || "";
+        expect(countXmlTagOccurrences(xml, "Unit")).toBe(6);
+      });
+      it("SIM B should have 0 units", () => {
+        const federate = scenario.getFederateById(simB);
+        expect(federate).toBeDefined();
+        expect(federate?.units).toHaveLength(0);
+        const xml = federate?.toString() || "";
+        expect(countXmlTagOccurrences(xml, "Unit")).toBe(0);
+      });
+    });
     it("SIM C should have equipment 111 ", () => {
       const federate = scenario.getFederateOfEquipment(equipment111);
       expect(federate).toBeDefined();
@@ -415,6 +447,38 @@ describe("MilitaryScenario with NETN", () => {
         expect(federate?.equipment).toHaveLength(1);
         const xml = federate?.toString() || "";
         expect(countXmlTagOccurrences(xml, "EquipmentItem")).toBe(1);
+      });
+    });
+    describe("when moving all equipment from SIM C to SIM B", () => {
+      beforeAll(() => {
+        scenario.assignAllEquipmentToFederate(simC, simB);
+      });
+      it("SIM B should have equipment 111", () => {
+        const federate = scenario.getFederateOfEquipment(equipment111);
+        expect(federate).toBeDefined();
+        expect(federate?.name).toBe("SIM B");
+        const xml = federate?.toString();
+        expect(xml?.includes(equipment111)).toBeTruthy();
+      });
+      it("SIM C should not have equipment 111", () => {
+        const federate = scenario.getFederateById(simC);
+        expect(federate?.equipment).not.toContain(equipment111);
+        const xml = federate?.toString();
+        expect(xml?.includes(equipment111)).toBeFalsy();
+      });
+      it("SIM B should have 2 equipment items", () => {
+        const federate = scenario.getFederateById(simB);
+        expect(federate).toBeDefined();
+        expect(federate?.equipment).toHaveLength(2);
+        const xml = federate?.toString() || "";
+        expect(countXmlTagOccurrences(xml, "EquipmentItem")).toBe(2);
+      });
+      it("SIM C should have no equipment item", () => {
+        const federate = scenario.getFederateById(simC);
+        expect(federate).toBeDefined();
+        expect(federate?.equipment).toHaveLength(0);
+        const xml = federate?.toString() || "";
+        expect(countXmlTagOccurrences(xml, "EquipmentItem")).toBe(0);
       });
     });
   });
