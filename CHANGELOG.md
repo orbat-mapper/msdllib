@@ -1,5 +1,19 @@
 # @orbat-mapper/msdllib
 
+## 0.24.1
+
+### Patch Changes
+
+- 6924eb0: Add functions to `MilitaryScenario`:
+  - assignAllUnitsToFederate( fromFederateHandle: string, toFederateHandle: string): void
+  - assignAllEquipmentToFederate(fromFederateHandle: string, toFederateHandle: string): void
+
+  Add functions to `Federate`:
+  - addAllUnits(units: string[]): void
+  - addAllEquipment(equipment: string[]): void
+  - removeAllUnits(): void
+  - removeAllEquipment(): void
+
 ## 0.24.0
 
 ### Minor Changes
@@ -26,12 +40,10 @@
 - 135a312: Add functionality to assign a unit to another federate in a NETN deployment.
 
   `Federate` class:
-
   - `addUnit(unitHandle: string): void`
   - `removeUnit(unitHandle: string): void`
 
   `MilitaryScenario` class:
-
   - `assignUnitToFederate(unitHandle: string, federateHandle: string): void`
   - `getFederateById(objectHandle: string): Federate | undefined`
   - `getFederateOfUnit(objectHandle: string): Federate | undefined`
@@ -39,12 +51,10 @@
 - 135a312: Add functionality to assign equipment to federates in a NETN deployment.
 
   `Federate` class:
-
   - `addEquipmentItem(equipmentItemHandle: string): void`
   - `removeEquipmentItem(equipmentItemHandle: string): void`
 
   `MilitaryScenario` class:
-
   - `getFederateOfEquipment(objectHandle: string): Federate | undefined`
   - `assignEquipmentItemToFederate(equipmentItemHandle: string, federateHandle: string): void`
 
