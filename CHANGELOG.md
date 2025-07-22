@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.24.2
+
+### Patch Changes
+
+- 52d4eb7: Fix bug when setting unit or equipment disposition
+
 ## 0.24.1
 
 ### Patch Changes
