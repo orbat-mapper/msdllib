@@ -98,7 +98,7 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
         : UnitDisposition.fromModel(disposition);
     this.#disposition = test;
     if (dispElm) {
-      this.element.replaceChild(dispElm, this.#disposition.element);
+      this.element.replaceChild(this.#disposition.element, dispElm);
     } else {
       this.element.appendChild(this.#disposition.element);
     }

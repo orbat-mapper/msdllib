@@ -138,7 +138,7 @@ export class EquipmentItem extends UnitEquipmentBase {
         : EquipmentItemDisposition.fromModel(disposition);
     this.#disposition = test;
     if (dispElm) {
-      this.element.replaceChild(dispElm, this.#disposition.element);
+      this.element.replaceChild(this.#disposition.element, dispElm);
     } else {
       this.element.appendChild(this.#disposition.element);
     }
