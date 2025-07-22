@@ -1,5 +1,12 @@
 # @orbat-mapper/msdllib
 
+## 0.24.0
+
+### Minor Changes
+
+- c24854e: Add `getItemHierarchy(.)` and `getItemParent(.)` methods to `MilitaryScenario` class
+- 59eb4b0: Add `superiorHandle` getter to `ForceSide` class (for consistency with units and equipment)
+
 ## 0.23.1
 
 ### Patch Changes
