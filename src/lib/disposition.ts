@@ -5,6 +5,7 @@ import {
   removeTagValue,
   removeUndefinedValues,
   setOrCreateTagValue,
+  xmlToString,
 } from "./domutils.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 import { MsdlLocation } from "./geo.js";
@@ -81,6 +82,10 @@ export class DispositionBase {
       speed: this.speed,
       location: this.location,
     });
+  }
+
+  toString(): string {
+    return xmlToString(this.element);
   }
 
   updateFromObject(data: Partial<DispositionType>) {

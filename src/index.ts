@@ -45,5 +45,6 @@ export { type UnitEquipmentInterface } from "./lib/common.js";
 export {
   EquipmentItemDisposition,
   UnitDisposition,
+  DispositionBase,
+  type DispositionType,
 } from "./lib/disposition.js";
-export type { DispositionType } from "./lib/disposition.js";

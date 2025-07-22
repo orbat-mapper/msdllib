@@ -293,6 +293,14 @@ describe("New EquipmentItem", () => {
     expect(equipment.disposition?.speed).toBe(42);
     expect(equipment.disposition?.directionOfMovement).toBe(1);
     expect(equipment.disposition?.location).toEqual([5.0, 54.0]);
+    equipment.disposition = EquipmentItemDisposition.fromModel({
+      speed: 9,
+      directionOfMovement: 99,
+      location: [5.0, 54.0],
+    });
+    expect(equipment.disposition?.speed).toBe(9);
+    expect(equipment.disposition?.directionOfMovement).toBe(99);
+    expect(equipment.disposition?.location).toEqual([5.0, 54.0]);
     equipment.disposition = undefined;
     expect(equipment.disposition).toBeUndefined();
   });

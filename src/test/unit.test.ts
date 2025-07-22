@@ -307,6 +307,14 @@ describe("New Unit", () => {
     expect(unit.disposition?.speed).toBe(42);
     expect(unit.disposition?.directionOfMovement).toBe(1);
     expect(unit.disposition?.location).toEqual([5.0, 54.0]);
+    unit.disposition = UnitDisposition.fromModel({
+      speed: 9,
+      directionOfMovement: 99,
+      location: [5.0, 54.0],
+    });
+    expect(unit.disposition?.speed).toBe(9);
+    expect(unit.disposition?.directionOfMovement).toBe(99);
+    expect(unit.disposition?.location).toEqual([5.0, 54.0]);
     unit.disposition = undefined;
     expect(unit.disposition).toBeUndefined();
   });
