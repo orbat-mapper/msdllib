@@ -1,19 +1,16 @@
-import { describe, it, expect, beforeEach, beforeAll } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import {
   EnumCommandRelationshipType,
   EquipmentItem,
   ForceSide,
   MilitaryScenario,
-  ScenarioId,
   MsdlOptions,
+  ScenarioId,
 } from "../index.js";
 import {
   EMPTY_SCENARIO,
-  EQUIPMENT_NETN,
-  parseFromString,
-  SCENARIO_ID_TYPE,
   MSDL_OPTIONS_TYPE,
-  UNIT_TEMPLATE,
+  SCENARIO_ID_TYPE,
 } from "./testdata.js";
 import fs from "fs/promises";
 import {

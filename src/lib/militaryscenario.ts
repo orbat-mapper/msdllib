@@ -25,6 +25,19 @@ export type SetUnitForceRelationTypeOptions = {
   target?: DropTarget;
 };
 
+export type InstructionType = "make-child" | "reorder-above" | "reorder-below";
+export type ForceSideRelationType = {};
+export type UnitRelationType = {
+  commandRelationshipType?: EnumCommandRelationshipType;
+};
+
+export type SetItemRelationOptions = {
+  source: Unit | EquipmentItem | string;
+  target: Unit | EquipmentItem | ForceSide | string;
+  instruction?: InstructionType;
+  // relationData?: ForceSideRelationType | UnitRelationType;
+};
+
 /**
  * MilitaryScenarioType
  *
@@ -145,19 +158,16 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
   getItemParent(
     item: Unit | EquipmentItem | ForceSide,
-  ): Unit | EquipmentItem | ForceSide | undefined {
-    if (item instanceof Unit) {
-      return this.getUnitParent(item);
-    } else if (item instanceof EquipmentItem) {
+  ): Unit | ForceSide | undefined {
+    if (item instanceof Unit || item instanceof EquipmentItem) {
       return (
         this.unitMap[item.superiorHandle] ??
         this.forceSideMap[item.superiorHandle]
       );
-    } else if (item instanceof ForceSide) {
+    } else {
       const superiorHandle = item.superiorHandle;
-      if (superiorHandle) return this.forceSideMap[item.superiorHandle];
+      if (superiorHandle) return this.forceSideMap[superiorHandle];
     }
-    return undefined;
   }
 
   /** @deprecated */
@@ -194,14 +204,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     itemOrObjectHandle: Unit | EquipmentItem | ForceSide | string,
     { includeItem = false }: { includeItem?: boolean } = {},
   ) {
-    let item: Unit | EquipmentItem | ForceSide | undefined;
-    if (typeof itemOrObjectHandle === "string") {
-      item =
-        this.getUnitOrForceSideById(itemOrObjectHandle) ||
-        this.getEquipmentById(itemOrObjectHandle);
-    } else {
-      item = itemOrObjectHandle;
-    }
+    const item = this.getItemInstance(itemOrObjectHandle);
     if (!item) {
       throw new Error("Item not found");
     }
@@ -212,7 +215,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     if (includeItem) {
       if (item instanceof Unit || item instanceof EquipmentItem) {
         hierarchy.push(item);
-      } else if (item instanceof ForceSide) {
+      } else {
         forceSide.push(item);
       }
     }
@@ -774,6 +777,118 @@ export class MilitaryScenario implements MilitaryScenarioType {
     } else {
       unit.setForceRelation(superior);
       superior.rootUnits.push(unit);
+    }
+  }
+
+  setItemRelation({
+    source,
+    target,
+    instruction = "make-child",
+  }: SetItemRelationOptions) {
+    const sourceItem = this.getItemInstance(source);
+    const targetItem = this.getItemInstance(target);
+
+    if (!sourceItem || !targetItem) {
+      throw new Error("Source or target item not found");
+    }
+    if (sourceItem.objectHandle === targetItem.objectHandle) {
+      throw new Error("Source and target items cannot be the same");
+    }
+    if (sourceItem instanceof EquipmentItem) {
+      const equipmentElement = getTagElement(this.element, "Equipment");
+      this.removeUnitOrEquipmentFromSuperior(sourceItem);
+      // Add to new superior
+      if (
+        instruction === "make-child" &&
+        (targetItem instanceof Unit || targetItem instanceof ForceSide)
+      ) {
+        sourceItem.setHoldingOrganization(targetItem);
+        targetItem.equipment.push(sourceItem);
+        equipmentElement?.appendChild(sourceItem.element);
+        return;
+      }
+      if (targetItem instanceof EquipmentItem) {
+        // Reorder equipment items
+        const targetSuperior = this.getItemParent(targetItem);
+        if (!targetSuperior) return;
+        sourceItem.setHoldingOrganization(targetSuperior);
+        const targetIndex = targetSuperior?.equipment.indexOf(targetItem);
+        if (targetIndex < 0) return;
+        if (instruction === "reorder-above") {
+          targetSuperior.equipment.splice(targetIndex, 0, sourceItem);
+          targetItem.element.insertAdjacentElement(
+            "beforebegin",
+            sourceItem.element,
+          );
+        } else if (instruction === "reorder-below") {
+          targetSuperior.equipment.splice(targetIndex + 1, 0, sourceItem);
+          targetItem.element.insertAdjacentElement(
+            "afterend",
+            sourceItem.element,
+          );
+        }
+      }
+    } else if (sourceItem instanceof Unit) {
+      if (targetItem instanceof EquipmentItem) {
+        throw new Error("Cannot make a Unit a child of EquipmentItem");
+      }
+      const unitsElement = getTagElement(this.element, "Units");
+      this.removeUnitOrEquipmentFromSuperior(sourceItem);
+      // Add to new superior
+      if (instruction === "make-child") {
+        if (targetItem instanceof Unit) {
+          sourceItem.setForceRelation(targetItem);
+          targetItem.subordinates.push(sourceItem);
+        } else {
+          sourceItem.setForceRelation(targetItem);
+          targetItem.rootUnits.push(sourceItem);
+        }
+        unitsElement?.appendChild(sourceItem.element);
+      } else if (
+        (instruction === "reorder-above" || instruction === "reorder-below") &&
+        targetItem instanceof Unit
+      ) {
+        const targetSuperior = this.getItemParent(targetItem);
+        if (targetSuperior instanceof Unit) {
+          sourceItem.setForceRelation(targetSuperior);
+
+          const targetIndex = targetSuperior?.subordinates.indexOf(targetItem);
+          if (targetIndex < 0) return;
+          instruction === "reorder-above"
+            ? targetSuperior.subordinates.splice(targetIndex, 0, sourceItem)
+            : targetSuperior.subordinates.splice(
+                targetIndex + 1,
+                0,
+                sourceItem,
+              );
+        } else if (targetSuperior instanceof ForceSide) {
+          sourceItem.setForceRelation(targetSuperior);
+          const targetIndex = targetSuperior.rootUnits.indexOf(targetItem);
+          if (targetIndex < 0) return;
+          instruction === "reorder-above"
+            ? targetSuperior.rootUnits.splice(targetIndex, 0, sourceItem)
+            : targetSuperior.rootUnits.splice(targetIndex + 1, 0, sourceItem);
+        }
+        targetItem.element.insertAdjacentElement(
+          instruction === "reorder-above" ? "beforebegin" : "afterend",
+          sourceItem.element,
+        );
+      }
+    }
+  }
+
+  // getItemRelation() {}
+
+  getItemInstance(
+    itemOrObjectHandle: Unit | EquipmentItem | ForceSide | string,
+  ): Unit | EquipmentItem | ForceSide | undefined {
+    if (typeof itemOrObjectHandle === "string") {
+      return (
+        this.getUnitOrForceSideById(itemOrObjectHandle) ??
+        this.getEquipmentById(itemOrObjectHandle)
+      );
+    } else {
+      return itemOrObjectHandle;
     }
   }
 
