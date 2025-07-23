@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.25.0
+
+### Minor Changes
+
+- 112f94e: Add `MilitaryScenario.setItemRelation(.)` method that allows you to reorder unit and equipment in the ORBAT
+
 ## 0.24.2
 
 ### Patch Changes
