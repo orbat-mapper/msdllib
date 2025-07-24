@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.25.1
+
+### Patch Changes
+
+- 25b7685: Improve `setItemRelation` error handling and input validation
+
 ## 0.25.0
 
 ### Minor Changes
