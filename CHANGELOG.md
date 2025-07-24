@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.26.1
+
+### Patch Changes
+
+- e579c3c: Fix bug where Unit and EquipmentItem elements were put in wrong parent element
+
 ## 0.26.0
 
 ### Minor Changes
