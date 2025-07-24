@@ -795,6 +795,12 @@ export class MilitaryScenario implements MilitaryScenarioType {
       throw new Error("Source and target items cannot be the same");
     }
     if (sourceItem instanceof EquipmentItem) {
+      if (targetItem instanceof EquipmentItem && instruction === "make-child") {
+        throw new Error(
+          "Cannot make EquipmentItem a child of another EquipmentItem",
+        );
+      }
+
       const equipmentElement = getTagElement(this.element, "Equipment");
       this.removeUnitOrEquipmentFromSuperior(sourceItem);
       // Add to new superior

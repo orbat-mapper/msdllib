@@ -275,6 +275,85 @@ describe("MilitaryScenario.setItemRelation when source is Unit", () => {
     expect(newOriginalSuperior.rootUnits).not.toContain(newSource);
   });
 });
+
+describe("MilitaryScenario.setItemRelation error handling", () => {
+  it("should throw an error if source is not a Unit or EquipmentItem", () => {
+    let scenario = loadTestScenario2();
+    const target = getUnitByLabel(scenario, "HQ2");
+    expect(() =>
+      scenario.setItemRelation({
+        source: "invalid",
+        target,
+      }),
+    ).toThrow("Source or target item not found");
+  });
+
+  it("should throw an error if target is not a Unit or EquipmentItem", () => {
+    let scenario = loadTestScenario2();
+    const source = getUnitByLabel(scenario, "HQ2");
+    expect(() =>
+      scenario.setItemRelation({
+        source,
+        target: "invalid",
+      }),
+    ).toThrow("Source or target item not found");
+  });
+
+  it("should throw an error if source and target are the same", () => {
+    let scenario = loadTestScenario2();
+    const source = getUnitByLabel(scenario, "HQ2");
+    expect(() =>
+      scenario.setItemRelation({
+        source,
+        target: source,
+      }),
+    ).toThrow("Source and target items cannot be the same");
+  });
+
+  it("should throw an error if source and target are equipment and instruction is 'make-child'", () => {
+    let scenario = loadTestScenario2();
+    const source = getEquipmentByLabel(scenario, "111");
+    const target = getEquipmentByLabel(scenario, "112");
+    expect(() =>
+      scenario.setItemRelation({
+        source,
+        target,
+        instruction: "make-child",
+      }),
+    ).toThrow("Cannot make EquipmentItem a child of another EquipmentItem");
+
+    expect(() =>
+      scenario.setItemRelation({
+        source,
+        target,
+      }),
+    ).toThrow("Cannot make EquipmentItem a child of another EquipmentItem");
+  });
+
+  it("should throw an error if source is a Unit and target is an EquipmentItem", () => {
+    let scenario = loadTestScenario2();
+    const source = getUnitByLabel(scenario, "HQ2");
+    const target = getEquipmentByLabel(scenario, "111");
+    expect(() =>
+      scenario.setItemRelation({
+        source,
+        target,
+      }),
+    ).toThrow("Cannot make a Unit a child of EquipmentItem");
+  });
+
+  // it("should throw an error if source is a ForceSide and target is EquipmentItem", () => {
+  //   let scenario = loadTestScenario2();
+  //   const source = getForceSideByName(scenario, "Friendly");
+  //   const target = getEquipmentByLabel(scenario, "111");
+  //   expect(() =>
+  //     scenario.setItemRelation({
+  //       source,
+  //       target,
+  //     }),
+  //   ).toThrow("Cannot make a ForceSide a child of EquipmentItem");
+  // });
+});
 /*
 describe("MilitaryScenario.setItemRelation when source is ForceSide", () => {});*/
 
