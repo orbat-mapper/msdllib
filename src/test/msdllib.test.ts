@@ -6,13 +6,11 @@ import {
   MilitaryScenario,
   MsdlOptions,
   ScenarioId,
-  MsdlOptions,
 } from "../index.js";
 import {
   EMPTY_SCENARIO,
   MSDL_OPTIONS_TYPE,
   SCENARIO_ID_TYPE,
-  MSDL_OPTIONS_TYPE,
   UNIT_TEMPLATE,
 } from "./testdata.js";
 import fs from "fs/promises";

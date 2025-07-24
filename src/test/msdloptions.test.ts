@@ -129,9 +129,11 @@ describe("MsdlOptions nesting", () => {
     options.aggregateBased = "TestValue";
     expect(options.element.querySelector("OrganizationDetail")).not.toBeNull();
 
-    const aggregateBased = options.element.querySelector("OrganizationDetail")?.querySelector("AggregateBased");
+    const aggregateBased = options.element
+      .querySelector("OrganizationDetail")
+      ?.querySelector("AggregateBased");
     expect(aggregateBased).not.toBeNull();
-    expect(getTagValue(options.element, "AggregateBased")).toBe("TestValue")
+    expect(getTagValue(options.element, "AggregateBased")).toBe("TestValue");
   });
 
   it("should handle nesting correctly for the ScenarioDataStandards element", () => {
@@ -140,21 +142,33 @@ describe("MsdlOptions nesting", () => {
 
     options.standardName = "New Standard";
     options.coordinateSystemDatum = "New Datum";
-    expect(options.element.querySelector("ScenarioDataStandards")).not.toBeNull();
+    expect(
+      options.element.querySelector("ScenarioDataStandards"),
+    ).not.toBeNull();
 
-    const standardName = options.element.querySelector("ScenarioDataStandards")?.querySelector("SymbologyDataStandard")?.querySelector("StandardName");
-    const coordinateSystemDatum = options.element.querySelector("ScenarioDataStandards")?.querySelector("CoordinateDataStandard")?.querySelector("CoordinateSystemDatum");
+    const standardName = options.element
+      .querySelector("ScenarioDataStandards")
+      ?.querySelector("SymbologyDataStandard")
+      ?.querySelector("StandardName");
+    const coordinateSystemDatum = options.element
+      .querySelector("ScenarioDataStandards")
+      ?.querySelector("CoordinateDataStandard")
+      ?.querySelector("CoordinateSystemDatum");
     expect(standardName).not.toBeNull();
     expect(coordinateSystemDatum).not.toBeNull();
 
-    expect(getTagValue(options.element, "StandardName")).toBe("New Standard")
-    expect(getTagValue(options.element, "CoordinateSystemDatum")).toBe("New Datum")
+    expect(getTagValue(options.element, "StandardName")).toBe("New Standard");
+    expect(getTagValue(options.element, "CoordinateSystemDatum")).toBe(
+      "New Datum",
+    );
   });
 
   it("should handle nesting within the XML correctly", () => {
-    const options_template = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
+    const options_template = new MsdlOptions(
+      parseFromString(MSDL_OPTIONS_TEMPLATE),
+    );
     const options_empty = new MsdlOptions(parseFromString(MSDL_OPTIONS_EMPTY));
-    options_empty.msdlVersion = "1.0.2";      
+    options_empty.msdlVersion = "1.0.2";
     options_empty.standardName = "MILSTD_2525B";
     options_empty.majorVersion = "2";
     options_empty.minorVersion = "3";
@@ -163,9 +177,16 @@ describe("MsdlOptions nesting", () => {
     options_empty.aggregateBased = "value";
     options_empty.aggregateEchelon = "FRONT";
 
-    const flat_options_template = options_template.toString().replaceAll('  ', ' ').replace(/>\s+</g, '><')
-    const flat_options_emtpy = options_empty.toString().replaceAll('  ', ' ').replace(/>\s+</g, '><').replaceAll(' xmlns=""', '')
-    expect(flat_options_emtpy).toBe(flat_options_template)
+    const flat_options_template = options_template
+      .toString()
+      .replaceAll("  ", " ")
+      .replace(/>\s+</g, "><");
+    const flat_options_emtpy = options_empty
+      .toString()
+      .replaceAll("  ", " ")
+      .replace(/>\s+</g, "><")
+      .replaceAll(' xmlns=""', "");
+    expect(flat_options_emtpy).toBe(flat_options_template);
   });
 });
 

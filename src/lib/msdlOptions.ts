@@ -70,7 +70,10 @@ export class MsdlOptions implements MsdlOptionsType {
   set aggregateBased(aggregateBased: string) {
     this.#aggregateBased = aggregateBased;
 
-    let organizationDetailEl = this.ensureChild(this.element, "OrganizationDetail")
+    let organizationDetailEl = this.ensureChild(
+      this.element,
+      "OrganizationDetail",
+    );
     setOrCreateTagValue(organizationDetailEl, "AggregateBased", aggregateBased);
   }
 
@@ -82,9 +85,16 @@ export class MsdlOptions implements MsdlOptionsType {
 
   set aggregateEchelon(aggregateEchelon: string) {
     this.#aggregateEchelon = aggregateEchelon;
-    
-    let organizationDetailEl = this.ensureChild(this.element, "OrganizationDetail")
-    setOrCreateTagValue(organizationDetailEl, "AggregateEchelon", aggregateEchelon);
+
+    let organizationDetailEl = this.ensureChild(
+      this.element,
+      "OrganizationDetail",
+    );
+    setOrCreateTagValue(
+      organizationDetailEl,
+      "AggregateEchelon",
+      aggregateEchelon,
+    );
   }
 
   get standardName(): string {
@@ -94,8 +104,14 @@ export class MsdlOptions implements MsdlOptionsType {
   set standardName(standardName: string) {
     this.#standardName = standardName;
 
-    let scenarioDataStandardsEl = this.ensureChild(this.element, "ScenarioDataStandards")
-    let symbologyDataStandardEl = this.ensureChild(scenarioDataStandardsEl, "SymbologyDataStandard")
+    let scenarioDataStandardsEl = this.ensureChild(
+      this.element,
+      "ScenarioDataStandards",
+    );
+    let symbologyDataStandardEl = this.ensureChild(
+      scenarioDataStandardsEl,
+      "SymbologyDataStandard",
+    );
     setOrCreateTagValue(symbologyDataStandardEl, "StandardName", standardName);
   }
 
@@ -106,8 +122,14 @@ export class MsdlOptions implements MsdlOptionsType {
   set majorVersion(majorVersion: string) {
     this.#majorVersion = majorVersion;
 
-    let scenarioDataStandardsEl = this.ensureChild(this.element, "ScenarioDataStandards")
-    let symbologyDataStandardEl = this.ensureChild(scenarioDataStandardsEl, "SymbologyDataStandard")
+    let scenarioDataStandardsEl = this.ensureChild(
+      this.element,
+      "ScenarioDataStandards",
+    );
+    let symbologyDataStandardEl = this.ensureChild(
+      scenarioDataStandardsEl,
+      "SymbologyDataStandard",
+    );
     setOrCreateTagValue(symbologyDataStandardEl, "MajorVersion", majorVersion);
   }
 
@@ -118,8 +140,14 @@ export class MsdlOptions implements MsdlOptionsType {
   set minorVersion(minorVersion: string) {
     this.#minorVersion = minorVersion;
 
-    let scenarioDataStandardsEl = this.ensureChild(this.element, "ScenarioDataStandards")
-    let symbologyDataStandardEl = this.ensureChild(scenarioDataStandardsEl, "SymbologyDataStandard")
+    let scenarioDataStandardsEl = this.ensureChild(
+      this.element,
+      "ScenarioDataStandards",
+    );
+    let symbologyDataStandardEl = this.ensureChild(
+      scenarioDataStandardsEl,
+      "SymbologyDataStandard",
+    );
     setOrCreateTagValue(symbologyDataStandardEl, "MinorVersion", minorVersion);
   }
 
@@ -133,8 +161,14 @@ export class MsdlOptions implements MsdlOptionsType {
   set coordinateSystemType(coordinateSystemType: string) {
     this.#coordinateSystemType = coordinateSystemType;
 
-    let scenarioDataStandardsEl = this.ensureChild(this.element, "ScenarioDataStandards")
-    let CoordinateDataStandardEl = this.ensureChild(scenarioDataStandardsEl, "CoordinateDataStandard")
+    let scenarioDataStandardsEl = this.ensureChild(
+      this.element,
+      "ScenarioDataStandards",
+    );
+    let CoordinateDataStandardEl = this.ensureChild(
+      scenarioDataStandardsEl,
+      "CoordinateDataStandard",
+    );
     setOrCreateTagValue(
       CoordinateDataStandardEl,
       "CoordinateSystemType",
@@ -152,8 +186,14 @@ export class MsdlOptions implements MsdlOptionsType {
   set coordinateSystemDatum(coordinateSystemDatum: string) {
     this.#coordinateSystemDatum = coordinateSystemDatum;
 
-    let scenarioDataStandardsEl = this.ensureChild(this.element, "ScenarioDataStandards")
-    let CoordinateDataStandardEl = this.ensureChild(scenarioDataStandardsEl, "CoordinateDataStandard")
+    let scenarioDataStandardsEl = this.ensureChild(
+      this.element,
+      "ScenarioDataStandards",
+    );
+    let CoordinateDataStandardEl = this.ensureChild(
+      scenarioDataStandardsEl,
+      "CoordinateDataStandard",
+    );
     setOrCreateTagValue(
       CoordinateDataStandardEl,
       "CoordinateSystemDatum",
@@ -214,12 +254,12 @@ export class MsdlOptions implements MsdlOptionsType {
     );
   }
 
-  private ensureChild(element : Element, childName : string): Element {
+  private ensureChild(element: Element, childName: string): Element {
     let child = element.querySelector(childName);
     if (!child) {
       child = createEmptyXMLElementFromTagName(childName);
       element.appendChild(child);
     }
-    return child
+    return child;
   }
 }
