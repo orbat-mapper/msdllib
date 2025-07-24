@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.26.0
+
+### Minor Changes
+
+- d8318ba: Add `MilitaryScenario.msdlOptions:MsdlOptions` attribute
+
 ## 0.25.1
 
 ### Patch Changes
