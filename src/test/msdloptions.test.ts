@@ -23,6 +23,10 @@ const MSDL_OPTIONS_TEMPLATE = `<Options xmlns="urn:sisostds:scenario:military:da
         </OrganizationDetail>
     </Options>`;
 
+const MSDL_OPTIONS_EMPTY = `<Options xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
+                  xmlns:modelID="http://www.sisostds.org/schemas/modelID">
+    </Options>`;
+
 describe("MSDLOptions", () => {
   it("defined", () => {
     expect(MilitaryScenario).toBeDefined();
@@ -114,6 +118,54 @@ describe("MSDLOptions", () => {
         "New Datum",
       );
     });
+  });
+});
+
+describe("MsdlOptions nesting", () => {
+  it("should handle nesting correctly for the OrganizationDetail element", () => {
+    const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_EMPTY));
+    expect(options.element.querySelector("OrganizationDetail")).toBeNull();
+
+    options.aggregateBased = "TestValue";
+    expect(options.element.querySelector("OrganizationDetail")).not.toBeNull();
+
+    const aggregateBased = options.element.querySelector("OrganizationDetail")?.querySelector("AggregateBased");
+    expect(aggregateBased).not.toBeNull();
+    expect(getTagValue(options.element, "AggregateBased")).toBe("TestValue")
+  });
+
+  it("should handle nesting correctly for the ScenarioDataStandards element", () => {
+    const options = new MsdlOptions(parseFromString(MSDL_OPTIONS_EMPTY));
+    expect(options.element.querySelector("ScenarioDataStandards")).toBeNull();
+
+    options.standardName = "New Standard";
+    options.coordinateSystemDatum = "New Datum";
+    expect(options.element.querySelector("ScenarioDataStandards")).not.toBeNull();
+
+    const standardName = options.element.querySelector("ScenarioDataStandards")?.querySelector("SymbologyDataStandard")?.querySelector("StandardName");
+    const coordinateSystemDatum = options.element.querySelector("ScenarioDataStandards")?.querySelector("CoordinateDataStandard")?.querySelector("CoordinateSystemDatum");
+    expect(standardName).not.toBeNull();
+    expect(coordinateSystemDatum).not.toBeNull();
+
+    expect(getTagValue(options.element, "StandardName")).toBe("New Standard")
+    expect(getTagValue(options.element, "CoordinateSystemDatum")).toBe("New Datum")
+  });
+
+  it("should handle nesting within the XML correctly", () => {
+    const options_template = new MsdlOptions(parseFromString(MSDL_OPTIONS_TEMPLATE));
+    const options_empty = new MsdlOptions(parseFromString(MSDL_OPTIONS_EMPTY));
+    options_empty.msdlVersion = "1.0.2";      
+    options_empty.standardName = "MILSTD_2525B";
+    options_empty.majorVersion = "2";
+    options_empty.minorVersion = "3";
+    options_empty.coordinateSystemType = "GDC";
+    options_empty.coordinateSystemDatum = "WGS84";
+    options_empty.aggregateBased = "value";
+    options_empty.aggregateEchelon = "FRONT";
+
+    const flat_options_template = options_template.toString().replaceAll('  ', ' ').replace(/>\s+</g, '><')
+    const flat_options_emtpy = options_empty.toString().replaceAll('  ', ' ').replace(/>\s+</g, '><').replaceAll(' xmlns=""', '')
+    expect(flat_options_emtpy).toBe(flat_options_template)
   });
 });
 

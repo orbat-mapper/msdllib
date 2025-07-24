@@ -69,7 +69,9 @@ export class MsdlOptions implements MsdlOptionsType {
 
   set aggregateBased(aggregateBased: string) {
     this.#aggregateBased = aggregateBased;
-    setOrCreateTagValue(this.element, "AggregateBased", aggregateBased);
+
+    let organizationDetailEl = this.ensureChild(this.element, "OrganizationDetail")
+    setOrCreateTagValue(organizationDetailEl, "AggregateBased", aggregateBased);
   }
 
   get aggregateEchelon(): string {
@@ -80,7 +82,9 @@ export class MsdlOptions implements MsdlOptionsType {
 
   set aggregateEchelon(aggregateEchelon: string) {
     this.#aggregateEchelon = aggregateEchelon;
-    setOrCreateTagValue(this.element, "AggregateEchelon", aggregateEchelon);
+    
+    let organizationDetailEl = this.ensureChild(this.element, "OrganizationDetail")
+    setOrCreateTagValue(organizationDetailEl, "AggregateEchelon", aggregateEchelon);
   }
 
   get standardName(): string {
@@ -89,7 +93,10 @@ export class MsdlOptions implements MsdlOptionsType {
 
   set standardName(standardName: string) {
     this.#standardName = standardName;
-    setOrCreateTagValue(this.element, "StandardName", standardName);
+
+    let scenarioDataStandardsEl = this.ensureChild(this.element, "ScenarioDataStandards")
+    let symbologyDataStandardEl = this.ensureChild(scenarioDataStandardsEl, "SymbologyDataStandard")
+    setOrCreateTagValue(symbologyDataStandardEl, "StandardName", standardName);
   }
 
   get majorVersion(): string {
@@ -98,7 +105,10 @@ export class MsdlOptions implements MsdlOptionsType {
 
   set majorVersion(majorVersion: string) {
     this.#majorVersion = majorVersion;
-    setOrCreateTagValue(this.element, "MajorVersion", majorVersion);
+
+    let scenarioDataStandardsEl = this.ensureChild(this.element, "ScenarioDataStandards")
+    let symbologyDataStandardEl = this.ensureChild(scenarioDataStandardsEl, "SymbologyDataStandard")
+    setOrCreateTagValue(symbologyDataStandardEl, "MajorVersion", majorVersion);
   }
 
   get minorVersion(): string {
@@ -107,7 +117,10 @@ export class MsdlOptions implements MsdlOptionsType {
 
   set minorVersion(minorVersion: string) {
     this.#minorVersion = minorVersion;
-    setOrCreateTagValue(this.element, "MinorVersion", minorVersion);
+
+    let scenarioDataStandardsEl = this.ensureChild(this.element, "ScenarioDataStandards")
+    let symbologyDataStandardEl = this.ensureChild(scenarioDataStandardsEl, "SymbologyDataStandard")
+    setOrCreateTagValue(symbologyDataStandardEl, "MinorVersion", minorVersion);
   }
 
   get coordinateSystemType(): string {
@@ -119,8 +132,11 @@ export class MsdlOptions implements MsdlOptionsType {
 
   set coordinateSystemType(coordinateSystemType: string) {
     this.#coordinateSystemType = coordinateSystemType;
+
+    let scenarioDataStandardsEl = this.ensureChild(this.element, "ScenarioDataStandards")
+    let CoordinateDataStandardEl = this.ensureChild(scenarioDataStandardsEl, "CoordinateDataStandard")
     setOrCreateTagValue(
-      this.element,
+      CoordinateDataStandardEl,
       "CoordinateSystemType",
       coordinateSystemType,
     );
@@ -135,8 +151,11 @@ export class MsdlOptions implements MsdlOptionsType {
 
   set coordinateSystemDatum(coordinateSystemDatum: string) {
     this.#coordinateSystemDatum = coordinateSystemDatum;
+
+    let scenarioDataStandardsEl = this.ensureChild(this.element, "ScenarioDataStandards")
+    let CoordinateDataStandardEl = this.ensureChild(scenarioDataStandardsEl, "CoordinateDataStandard")
     setOrCreateTagValue(
-      this.element,
+      CoordinateDataStandardEl,
       "CoordinateSystemDatum",
       coordinateSystemDatum,
     );
@@ -193,5 +212,14 @@ export class MsdlOptions implements MsdlOptionsType {
     return new MsdlOptions(
       createEmptyXMLElementFromTagName(MsdlOptions.TAG_NAME),
     );
+  }
+
+  private ensureChild(element : Element, childName : string): Element {
+    let child = element.querySelector(childName);
+    if (!child) {
+      child = createEmptyXMLElementFromTagName(childName);
+      element.appendChild(child);
+    }
+    return child
   }
 }
