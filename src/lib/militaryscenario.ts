@@ -800,8 +800,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
           "Cannot make EquipmentItem a child of another EquipmentItem",
         );
       }
-
-      const equipmentElement = getTagElement(this.element, "Equipment");
+      const organizationsElement = getTagElement(this.element, "Organizations");
+      const equipmentElement = getTagElement(organizationsElement, "Equipment");
       this.removeUnitOrEquipmentFromSuperior(sourceItem);
       // Add to new superior
       if (
@@ -838,7 +838,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
       if (targetItem instanceof EquipmentItem) {
         throw new Error("Cannot make a Unit a child of EquipmentItem");
       }
-      const unitsElement = getTagElement(this.element, "Units");
+      const organizationsElement = getTagElement(this.element, "Organizations");
+      const unitsElement = getTagElement(organizationsElement, "Units");
       this.removeUnitOrEquipmentFromSuperior(sourceItem);
       // Add to new superior
       if (instruction === "make-child") {
