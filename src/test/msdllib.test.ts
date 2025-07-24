@@ -11,6 +11,7 @@ import {
   EMPTY_SCENARIO,
   MSDL_OPTIONS_TYPE,
   SCENARIO_ID_TYPE,
+  UNIT_TEMPLATE,
 } from "./testdata.js";
 import fs from "fs/promises";
 import {
