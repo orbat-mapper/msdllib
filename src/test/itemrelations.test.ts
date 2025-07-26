@@ -342,6 +342,18 @@ describe("MilitaryScenario.setItemRelation error handling", () => {
     ).toThrow("Cannot make a Unit a child of EquipmentItem");
   });
 
+  it("should throw an error if target is a descendant of parent", () => {
+    let scenario = loadTestScenario2();
+    const source = getUnitByLabel(scenario, "HQ");
+    const target = getUnitByLabel(scenario, "1th");
+    expect(() =>
+      scenario.setItemRelation({
+        source,
+        target,
+      }),
+    ).toThrow("Cannot make source a subordinate of itself");
+  });
+
   // it("should throw an error if source is a ForceSide and target is EquipmentItem", () => {
   //   let scenario = loadTestScenario2();
   //   const source = getForceSideByName(scenario, "Friendly");
