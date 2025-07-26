@@ -276,8 +276,72 @@ describe("MilitaryScenario.setItemRelation when source is Unit", () => {
   });
 });
 
+describe("MilitaryScenario.setItemRelation when source is ForceSide", () => {
+  it("should support the 'reorder-above' instruction", () => {
+    const scenario = loadTestScenario2();
+    const source = getForceSideByName(scenario, "Hostile");
+    const target = getForceSideByName(scenario, "Friendly");
+    expect(source.isSide).toBe(true);
+    expect(target.isSide).toBe(true);
+    expect(scenario.sides.length).toBe(2);
+    expect(scenario.sides.indexOf(source)).toBeGreaterThan(
+      scenario.sides.indexOf(target),
+    );
+    scenario.setItemRelation({
+      source,
+      target,
+      instruction: "reorder-above",
+    });
+    expect(scenario.sides.indexOf(source)).toBeLessThan(
+      scenario.sides.indexOf(target),
+    );
+    expect(scenario.sides.length).toBe(2);
+    // check after serialization
+    const newScenario = MilitaryScenario.createFromString(scenario.toString());
+    const newSource = getForceSideByName(newScenario, "Hostile");
+    const newTarget = getForceSideByName(newScenario, "Friendly");
+    expect(newSource.isSide).toBe(true);
+    expect(newTarget.isSide).toBe(true);
+    expect(newScenario.sides.length).toBe(2);
+    expect(newScenario.sides.indexOf(newSource)).toBeLessThan(
+      newScenario.sides.indexOf(newTarget),
+    );
+  });
+
+  it("should support the 'reorder-below' instruction", () => {
+    const scenario = loadTestScenario2();
+    const source = getForceSideByName(scenario, "Friendly");
+    const target = getForceSideByName(scenario, "Hostile");
+    expect(source.isSide).toBe(true);
+    expect(target.isSide).toBe(true);
+    expect(scenario.sides.length).toBe(2);
+    expect(scenario.sides.indexOf(source)).toBeLessThan(
+      scenario.sides.indexOf(target),
+    );
+    scenario.setItemRelation({
+      source,
+      target,
+      instruction: "reorder-below",
+    });
+    expect(scenario.sides.length).toBe(2);
+    expect(scenario.sides.indexOf(source)).toBeGreaterThan(
+      scenario.sides.indexOf(target),
+    );
+    // check after serialization
+    const newScenario = MilitaryScenario.createFromString(scenario.toString());
+    const newSource = getForceSideByName(newScenario, "Friendly");
+    const newTarget = getForceSideByName(newScenario, "Hostile");
+    expect(newSource.isSide).toBe(true);
+    expect(newTarget.isSide).toBe(true);
+    expect(newScenario.sides.length).toBe(2);
+    expect(newScenario.sides.indexOf(newSource)).toBeGreaterThan(
+      newScenario.sides.indexOf(newTarget),
+    );
+  });
+});
+
 describe("MilitaryScenario.setItemRelation error handling", () => {
-  it("should throw an error if source is not a Unit or EquipmentItem", () => {
+  it("should throw an error if source is not found", () => {
     let scenario = loadTestScenario2();
     const target = getUnitByLabel(scenario, "HQ2");
     expect(() =>
@@ -288,7 +352,7 @@ describe("MilitaryScenario.setItemRelation error handling", () => {
     ).toThrow("Source or target item not found");
   });
 
-  it("should throw an error if target is not a Unit or EquipmentItem", () => {
+  it("should throw an error if target is not found", () => {
     let scenario = loadTestScenario2();
     const source = getUnitByLabel(scenario, "HQ2");
     expect(() =>
@@ -354,17 +418,24 @@ describe("MilitaryScenario.setItemRelation error handling", () => {
     ).toThrow("Cannot make source a subordinate of itself");
   });
 
-  // it("should throw an error if source is a ForceSide and target is EquipmentItem", () => {
-  //   let scenario = loadTestScenario2();
-  //   const source = getForceSideByName(scenario, "Friendly");
-  //   const target = getEquipmentByLabel(scenario, "111");
-  //   expect(() =>
-  //     scenario.setItemRelation({
-  //       source,
-  //       target,
-  //     }),
-  //   ).toThrow("Cannot make a ForceSide a child of EquipmentItem");
-  // });
+  it("should throw an error if source is a ForceSide and target is Unit or EquipmentItem", () => {
+    let scenario = loadTestScenario2();
+    const source = getForceSideByName(scenario, "Friendly");
+    const target = getEquipmentByLabel(scenario, "111");
+    expect(() =>
+      scenario.setItemRelation({
+        source,
+        target,
+      }),
+    ).toThrow("Cannot make a ForceSide a child of an EquipmentItem");
+    const targetUnit = getUnitByLabel(scenario, "HQ2");
+    expect(() =>
+      scenario.setItemRelation({
+        source,
+        target: targetUnit,
+      }),
+    ).toThrow("Cannot make a ForceSide a child of a Unit");
+  });
 });
 /*
 describe("MilitaryScenario.setItemRelation when source is ForceSide", () => {});*/

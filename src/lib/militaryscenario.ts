@@ -32,7 +32,7 @@ export type UnitRelationType = {
 };
 
 export type SetItemRelationOptions = {
-  source: Unit | EquipmentItem | string;
+  source: Unit | EquipmentItem | ForceSide | string;
   target: Unit | EquipmentItem | ForceSide | string;
   instruction?: InstructionType;
   // relationData?: ForceSideRelationType | UnitRelationType;
@@ -889,6 +889,38 @@ export class MilitaryScenario implements MilitaryScenarioType {
           sourceItem.element,
         );
       }
+    } else if (sourceItem instanceof ForceSide) {
+      if (targetItem instanceof EquipmentItem) {
+        throw new Error("Cannot make a ForceSide a child of an EquipmentItem");
+      }
+      if (targetItem instanceof Unit) {
+        throw new Error("Cannot make a ForceSide a child of a Unit");
+      }
+      if (instruction === "make-child") {
+        console.warn("The make-child instruction is not supported yet");
+        return;
+      }
+      const forceSides = this.forceSides.filter(
+        (s) => s.objectHandle !== sourceItem.objectHandle,
+      );
+      const targetIndex = forceSides.indexOf(targetItem);
+      if (targetIndex < 0) {
+        throw new Error("Target ForceSide not found in sides");
+      }
+      if (instruction === "reorder-above") {
+        forceSides.splice(targetIndex, 0, sourceItem);
+        targetItem.element.insertAdjacentElement(
+          "beforebegin",
+          sourceItem.element,
+        );
+      } else if (instruction === "reorder-below") {
+        forceSides.splice(targetIndex + 1, 0, sourceItem);
+        targetItem.element.insertAdjacentElement(
+          "afterend",
+          sourceItem.element,
+        );
+      }
+      this.forceSides = forceSides;
     }
   }
 
