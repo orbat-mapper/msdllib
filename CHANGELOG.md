@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 0.27.0
+
+### Minor Changes
+
+- 165cb7e: Add `MilitaryScenario.setItemRelation(.)` `ForceSide` reordering support
+
 ## 0.26.1
 
 ### Patch Changes
