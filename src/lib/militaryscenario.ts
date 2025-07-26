@@ -794,6 +794,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     if (sourceItem.objectHandle === targetItem.objectHandle) {
       throw new Error("Source and target items cannot be the same");
     }
+
     if (sourceItem instanceof EquipmentItem) {
       if (targetItem instanceof EquipmentItem && instruction === "make-child") {
         throw new Error(
@@ -838,6 +839,13 @@ export class MilitaryScenario implements MilitaryScenarioType {
       if (targetItem instanceof EquipmentItem) {
         throw new Error("Cannot make a Unit a child of EquipmentItem");
       }
+
+      // is source a superior of target?
+      const { hierarchy } = this.getItemHierarchy(targetItem);
+      if (hierarchy.includes(sourceItem)) {
+        throw new Error("Cannot make source a subordinate of itself");
+      }
+
       const organizationsElement = getTagElement(this.element, "Organizations");
       const unitsElement = getTagElement(organizationsElement, "Units");
       this.removeUnitOrEquipmentFromSuperior(sourceItem);
