@@ -406,6 +406,25 @@ export const FORCESIDE_TEMPLATE_IS_FORCE = `<ForceSide>
     <AllegianceHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</AllegianceHandle>
 </ForceSide>`;
 
+export const ASSOCIATIONS_TEMPLATE = `
+    <Associations>
+        <Association>
+            <AffiliateHandle>e7ae4710-2dcd-11e2-be2b-000c294c9df8</AffiliateHandle>
+            <Relationship>HO</Relationship>
+        </Association>
+        <Association>
+            <AffiliateHandle>e7ae4710-2ccc-11e2-be2b-000c294c9df8</AffiliateHandle>
+            <Relationship>FR</Relationship>
+        </Association>
+    </Associations>`;
+
+export const ASSOCIATION_TEMPLATE = `
+        <Association>
+            <AffiliateHandle>e7ae4710-2dcd-11e2-be2b-000c294c9df8</AffiliateHandle>
+            <Relationship>HO</Relationship>
+        </Association>
+    `;
+
 export const EQUIPMENT_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
     <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
