@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  ASSOCIATION_TEMPLATE,
   FORCESIDE_TEMPLATE_IS_FORCE,
   FORCESIDE_TEMPLATE_IS_SIDE,
   FORCESIDE_TEMPLATE_IS_SIDE2,
@@ -10,9 +11,11 @@ import { loadTestScenario } from "./testutils.js";
 import { HostilityStatusCode, StandardIdentity } from "../lib/enums.js";
 import {
   getTagElement,
+  getTagElements,
   getTagValue,
   getValueOrUndefined,
 } from "../lib/domutils.js";
+import { Association } from "../lib/forcesides.js";
 
 describe("ForceSide class", () => {
   it("is defined", () => {
@@ -357,5 +360,65 @@ describe("New ForceSide from model", () => {
     expect(side).toBeInstanceOf(ForceSide);
     expect(getTagElement(side.element, "ObjectHandle")).toBeDefined();
     expect(getTagElement(side.element, "Name")).toBeUndefined();
+  });
+});
+
+describe("Association class", () => {
+  it("is defined", () => {
+    expect(Association).toBeDefined();
+  });
+
+  it("can be created from Element", () => {
+    let element = parseFromString(ASSOCIATION_TEMPLATE);
+    let association = new Association(element);
+    expect(association).toBeInstanceOf(Association);
+    expect(association.affiliateHandle).toBe(
+      "e7ae4710-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(association.relationship).toBe(HostilityStatusCode.Hostile);
+  });
+
+  it("can be modified", () => {
+    let element = parseFromString(ASSOCIATION_TEMPLATE);
+    let association = new Association(element);
+    association.affiliateHandle = "new-affiliate-handle";
+    association.relationship = HostilityStatusCode.Friend;
+    expect(association.affiliateHandle).toBe("new-affiliate-handle");
+    expect(association.relationship).toBe(HostilityStatusCode.Friend);
+    // test serialization
+    const xml = association.toString();
+    const newAssociation = new Association(parseFromString(xml));
+    expect(newAssociation.affiliateHandle).toBe("new-affiliate-handle");
+    expect(newAssociation.relationship).toBe(HostilityStatusCode.Friend);
+  });
+
+  it("can be serialized to an object", () => {
+    let element = parseFromString(ASSOCIATION_TEMPLATE);
+    let association = new Association(element);
+    const obj = association.toObject();
+    expect(obj).toBeDefined();
+    expect(obj.affiliateHandle).toBe("e7ae4710-2dcd-11e2-be2b-000c294c9df8");
+    expect(obj.relationship).toBe(HostilityStatusCode.Hostile);
+  });
+
+  it("can be created from model", () => {
+    const association = Association.fromModel({
+      affiliateHandle: "e7ae4710-2dcd-11e2-be2b-000c294c9df8",
+      relationship: HostilityStatusCode.Hostile,
+    });
+    expect(association).toBeInstanceOf(Association);
+    expect(association.affiliateHandle).toBe(
+      "e7ae4710-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(association.relationship).toBe(HostilityStatusCode.Hostile);
+    // test serialization
+    const xml = association.toString();
+    expect(xml.includes("<Association>")).toBe(true);
+    expect(
+      xml.includes(
+        "<AffiliateHandle>e7ae4710-2dcd-11e2-be2b-000c294c9df8</AffiliateHandle>",
+      ),
+    ).toBe(true);
+    expect(xml.includes("<Relationship>HO</Relationship>")).toBe(true);
   });
 });

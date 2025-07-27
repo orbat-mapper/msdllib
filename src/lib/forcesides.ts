@@ -277,3 +277,78 @@ export class ForceSide implements ForceSideType {
     return side;
   }
 }
+
+export class Association implements AssociationType {
+  static readonly TAG_NAME = "Association";
+  element: Element;
+  #affiliateHandle: string;
+  #relationship: HostilityStatusCode;
+
+  constructor(element: Element) {
+    this.element = element;
+    this.#affiliateHandle = getTagValue(element, "AffiliateHandle");
+    this.#relationship = getTagValue(
+      element,
+      "Relationship",
+    ) as HostilityStatusCode;
+  }
+
+  get affiliateHandle(): string {
+    return (
+      this.#affiliateHandle ?? getTagValue(this.element, "AffiliateHandle")
+    );
+  }
+
+  set affiliateHandle(affiliateHandle: string) {
+    this.#affiliateHandle = affiliateHandle;
+    setOrCreateTagValue(this.element, "AffiliateHandle", affiliateHandle);
+  }
+
+  get relationship(): HostilityStatusCode {
+    return (
+      this.#relationship ??
+      (getTagValue(this.element, "Relationship") as HostilityStatusCode)
+    );
+  }
+  set relationship(relationship: HostilityStatusCode) {
+    this.#relationship = relationship;
+    setOrCreateTagValue(this.element, "Relationship", relationship);
+  }
+
+  toString() {
+    if (!this.element) return "";
+    const oSerializer = new XMLSerializer();
+    return oSerializer.serializeToString(this.element);
+  }
+
+  updateFromObject(data: Partial<AssociationType>): void {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key in this) {
+        (this as any)[key] = value;
+      } else {
+        console.warn(`Property ${key} does not exist.`);
+      }
+    });
+  }
+
+  toObject(): AssociationType {
+    return removeUndefinedValues({
+      affiliateHandle: this.affiliateHandle,
+      relationship: this.relationship,
+    });
+  }
+
+  static fromModel(model: AssociationType): Association {
+    const association = Association.create();
+    association.updateFromObject(model);
+    return association;
+  }
+
+  static create(): Association {
+    const association = new Association(
+      createEmptyXMLElementFromTagName(Association.TAG_NAME),
+    );
+    association.affiliateHandle = uuidv4();
+    return association;
+  }
+}
