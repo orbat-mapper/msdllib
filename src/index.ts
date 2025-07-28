@@ -9,6 +9,7 @@ export { Unit } from "./lib/units.js";
 export { EquipmentItem } from "./lib/equipment.js";
 export {
   ForceSide,
+  Association,
   type AssociationType,
   type ForceSideType,
   type ForceSideTypeUpdate,

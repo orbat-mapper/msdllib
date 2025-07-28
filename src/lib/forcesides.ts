@@ -7,9 +7,11 @@ import {
 import { Unit } from "./units.js";
 import {
   createEmptyXMLElementFromTagName,
+  getTagElement,
   getTagElements,
   getTagValue,
   getValueOrUndefined,
+  removeTagValues,
   removeUndefinedValues,
   setOrCreateTagValue,
 } from "./domutils.js";
@@ -25,6 +27,7 @@ export interface ForceSideType {
   countryCode?: string;
   rootUnits: Unit[];
   equipment: EquipmentItem[];
+  associations?: AssociationType[];
 }
 
 export type ForceSideTypeUpdate = Omit<
@@ -53,7 +56,7 @@ export class ForceSide implements ForceSideType {
   #countryCode?: string;
   #allegianceHandle?: string;
   rootUnits: Unit[] = [];
-  associations: AssociationType[] = [];
+  #associations: Association[] = [];
   forces: ForceSide[] = [];
   equipment: EquipmentItem[] = [];
   element: Element;
@@ -69,6 +72,31 @@ export class ForceSide implements ForceSideType {
     this.#objectHandle = getTagValue(element, "ObjectHandle");
     this.#allegianceHandle = getValueOrUndefined(element, "AllegianceHandle");
     this.initAssociations();
+  }
+
+  get associations(): Association[] {
+    return this.#associations;
+  }
+
+  set associations(associations: (Association | AssociationType)[]) {
+    this.#associations = [];
+    let associationsEl = getTagElement(this.element, "Associations");
+    if (!associationsEl) {
+      associationsEl = createEmptyXMLElementFromTagName("Associations");
+      this.element.appendChild(associationsEl);
+    }
+    removeTagValues(associationsEl, Association.TAG_NAME);
+
+    for (const association of associations) {
+      let associationInstance: Association;
+      if (association instanceof Association) {
+        associationInstance = association;
+      } else {
+        associationInstance = Association.fromModel(association);
+      }
+      this.#associations.push(associationInstance);
+      associationsEl.appendChild(associationInstance.element);
+    }
   }
 
   get objectHandle(): string {
@@ -235,13 +263,31 @@ export class ForceSide implements ForceSideType {
   }
 
   private initAssociations() {
-    for (let e of getTagElements(this.element, "Association")) {
-      let association = {
-        affiliateHandle: getTagValue(e, "AffiliateHandle"),
-        relationship: getTagValue(e, "Relationship") as HostilityStatusCode,
-      };
-      this.associations.push(association);
+    const associationsEl = getTagElement(this.element, "Associations");
+    for (let e of getTagElements(associationsEl, Association.TAG_NAME)) {
+      this.#associations.push(new Association(e));
     }
+  }
+
+  addAssociation(association: Association | AssociationType): void {
+    this.associations = [...this.#associations, association];
+  }
+
+  updateAssociation({ affiliateHandle, relationship }: AssociationType): void {
+    const existingAssociation = this.#associations.find(
+      (a) => a.affiliateHandle === affiliateHandle,
+    );
+    if (existingAssociation) {
+      existingAssociation.relationship = relationship;
+    } else {
+      this.addAssociation({ affiliateHandle, relationship });
+    }
+  }
+
+  removeAssociation(affiliateHandle: string): void {
+    this.associations = this.#associations.filter(
+      (a) => a.affiliateHandle !== affiliateHandle,
+    );
   }
 
   toObject(): ForceSideTypeUpdate {
@@ -250,7 +296,14 @@ export class ForceSide implements ForceSideType {
       name: this.name,
       militaryService: this.militaryService,
       countryCode: this.countryCode,
+      associations: this.associations.map((a) => a.toObject()),
     });
+  }
+
+  toString() {
+    if (!this.element) return "";
+    const oSerializer = new XMLSerializer();
+    return oSerializer.serializeToString(this.element);
   }
 
   updateFromObject(data: Partial<ForceSideTypeUpdate>): void {
