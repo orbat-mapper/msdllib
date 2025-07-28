@@ -1,5 +1,13 @@
 # @orbat-mapper/msdllib
 
+## 0.28.0
+
+### Minor Changes
+
+- 40a3b0c: Make `ForceSide` associations writable:
+  - `ForceSide.associations` is writable
+  - added `addAssociation`, `removeAssociation` and `updateAssociation` methods to `ForceSide` class
+
 ## 0.27.0
 
 ### Minor Changes
