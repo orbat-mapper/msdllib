@@ -1,7 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { UnitSymbolModifiers } from "../lib/symbolmodifiers.js";
-import { parseFromString, UNIT_ATTACHED, UNIT_TEMPLATE } from "./testdata.js";
+import {
+  EquipmentSymbolModifiers,
+  UnitSymbolModifiers,
+} from "../lib/symbolmodifiers.js";
+import {
+  EQUIPMENT_NO_MODEL_TEMPLATE,
+  EQUIPMENT_NO_MODIFIERS_TEMPLATE,
+  EQUIPMENT_TEMPLATE,
+  parseFromString,
+  UNIT_ATTACHED,
+  UNIT_TEMPLATE,
+} from "./testdata.js";
 import { Unit } from "../lib/units.js";
+import { EquipmentItem } from "../lib/equipment.js";
 
 const UNIT_SYMBOL_MODIFIERS_TEMPLATE = `<UnitSymbolModifiers>
     <UniqueDesignation>4</UniqueDesignation>
@@ -9,6 +20,17 @@ const UNIT_SYMBOL_MODIFIERS_TEMPLATE = `<UnitSymbolModifiers>
     <Echelon>BATTALION</Echelon>
     <CombatEffectiveness>GREEN</CombatEffectiveness>
 </UnitSymbolModifiers>`;
+
+const EQUIPMENT_SYMBOL_MODIFIERS_TEMPLATE = `<EquipmentSymbolModifiers>
+<Quantity>10</Quantity>
+    <StaffComments>Test comment</StaffComments>
+    <AdditionalInfo>Additional info</AdditionalInfo>
+    <CombatEffectiveness>GREEN</CombatEffectiveness>
+    <IFF>IFF123</IFF>
+    <UniqueDesignation>4</UniqueDesignation>
+    <EquipmentType>Tank</EquipmentType>
+    <TowedSonarArray>true</TowedSonarArray>
+</EquipmentSymbolModifiers>`;
 
 describe("UnitSymbolModifiers class", () => {
   it("should be defined", () => {
@@ -183,5 +205,120 @@ describe("Unit.symbolModifiers property", () => {
     expect(newUnit.symbolModifiers?.iff).toBe("IFF456");
     expect(newUnit.symbolModifiers?.echelon).toBe("PLATOON");
     expect(newUnit.symbolModifiers?.combatEffectiveness).toBe("GREEN");
+  });
+});
+
+describe("EquipmentSymbolModifiers class", () => {
+  it("should be defined", () => {
+    expect(UnitSymbolModifiers).toBeDefined();
+  });
+
+  it("should create an instance from XML element", () => {
+    const element = parseFromString(EQUIPMENT_SYMBOL_MODIFIERS_TEMPLATE);
+    const modifiers = new EquipmentSymbolModifiers(element);
+    expect(modifiers).toBeInstanceOf(EquipmentSymbolModifiers);
+    expect(modifiers.uniqueDesignation).toBe("4");
+    expect(modifiers.quantity).toBe(10);
+    expect(modifiers.staffComments).toBe("Test comment");
+    expect(modifiers.additionalInfo).toBe("Additional info");
+    expect(modifiers.combatEffectiveness).toBe("GREEN");
+    expect(modifiers.iff).toBe("IFF123");
+    expect(modifiers.equipmentType).toBe("Tank");
+    expect(modifiers.towedSonarArray).toBe(true);
+  });
+
+  it("should have a toString method that returns XML", () => {
+    const element = parseFromString(EQUIPMENT_SYMBOL_MODIFIERS_TEMPLATE);
+    const modifiers = new EquipmentSymbolModifiers(element);
+    const xmlString = modifiers.toString();
+    expect(xmlString).toContain("<EquipmentSymbolModifiers>");
+    expect(xmlString).toContain("<UniqueDesignation>4</UniqueDesignation>");
+    expect(xmlString).toContain("<Quantity>10</Quantity>");
+    expect(xmlString).toContain("<StaffComments>Test comment</StaffComments>");
+  });
+
+  it("should have a toObject method that returns an object representation", () => {
+    const element = parseFromString(EQUIPMENT_SYMBOL_MODIFIERS_TEMPLATE);
+    const modifiers = new EquipmentSymbolModifiers(element);
+    const obj = modifiers.toObject();
+    expect(obj).toEqual({
+      uniqueDesignation: "4",
+      quantity: 10,
+      staffComments: "Test comment",
+      additionalInfo: "Additional info",
+      combatEffectiveness: "GREEN",
+      iff: "IFF123",
+      equipmentType: "Tank",
+      towedSonarArray: true,
+    });
+  });
+
+  it("can be created from model", () => {
+    const modifiers = EquipmentSymbolModifiers.fromModel({
+      uniqueDesignation: "4",
+      quantity: 10,
+      staffComments: "Test comment",
+      additionalInfo: "Additional info",
+      combatEffectiveness: "GREEN",
+      iff: "IFF123",
+      equipmentType: "Tank",
+      towedSonarArray: true,
+    });
+    expect(modifiers).toBeInstanceOf(EquipmentSymbolModifiers);
+    expect(modifiers.uniqueDesignation).toBe("4");
+    expect(modifiers.quantity).toBe(10);
+    expect(modifiers.staffComments).toBe("Test comment");
+    expect(modifiers.additionalInfo).toBe("Additional info");
+    expect(modifiers.combatEffectiveness).toBe("GREEN");
+    expect(modifiers.iff).toBe("IFF123");
+    expect(modifiers.equipmentType).toBe("Tank");
+    expect(modifiers.towedSonarArray).toBe(true);
+
+    // test serialization
+    const xmlString = modifiers.toString();
+    const element = parseFromString(xmlString);
+    expect(element.tagName).toBe("EquipmentSymbolModifiers");
+  });
+});
+
+describe("EquipmentItem.symbolModifiers property", () => {
+  it("should be defined", () => {
+    const equipmentItem = new EquipmentItem(
+      parseFromString(EQUIPMENT_TEMPLATE),
+    );
+    expect(equipmentItem.symbolModifiers).toBeDefined();
+    expect(equipmentItem.symbolModifiers).toBeInstanceOf(
+      EquipmentSymbolModifiers,
+    );
+    const modifiers = equipmentItem.symbolModifiers!;
+    expect(modifiers.uniqueDesignation).toBe("111");
+    expect(modifiers.quantity).toBe(10);
+    expect(modifiers.equipmentType).toBe("T-80B");
+  });
+
+  it("should create an EquipmentSymbolModifiers element if not already created", () => {
+    const equipmentItem = new EquipmentItem(
+      parseFromString(EQUIPMENT_NO_MODIFIERS_TEMPLATE),
+    );
+    expect(equipmentItem.symbolModifiers).toBeUndefined();
+    equipmentItem.symbolModifiers = {
+      uniqueDesignation: "1",
+      quantity: 5,
+      equipmentType: "Tank",
+    };
+    expect(equipmentItem.symbolModifiers).toBeDefined();
+    expect(equipmentItem.symbolModifiers).toBeInstanceOf(
+      EquipmentSymbolModifiers,
+    );
+    expect(equipmentItem.symbolModifiers?.uniqueDesignation).toBe("1");
+    expect(equipmentItem.symbolModifiers?.quantity).toBe(5);
+    expect(equipmentItem.symbolModifiers?.equipmentType).toBe("Tank");
+    // check after serialization
+    const xmlString = equipmentItem.toString();
+    const newEquipmentItem = new EquipmentItem(parseFromString(xmlString));
+    expect(newEquipmentItem.symbolModifiers).toBeDefined();
+    expect(newEquipmentItem.symbolModifiers?.uniqueDesignation).toBe("1");
+    expect(newEquipmentItem.symbolModifiers?.quantity).toBe(5);
+    expect(newEquipmentItem.symbolModifiers?.equipmentType).toBe("Tank");
   });
 });

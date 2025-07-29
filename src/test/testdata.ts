@@ -465,6 +465,25 @@ export const EQUIPMENT_TEMPLATE = `<EquipmentItem>
     </Model>
 </EquipmentItem>`;
 
+export const EQUIPMENT_NO_MODIFIERS_TEMPLATE = `<EquipmentItem>
+    <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
+    <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
+    <Name>111</Name>
+ 
+    <Relations>
+        <OrganicSuperiorHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</OrganicSuperiorHandle>
+        <HoldingOrganization>
+            <OwnerChoice>UNIT</OwnerChoice>
+            <OwnerData>
+                <UnitOwnerHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</UnitOwnerHandle>
+            </OwnerData>
+        </HoldingOrganization>
+    </Relations>
+    <Model>
+        <Resolution>HIGH</Resolution>
+    </Model>
+</EquipmentItem>`;
+
 export const EQUIPMENT_NO_MODEL_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
     <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
