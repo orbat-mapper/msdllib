@@ -9,4 +9,12 @@ describe("Package exports", () => {
   it("should export Association", () => {
     expect(pkg.Association).toBeDefined();
   });
+
+  it("should export UnitSymbolModifiers", () => {
+    expect(pkg.UnitSymbolModifiers).toBeDefined();
+  });
+
+  it("should export EquipmentSymbolModifiers", () => {
+    expect(pkg.EquipmentSymbolModifiers).toBeDefined();
+  });
 });
