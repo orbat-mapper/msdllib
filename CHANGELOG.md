@@ -1,5 +1,12 @@
 # @orbat-mapper/msdllib
 
+## 0.29.0
+
+### Minor Changes
+
+- 4006566: Make `EquipmentItem.symbolModifiers` writable
+- f227e34: Make `Unit.symbolModifiers` writable
+
 ## 0.28.0
 
 ### Minor Changes
