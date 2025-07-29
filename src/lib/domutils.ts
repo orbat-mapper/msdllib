@@ -32,13 +32,14 @@ export function setOrCreateTagValue(
   { deleteIfNull = true, namespace = "*" } = {},
 ): void {
   let el = parent.getElementsByTagNameNS(namespace, tagName).item(0);
+  const shouldDelete = deleteIfNull && value == null;
   if (el) {
-    if (deleteIfNull && value == null) {
+    if (shouldDelete) {
       el.parentNode?.removeChild(el);
     } else {
       el.textContent = value ?? "";
     }
-  } else {
+  } else if (!shouldDelete) {
     let newElem =
       namespace === "*"
         ? parent.ownerDocument.createElement(tagName)

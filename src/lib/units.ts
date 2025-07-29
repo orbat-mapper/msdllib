@@ -25,13 +25,16 @@ import { UnitModel, type UnitModelType } from "./modelType.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 import { v4 as uuidv4 } from "uuid";
 import { type DispositionType, UnitDisposition } from "./disposition.js";
-import { UnitSymbolModifiers } from "./symbolmodifiers.js";
+import {
+  UnitSymbolModifiers,
+  type UnitSymbolModifiersType,
+} from "./symbolmodifiers.js";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 
 export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
   static readonly TAG_NAME = "Unit";
-  symbolModifiers?: UnitSymbolModifiers;
+  #symbolModifiers?: UnitSymbolModifiers;
   equipment: EquipmentItem[] = [];
   subordinates: Unit[] = [];
   superiorHandle = "";
@@ -44,10 +47,10 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
     super(element);
     const unitSymbolModifiersElement = getTagElement(
       element,
-      "UnitSymbolModifiers",
+      UnitSymbolModifiers.TAG_NAME,
     );
     if (unitSymbolModifiersElement) {
-      this.symbolModifiers = new UnitSymbolModifiers(
+      this.#symbolModifiers = new UnitSymbolModifiers(
         unitSymbolModifiersElement,
       );
     }
@@ -73,6 +76,33 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
 
   get isRoot(): boolean {
     return this.forceRelationChoice === ForceOwnerType.ForceSide;
+  }
+
+  get symbolModifiers(): UnitSymbolModifiers | undefined {
+    return this.#symbolModifiers;
+  }
+
+  set symbolModifiers(
+    symbolModifiers: UnitSymbolModifiers | UnitSymbolModifiersType | undefined,
+  ) {
+    const symbElm = getTagElement(this.element, UnitSymbolModifiers.TAG_NAME);
+    if (!symbolModifiers) {
+      this.#symbolModifiers = undefined;
+      if (symbElm) {
+        this.element.removeChild(symbElm);
+      }
+      return;
+    }
+
+    this.#symbolModifiers =
+      symbolModifiers instanceof UnitSymbolModifiers
+        ? symbolModifiers
+        : UnitSymbolModifiers.fromModel(symbolModifiers);
+    if (symbElm) {
+      this.element.replaceChild(this.#symbolModifiers.element, symbElm);
+    } else {
+      this.element.appendChild(this.#symbolModifiers.element);
+    }
   }
 
   get disposition(): UnitDisposition | undefined {
