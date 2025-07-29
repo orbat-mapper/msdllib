@@ -5,10 +5,12 @@ import type {
 } from "./enums.js";
 import {
   createEmptyXMLElementFromTagName,
+  getBooleanValue,
   getNumberValue,
   getTagValue,
   getValueOrUndefined,
   removeUndefinedValues,
+  setOrCreateBooleanValue,
   setOrCreateTagValue,
 } from "./domutils.js";
 import type { AssociationType } from "./forcesides.js";
@@ -93,12 +95,14 @@ export class UnitSymbolModifiers implements UnitSymbolModifiersType {
     this.#additionalInfo = value;
     setOrCreateTagValue(this.element, "AdditionalInfo", value);
   }
+
   get combatEffectiveness(): EnumCombatEffectivenessType | string | undefined {
     return (
       this.#combatEffectiveness ??
       getValueOrUndefined(this.element, "CombatEffectiveness")
     );
   }
+
   set combatEffectiveness(
     value: EnumCombatEffectivenessType | string | undefined,
   ) {
@@ -112,6 +116,7 @@ export class UnitSymbolModifiers implements UnitSymbolModifiersType {
       getValueOrUndefined(this.element, "HigherFormation")
     );
   }
+
   set higherFormation(value: string | undefined) {
     this.#higherFormation = value;
     setOrCreateTagValue(this.element, "HigherFormation", value);
@@ -120,6 +125,7 @@ export class UnitSymbolModifiers implements UnitSymbolModifiersType {
   get iff(): string | undefined {
     return this.#iff ?? getValueOrUndefined(this.element, "IFF");
   }
+
   set iff(value: string | undefined) {
     this.#iff = value;
     setOrCreateTagValue(this.element, "IFF", value);
@@ -132,6 +138,7 @@ export class UnitSymbolModifiers implements UnitSymbolModifiersType {
       ""
     );
   }
+
   set uniqueDesignation(value: string) {
     this.#uniqueDesignation = value;
     setOrCreateTagValue(this.element, "UniqueDesignation", value);
@@ -142,6 +149,7 @@ export class UnitSymbolModifiers implements UnitSymbolModifiersType {
       this.#specialC2HQ ?? getValueOrUndefined(this.element, "SpecialC2HQ")
     );
   }
+
   set specialC2HQ(value: string | undefined) {
     this.#specialC2HQ = value;
     setOrCreateTagValue(this.element, "SpecialC2HQ", value);
@@ -204,32 +212,115 @@ export type EquipmentSymbolModifiersType = {
 
 export class EquipmentSymbolModifiers implements EquipmentSymbolModifiersType {
   static readonly TAG_NAME = "EquipmentSymbolModifiers";
-  quantity?: number;
-  staffComments?: string;
-  additionalInfo?: string;
-  combatEffectiveness?: string;
-  iff?: string;
-  uniqueDesignation: string;
-  equipmentType?: string;
-  towedSonarArray?: boolean;
+  #quantity?: number;
+  #staffComments?: string;
+  #additionalInfo?: string;
+  #combatEffectiveness?: string;
+  #iff?: string;
+  #uniqueDesignation: string;
+  #equipmentType?: string;
+  #towedSonarArray?: boolean;
   element: Element;
 
   constructor(element: Element) {
     this.element = element;
-    this.quantity = getNumberValue(element, "Quantity");
-    this.staffComments = getValueOrUndefined(element, "StaffComments");
-    this.additionalInfo = getValueOrUndefined(element, "AdditionalInfo");
-    this.combatEffectiveness = getValueOrUndefined(
+    this.#quantity = getNumberValue(element, "Quantity");
+    this.#staffComments = getValueOrUndefined(element, "StaffComments");
+    this.#additionalInfo = getValueOrUndefined(element, "AdditionalInfo");
+    this.#combatEffectiveness = getValueOrUndefined(
       element,
       "CombatEffectiveness",
     );
-    this.iff = getValueOrUndefined(element, "IFF");
-    this.uniqueDesignation =
+    this.#iff = getValueOrUndefined(element, "IFF");
+    this.#uniqueDesignation =
       getValueOrUndefined(element, "UniqueDesignation") ?? "";
-    this.equipmentType = getValueOrUndefined(element, "EquipmentType");
-    const towedSonarArray = getValueOrUndefined(element, "TowedSonarArray");
-    this.towedSonarArray =
-      towedSonarArray !== undefined ? towedSonarArray === "true" : undefined;
+    this.#equipmentType = getValueOrUndefined(element, "EquipmentType");
+    this.#towedSonarArray = getBooleanValue(element, "TowedSonarArray");
+  }
+
+  get quantity(): number | undefined {
+    return this.#quantity ?? getNumberValue(this.element, "Quantity");
+  }
+
+  set quantity(value: number | undefined) {
+    this.#quantity = value;
+    setOrCreateTagValue(
+      this.element,
+      "Quantity",
+      value !== undefined ? value.toString() : undefined,
+    );
+  }
+
+  get staffComments(): string | undefined {
+    return (
+      this.#staffComments ?? getValueOrUndefined(this.element, "StaffComments")
+    );
+  }
+  set staffComments(value: string | undefined) {
+    this.#staffComments = value;
+    setOrCreateTagValue(this.element, "StaffComments", value);
+  }
+
+  get additionalInfo(): string | undefined {
+    return (
+      this.#additionalInfo ??
+      getValueOrUndefined(this.element, "AdditionalInfo")
+    );
+  }
+  set additionalInfo(value: string | undefined) {
+    this.#additionalInfo = value;
+    setOrCreateTagValue(this.element, "AdditionalInfo", value);
+  }
+
+  get combatEffectiveness(): string | undefined {
+    return (
+      this.#combatEffectiveness ??
+      getValueOrUndefined(this.element, "CombatEffectiveness")
+    );
+  }
+  set combatEffectiveness(value: string | undefined) {
+    this.#combatEffectiveness = value;
+    setOrCreateTagValue(this.element, "CombatEffectiveness", value);
+  }
+
+  get iff(): string | undefined {
+    return this.#iff ?? getValueOrUndefined(this.element, "IFF");
+  }
+  set iff(value: string | undefined) {
+    this.#iff = value;
+    setOrCreateTagValue(this.element, "IFF", value);
+  }
+
+  get uniqueDesignation(): string {
+    return (
+      this.#uniqueDesignation ??
+      getValueOrUndefined(this.element, "UniqueDesignation") ??
+      ""
+    );
+  }
+  set uniqueDesignation(value: string) {
+    this.#uniqueDesignation = value;
+    setOrCreateTagValue(this.element, "UniqueDesignation", value);
+  }
+
+  get equipmentType(): string | undefined {
+    return (
+      this.#equipmentType ?? getValueOrUndefined(this.element, "EquipmentType")
+    );
+  }
+  set equipmentType(value: string | undefined) {
+    this.#equipmentType = value;
+    setOrCreateTagValue(this.element, "EquipmentType", value);
+  }
+
+  get towedSonarArray(): boolean | undefined {
+    return (
+      this.#towedSonarArray ?? getBooleanValue(this.element, "TowedSonarArray")
+    );
+  }
+  set towedSonarArray(value: boolean | undefined) {
+    this.#towedSonarArray = value;
+    setOrCreateBooleanValue(this.element, "TowedSonarArray", value);
   }
 
   toString() {
@@ -249,5 +340,28 @@ export class EquipmentSymbolModifiers implements EquipmentSymbolModifiersType {
       equipmentType: this.equipmentType,
       towedSonarArray: this.towedSonarArray,
     });
+  }
+
+  static fromModel(model: EquipmentSymbolModifiersType) {
+    const symbolModifiers = EquipmentSymbolModifiers.create();
+    symbolModifiers.updateFromObject(model);
+    return symbolModifiers;
+  }
+
+  updateFromObject(data: Partial<EquipmentSymbolModifiers>): void {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key in this) {
+        (this as any)[key] = value;
+      } else {
+        console.warn(`Property ${key} does not exist.`);
+      }
+    });
+  }
+
+  static create() {
+    const element = createEmptyXMLElementFromTagName(
+      EquipmentSymbolModifiers.TAG_NAME,
+    );
+    return new EquipmentSymbolModifiers(element);
   }
 }

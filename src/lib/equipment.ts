@@ -23,13 +23,18 @@ import {
   type DispositionType,
   EquipmentItemDisposition,
 } from "./disposition.js";
-import { EquipmentSymbolModifiers } from "./symbolmodifiers.js";
+import {
+  EquipmentSymbolModifiers,
+  type EquipmentSymbolModifiersType,
+  UnitSymbolModifiers,
+  type UnitSymbolModifiersType,
+} from "./symbolmodifiers.js";
 
 export type EquipmentItemGeoJsonOptions = IdGeoJsonOptions;
 
 export class EquipmentItem extends UnitEquipmentBase {
   static readonly TAG_NAME = "EquipmentItem";
-  symbolModifiers?: EquipmentSymbolModifiers;
+  #symbolModifiers?: EquipmentSymbolModifiers;
   relations: EquipmentRelationsType;
   #model?: EquipmentModel;
   #disposition?: EquipmentItemDisposition;
@@ -41,7 +46,7 @@ export class EquipmentItem extends UnitEquipmentBase {
       "EquipmentSymbolModifiers",
     );
     if (equipmentSymbolModifiersElement) {
-      this.symbolModifiers = new EquipmentSymbolModifiers(
+      this.#symbolModifiers = new EquipmentSymbolModifiers(
         equipmentSymbolModifiersElement,
       );
     }
@@ -109,6 +114,39 @@ export class EquipmentItem extends UnitEquipmentBase {
         ownerChoice: "FORCE_SIDE",
         ownerHandle: superior.objectHandle,
       };
+    }
+  }
+
+  get symbolModifiers(): EquipmentSymbolModifiers | undefined {
+    return this.#symbolModifiers;
+  }
+
+  set symbolModifiers(
+    symbolModifiers:
+      | EquipmentSymbolModifiers
+      | EquipmentSymbolModifiersType
+      | undefined,
+  ) {
+    const symbElm = getTagElement(
+      this.element,
+      EquipmentSymbolModifiers.TAG_NAME,
+    );
+    if (!symbolModifiers) {
+      this.#symbolModifiers = undefined;
+      if (symbElm) {
+        this.element.removeChild(symbElm);
+      }
+      return;
+    }
+
+    this.#symbolModifiers =
+      symbolModifiers instanceof EquipmentSymbolModifiers
+        ? symbolModifiers
+        : EquipmentSymbolModifiers.fromModel(symbolModifiers);
+    if (symbElm) {
+      this.element.replaceChild(this.#symbolModifiers.element, symbElm);
+    } else {
+      this.element.appendChild(this.#symbolModifiers.element);
     }
   }
 
