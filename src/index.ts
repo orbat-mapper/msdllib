@@ -49,3 +49,10 @@ export {
   DispositionBase,
   type DispositionType,
 } from "./lib/disposition.js";
+
+export {
+  UnitSymbolModifiers,
+  type UnitSymbolModifiersType,
+  EquipmentSymbolModifiers,
+  type EquipmentSymbolModifiersType,
+} from "./lib/symbolmodifiers.js";

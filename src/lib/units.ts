@@ -3,15 +3,11 @@ import {
   createXMLElement,
   getTagElement,
   getTagValue,
-  getValueOrUndefined,
   setOrCreateTagValue,
 } from "./domutils.js";
 import type { Feature, Point } from "geojson";
 import {
-  type EnumCombatEffectivenessType,
   EnumCommandRelationshipType,
-  type EnumEchelon,
-  type EnumReinforcedReducedType,
   ForceOwnerType,
   StandardIdentity,
 } from "./enums.js";
@@ -29,6 +25,7 @@ import { UnitModel, type UnitModelType } from "./modelType.js";
 import type { LngLatElevationTuple, LngLatTuple } from "./types.js";
 import { v4 as uuidv4 } from "uuid";
 import { type DispositionType, UnitDisposition } from "./disposition.js";
+import { UnitSymbolModifiers } from "./symbolmodifiers.js";
 
 type UnitGeoJsonOptions = IdGeoJsonOptions;
 
@@ -259,48 +256,6 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
       deleteIfNull: false,
     });
     return unit;
-  }
-}
-
-export type UnitSymbolModifiersType = {
-  echelon?: EnumEchelon | string;
-  reinforcedReduced?: EnumReinforcedReducedType | string;
-  staffComments?: string;
-  additionalInfo?: string;
-  combatEffectiveness?: EnumCombatEffectivenessType | string;
-  higherFormation?: string;
-  iff?: string;
-  uniqueDesignation: string;
-  specialC2HQ?: string;
-};
-
-export class UnitSymbolModifiers implements UnitSymbolModifiersType {
-  echelon?: EnumEchelon | string;
-  reinforcedReduced?: EnumReinforcedReducedType | string;
-  staffComments?: string;
-  additionalInfo?: string;
-  combatEffectiveness?: EnumCombatEffectivenessType | string;
-  higherFormation?: string;
-  iff?: string;
-  uniqueDesignation: string;
-  specialC2HQ?: string;
-  element: Element;
-
-  constructor(element: Element) {
-    this.element = element;
-    this.echelon = getValueOrUndefined(element, "Echelon");
-    this.reinforcedReduced = getValueOrUndefined(element, "ReinforcedReduced");
-    this.staffComments = getValueOrUndefined(element, "StaffComments");
-    this.additionalInfo = getValueOrUndefined(element, "AdditionalInfo");
-    this.combatEffectiveness = getValueOrUndefined(
-      element,
-      "CombatEffectiveness",
-    );
-    this.higherFormation = getValueOrUndefined(element, "HigherFormation");
-    this.iff = getValueOrUndefined(element, "Iff");
-    this.uniqueDesignation =
-      getValueOrUndefined(element, "UniqueDesignation") ?? "";
-    this.specialC2HQ = getTagValue(element, "SpecialC2HQ");
   }
 }
 
