@@ -72,7 +72,6 @@ export const UNIT_TEMPLATE = `<Unit>
     <ObjectHandle></ObjectHandle>
     <SymbolIdentifier>S-G-U----------</SymbolIdentifier>
     <Name>NEW UNIT</Name>
-    <UnitSymbolModifiers></UnitSymbolModifiers>
     <Relations>
         <ForceRelation>
             <ForceRelationChoice></ForceRelationChoice>
