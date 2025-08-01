@@ -660,6 +660,20 @@ export class MilitaryScenario implements MilitaryScenarioType {
     this.updateDeploymentElement();
   }
 
+  setEquipmentHoldingOrganization(
+    equipment: EquipmentItem,
+    newSuperiorHandle: string,
+  ) {
+    const superior = this.getUnitOrForceSideById(newSuperiorHandle);
+    if (!superior) {
+      throw new Error(`Superior unit or side ${newSuperiorHandle} not found`);
+    }
+    const oldSuperior = equipment.superiorHandle;
+    this.removeUnitOrEquipmentFromSuperior(equipment);
+    equipment.setHoldingOrganization(superior);
+    this.addEquipmentItemToOwner(equipment);
+  }
+
   private detectNETN() {
     const netnElement =
       getTagElement(this.element, "EntityType") ??
