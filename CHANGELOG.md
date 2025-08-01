@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 1.0.2
+
+### Patch Changes
+
+- 6d1bdce: `ForceSide.setAffiliation` now sets the affiliation of equipment assigned directly to the `ForceSide`
+
 ## 1.0.1
 
 ### Patch Changes
