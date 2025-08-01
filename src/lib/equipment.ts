@@ -26,8 +26,6 @@ import {
 import {
   EquipmentSymbolModifiers,
   type EquipmentSymbolModifiersType,
-  UnitSymbolModifiers,
-  type UnitSymbolModifiersType,
 } from "./symbolmodifiers.js";
 
 export type EquipmentItemGeoJsonOptions = IdGeoJsonOptions;
@@ -225,10 +223,9 @@ export class EquipmentItem extends UnitEquipmentBase {
   }
 
   get superiorHandle(): string {
-    if (this.relations.organicSuperiorHandle) {
-      return this.relations.organicSuperiorHandle;
-    }
-    return this.relations.ownerHandle;
+    return (
+      (this.relations.ownerHandle || this.relations.organicSuperiorHandle) ?? ""
+    );
   }
 
   toGeoJson(
