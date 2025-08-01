@@ -175,6 +175,10 @@ export class ForceSide implements ForceSideType {
     for (let rootUnit of this.rootUnits) {
       helper(rootUnit);
     }
+
+    for (let equipmentItem of this.equipment) {
+      equipmentItem.setAffiliation(s);
+    }
   }
 
   getAffiliation(): StandardIdentity {
