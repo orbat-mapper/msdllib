@@ -338,3 +338,90 @@ describe("New EquipmentItem", () => {
     expect(equipment.name, "Relations").toBe("Battery");
   });
 });
+
+const EQUIPMENT_FORCE_OWNER_TEMPLATE = `<EquipmentItem>
+    <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
+    <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
+    <Name>111</Name>
+
+    <Relations>
+        <OrganicSuperiorHandle>f9e2ec3e-2dcd-11e2-be2b-xxxxxxxxxxxx</OrganicSuperiorHandle>
+   
+        <HoldingOrganization>
+            <OwnerChoice>FORCE_SIDE</OwnerChoice>
+            <OwnerData>
+                <ForceOwnerHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</ForceOwnerHandle>
+            </OwnerData>
+        </HoldingOrganization>
+    </Relations>
+    <Model>
+        <Resolution>HIGH</Resolution>
+    </Model>
+</EquipmentItem>`;
+
+const EQUIPMENT_NO_DIFFERENT_ORGANIC_TEMPLATE = `<EquipmentItem>
+    <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
+    <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
+    <Name>111</Name>
+ 
+    <Relations>
+        <OrganicSuperiorHandle>f9e2ec3e-2dcd-11e2-be2b-000c294ccccc</OrganicSuperiorHandle>
+        <HoldingOrganization>
+            <OwnerChoice>UNIT</OwnerChoice>
+            <OwnerData>
+                <UnitOwnerHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</UnitOwnerHandle>
+            </OwnerData>
+        </HoldingOrganization>
+    </Relations>
+    <Model>
+        <Resolution>HIGH</Resolution>
+    </Model>
+</EquipmentItem>`;
+
+describe("EquipmentItem relations", () => {
+  it("should have a relations property", () => {
+    const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+    expect(equipment.relations).toBeDefined();
+    expect(equipment.relations.organicSuperiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(equipment.relations.ownerChoice).toBe("UNIT");
+    expect(equipment.relations.ownerHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(equipment.superiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+  });
+
+  it("should support FORCE_OWNER relations", () => {
+    const equipment = new EquipmentItem(
+      parseFromString(EQUIPMENT_FORCE_OWNER_TEMPLATE),
+    );
+    expect(equipment.relations).toBeDefined();
+    expect(equipment.relations.ownerChoice).toBe("FORCE_SIDE");
+    expect(equipment.relations.ownerHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(equipment.superiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+  });
+
+  it("should prefer UNIT relations over organic relations", () => {
+    const equipment = new EquipmentItem(
+      parseFromString(EQUIPMENT_NO_DIFFERENT_ORGANIC_TEMPLATE),
+    );
+    expect(equipment.relations).toBeDefined();
+    expect(equipment.relations.organicSuperiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294ccccc",
+    );
+    expect(equipment.relations.ownerChoice).toBe("UNIT");
+    expect(equipment.relations.ownerHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(equipment.superiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+  });
+});
