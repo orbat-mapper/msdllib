@@ -341,6 +341,12 @@ describe("MilitaryScenario with NETN", () => {
     it("should list 3 federates", () => {
       expect(scenario.deployment?.federates).toHaveLength(3);
     });
+    it("should find the correct federate for unit and equipment", () => {
+      const federateUnit = scenario.getFederateOfUnitOrEquipment(unitHQ);
+      const federateEquipment = scenario.getFederateOfUnitOrEquipment(equipment111);
+      expect(federateUnit?.name).toBe("SIM B");
+      expect(federateEquipment?.name).toBe("SIM C");
+    });
     it("should have unit HQ at SIM B", () => {
       const federate = scenario.getFederateOfUnit(unitHQ);
       expect(federate).toBeDefined();

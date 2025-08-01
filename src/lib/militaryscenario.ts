@@ -285,6 +285,14 @@ export class MilitaryScenario implements MilitaryScenarioType {
     const deploymentEl = getTagElement(this.element, "Deployment");
     if (!deploymentEl) return;
     this.deployment = new Deployment(deploymentEl);
+    for (const unit in this.unitMap) {
+      if (!this.deployment.getFederateOfUnit(unit))
+        this.deployment.addUnallocatedUnit(unit);
+    }
+    for (const equipment in this.equipmentMap) {
+      if (!this.deployment.getFederateOfEquipment(equipment))
+        this.deployment.addUnallocatedEquipment(equipment);
+    }
   }
 
   private initializeMetaInfo() {
@@ -459,6 +467,10 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
   getFederateOfEquipment(objectHandle: string): Federate | undefined {
     return this.deployment?.getFederateOfEquipment(objectHandle);
+  }
+
+  getFederateOfUnitOrEquipment(objectHandle: string): Federate | undefined {
+    return this.deployment?.getFederateOfUnitOrEquipment(objectHandle);
   }
 
   private updateSidesRootUnits() {
