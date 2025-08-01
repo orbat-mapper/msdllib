@@ -192,6 +192,19 @@ describe("ForceSide methods", () => {
         expect(unit.getAffiliation()).toBe(StandardIdentity.Joker);
       }
     });
+
+    it("should set the affiliation of root equipment", () => {
+      let scenario = loadTestScenario("/data/SimpleScenario.xml");
+      const side = scenario.sides[1]!;
+      expect(side.equipment.length).toBeGreaterThan(0);
+      expect(side.equipment[0]!.getAffiliation()).toBe(
+        StandardIdentity.NoneSpecified,
+      );
+      side.setAffiliation(StandardIdentity.Hostile);
+      expect(side.equipment[0]!.getAffiliation()).toBe(
+        StandardIdentity.Hostile,
+      );
+    });
   });
 
   describe("when using toGeoJson", () => {
