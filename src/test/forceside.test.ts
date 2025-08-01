@@ -198,12 +198,10 @@ describe("ForceSide methods", () => {
       const side = scenario.sides[1]!;
       expect(side.equipment.length).toBeGreaterThan(0);
       expect(side.equipment[0]!.getAffiliation()).toBe(
-        StandardIdentity.NoneSpecified,
-      );
-      side.setAffiliation(StandardIdentity.Hostile);
-      expect(side.equipment[0]!.getAffiliation()).toBe(
         StandardIdentity.Hostile,
       );
+      side.setAffiliation(StandardIdentity.Faker);
+      expect(side.equipment[0]!.getAffiliation()).toBe(StandardIdentity.Faker);
     });
   });
 

@@ -397,18 +397,17 @@ export class MilitaryScenario implements MilitaryScenarioType {
       return;
     }
     this._primarySide = side;
-    for (let rootUnit of side.rootUnits) {
-      this.setAffiliation(rootUnit, StandardIdentity.Friend);
-    }
+    side.setAffiliation(StandardIdentity.Friend);
+
     for (let association of side.associations) {
       let code = rel2code(association.relationship);
       if (association.affiliateHandle === side.objectHandle) {
         console.warn(side.name + " has an association with itself");
         continue;
       }
-      let rootUnits = this.forceSideMap[association.affiliateHandle]?.rootUnits;
-      for (let unit of rootUnits ?? []) {
-        this.setAffiliation(unit, code);
+      const relatedForceSide = this.forceSideMap[association.affiliateHandle];
+      if (relatedForceSide) {
+        relatedForceSide.setAffiliation(code);
       }
     }
   }
