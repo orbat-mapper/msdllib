@@ -182,11 +182,11 @@ export class ForceSide implements ForceSideType {
   }
 
   getAffiliation(): StandardIdentity {
-    const firstUnit = this.rootUnits[0];
-    if (!firstUnit) {
+    const firstUnitOrEquipment = this.rootUnits[0] ?? this.equipment[0];
+    if (!firstUnitOrEquipment) {
       return StandardIdentity.NoneSpecified;
     }
-    return firstUnit.getAffiliation();
+    return firstUnitOrEquipment.getAffiliation();
   }
 
   getEquipmentItems(): EquipmentItem[] {
