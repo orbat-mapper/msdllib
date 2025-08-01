@@ -82,7 +82,7 @@ describe("Simple scenario", () => {
   it("load from file", () => {
     let scenario = loadTestScenario();
     expect(scenario.unitCount).toBe(6);
-    expect(scenario.equipmentCount).toBe(2);
+    expect(scenario.equipmentCount).toBe(3);
     expect(scenario.forceSides).toBeInstanceOf(Array);
     expect(scenario.forceSides.length).toBe(3);
     expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
@@ -250,6 +250,12 @@ describe("MilitaryScenario equipment", () => {
       expect(unit.equipment.length).toBe(1);
       expect(unit.equipment[0]?.relations).toBeDefined();
       expect(unit.equipment[0]?.relations.ownerChoice).toBe("UNIT");
+    });
+  });
+  describe("when an equipment item has an unknown owner", () => {
+    it("should put it into the root equipment list", () => {
+      expect(scenario.equipment).toBeDefined();
+      expect(scenario.equipment.length).toBe(1);
     });
   });
 });

@@ -372,22 +372,23 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private addEquipmentItemToOwner(eq: EquipmentItem) {
-    if (
-      eq.relations.organicSuperiorHandle ||
-      eq.relations.ownerChoice === "UNIT"
-    ) {
-      let unit = this.unitMap[eq.superiorHandle];
-      if (unit) {
-        unit.equipment.push(eq);
-      }
-    } else if (eq.relations.ownerChoice === "FORCE_SIDE") {
+    if (eq.relations.ownerChoice === "FORCE_SIDE") {
       const side = this.forceSideMap[eq.relations.ownerHandle];
       if (side) {
         side.equipment.push(eq);
+        return;
       }
-    } else {
-      this.equipment.push(eq);
     }
+
+    if (eq.superiorHandle) {
+      let unit = this.unitMap[eq.superiorHandle];
+      if (unit) {
+        unit.equipment.push(eq);
+        return;
+      }
+    }
+    console.warn("Could not find the owner of EquipmentItem " + eq.label);
+    this.equipment.push(eq);
   }
 
   set primarySide(side: ForceSide | null) {
