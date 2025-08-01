@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 1.0.1
+
+### Patch Changes
+
+- ffb2e18: Fix bug in equipment assignment introduced by changes to `EquipmentItem.superiorHandle` behavior
+
 ## 1.0.0
 
 ### Major Changes
