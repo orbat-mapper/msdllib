@@ -1,5 +1,14 @@
 # @orbat-mapper/msdllib
 
+## 1.0.0
+
+### Major Changes
+
+- c64b6cd: `EquipmentItem.superiorHandle` now returns `ownerHandle` instead of `organicSuperiorHandle`
+
+  This may potentially break existing code that relies on the previous behavior. In cases where you need to access the
+  organic superior handle, you can use `EquipmentItem.relations.organicSuperiorHandle` (read only).
+
 ## 0.29.0
 
 ### Minor Changes
