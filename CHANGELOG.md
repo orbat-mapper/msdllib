@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 1.0.3
+
+### Patch Changes
+
+- 0dd52e1: Update `ForceSide` root equipment when setting primary side
+
 ## 1.0.2
 
 ### Patch Changes
