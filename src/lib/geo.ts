@@ -66,6 +66,8 @@ export class MsdlCoordinates implements MsdlCoordinatesType {
       this.writeGDCLocation(loc);
     } else if (this.coordinateChoice === "MGRS") {
       this.writeMGRSLocation(loc);
+    } else if (this.coordinateChoice === "GCC") {
+      this.writeGCCLocation(loc);
     } else {
       console.warn(`Unhandled coordinate choice ${this.coordinateChoice}`);
     }
@@ -88,6 +90,19 @@ export class MsdlCoordinates implements MsdlCoordinatesType {
       setOrCreateTagValue(gdcElement, "ElevationAGL", loc[2].toString());
     }
     dataElement.appendChild(gdcElement);
+    this.element.appendChild(dataElement);
+  }
+
+  private writeGCCLocation(loc: LngLatTuple | LngLatElevationTuple) {
+    setOrCreateTagValue(this.element, "CoordinateChoice", "GCC");
+    removeTagValue(this.element, "CoordinateData");
+    const dataElement = createEmptyXMLElementFromTagName("CoordinateData");
+    const gccElement = createEmptyXMLElementFromTagName("GCC");
+    const [X, Y, Z] = projector.project(loc[1], loc[0], loc[2] ?? 0);
+    setOrCreateTagValue(gccElement, "X", X.toString());
+    setOrCreateTagValue(gccElement, "Y", Y.toString());
+    setOrCreateTagValue(gccElement, "Z", Z.toString());
+    dataElement.appendChild(gccElement);
     this.element.appendChild(dataElement);
   }
 
@@ -269,5 +284,12 @@ export class MsdlLocation extends MsdlCoordinates {
 
   static override create(coordinateChoice: CoordinateChoice) {
     return MsdlCoordinates.create(coordinateChoice, MsdlLocation.TAG_NAME);
+  }
+
+  static override fromModel(
+    model: MsdlCoordinatesType,
+    tagName = MsdlLocation.TAG_NAME,
+  ): MsdlLocation {
+    return super.fromModel(model, tagName);
   }
 }
