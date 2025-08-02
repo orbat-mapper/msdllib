@@ -1,5 +1,15 @@
 # @orbat-mapper/msdllib
 
+## 1.1.0
+
+### Minor Changes
+
+- 87a1994: Add support for writing GCC (geocentric) coordinates
+
+### Patch Changes
+
+- 5b2aa97: Use first equipment item for affiliation if there are no units in a ForceSide
+
 ## 1.0.3
 
 ### Patch Changes
