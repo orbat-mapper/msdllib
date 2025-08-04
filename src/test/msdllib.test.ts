@@ -343,7 +343,8 @@ describe("MilitaryScenario with NETN", () => {
     });
     it("should find the correct federate for unit and equipment", () => {
       const federateUnit = scenario.getFederateOfUnitOrEquipment(unitHQ);
-      const federateEquipment = scenario.getFederateOfUnitOrEquipment(equipment111);
+      const federateEquipment =
+        scenario.getFederateOfUnitOrEquipment(equipment111);
       expect(federateUnit?.name).toBe("SIM B");
       expect(federateEquipment?.name).toBe("SIM C");
     });

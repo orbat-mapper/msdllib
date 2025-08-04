@@ -78,6 +78,9 @@ const FEDERATE_ELEMENT_SAMPLE = `<Federate>
 `;
 
 describe("Deployment class", () => {
+  const FED_0 = "c8e2b9d1-2f4a-4e3c-8a1b-7f6d2e3c4b5a";
+  const FED_1 = "e3f1c2d4-5b6a-4c7d-8e9f-0a1b2c3d4e5f";
+  const FED_2 = "9b8c7d6e-5f4a-3b2c-1d0e-9f8e7d6c5b4a";
   it("is defined", () => {
     expect(Deployment).toBeDefined();
   });
@@ -94,16 +97,44 @@ describe("Deployment class", () => {
     expect(deployment.federates[1]?.units.length).toBe(2);
     expect(deployment.federates[2]?.name).toBe("SIM C");
     expect(deployment.federates[2]?.units.length).toBe(4);
+    expect(deployment.federates[2]?.equipment.length).toBe(2);
 
-    expect(deployment.federates[0]?.objectHandle).toBe(
-      "c8e2b9d1-2f4a-4e3c-8a1b-7f6d2e3c4b5a",
+    expect(deployment.federates[0]?.objectHandle).toBe(FED_0);
+    expect(deployment.federates[1]?.objectHandle).toBe(FED_1);
+    expect(deployment.federates[2]?.objectHandle).toBe(FED_2);
+
+    const unit = deployment.federates[1]?.units[0]!;
+    const equipment = deployment.federates[2]?.equipment[0]!;
+    expect(deployment.getFederateOfUnit(unit)?.objectHandle).toBe(FED_1);
+    expect(deployment.getFederateOfEquipment(equipment)?.objectHandle).toBe(
+      FED_2,
     );
-    expect(deployment.federates[1]?.objectHandle).toBe(
-      "e3f1c2d4-5b6a-4c7d-8e9f-0a1b2c3d4e5f",
+  });
+
+  it("can unallocate units", () => {
+    const deployment = new Deployment(
+      createXMLElement(DEPLOYMENT_ELEMENT_SAMPLE),
     );
-    expect(deployment.federates[2]?.objectHandle).toBe(
-      "9b8c7d6e-5f4a-3b2c-1d0e-9f8e7d6c5b4a",
+    const unit = deployment.federates[1]?.units[0]!;
+    expect(unit).toBeDefined();
+    deployment.removeUnitFromFederate(FED_1, unit);
+    expect(deployment.getFederateOfUnit(unit)).toBeUndefined();
+    expect(deployment.getUnallocatedUnits()).toContain(unit);
+    const xml = xmlToString(deployment.element);
+    expect(!xml.includes(unit));
+  });
+
+  it("can unallocate equipment", () => {
+    const deployment = new Deployment(
+      createXMLElement(DEPLOYMENT_ELEMENT_SAMPLE),
     );
+    const equipment = deployment.federates[2]?.equipment[0]!;
+    expect(equipment).toBeDefined();
+    deployment.removeEquipmentFromFederate(FED_2, equipment);
+    expect(deployment.getFederateOfUnit(equipment)).toBeUndefined();
+    expect(deployment.getUnallocatedEquipment()).toContain(equipment);
+    const xml = xmlToString(deployment.element);
+    expect(!xml.includes(equipment));
   });
 });
 

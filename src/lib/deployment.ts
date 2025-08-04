@@ -83,7 +83,7 @@ export class Deployment {
   removeEquipmentFromFederate(federateHandle: string, equipmentHandle: string) {
     const federate = this.getFederateById(federateHandle);
     if (!federate) return;
-    federate.addEquipmentItem(equipmentHandle);
+    federate.removeEquipmentItem(equipmentHandle);
     this._unallocatedEquipment.push(equipmentHandle);
   }
 
