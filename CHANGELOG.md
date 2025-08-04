@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 1.1.1
+
+### Patch Changes
+
+- ca525da: Add logic for unallocated units and equipment
+
 ## 1.1.0
 
 ### Minor Changes
