@@ -285,6 +285,14 @@ export class MilitaryScenario implements MilitaryScenarioType {
     const deploymentEl = getTagElement(this.element, "Deployment");
     if (!deploymentEl) return;
     this.deployment = new Deployment(deploymentEl);
+    for (const unit in this.unitMap) {
+      if (!this.deployment.getFederateOfUnit(unit))
+        this.deployment.addUnallocatedUnit(unit);
+    }
+    for (const equipment in this.equipmentMap) {
+      if (!this.deployment.getFederateOfEquipment(equipment))
+        this.deployment.addUnallocatedEquipment(equipment);
+    }
   }
 
   private initializeMetaInfo() {
@@ -459,6 +467,10 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
   getFederateOfEquipment(objectHandle: string): Federate | undefined {
     return this.deployment?.getFederateOfEquipment(objectHandle);
+  }
+
+  getFederateOfUnitOrEquipment(objectHandle: string): Federate | undefined {
+    return this.deployment?.getFederateOfUnitOrEquipment(objectHandle);
   }
 
   private updateSidesRootUnits() {
@@ -658,6 +670,20 @@ export class MilitaryScenario implements MilitaryScenarioType {
     const equipment = fromFederate.removeAllEquipment();
     toFederate.addAllEquipment(equipment);
     this.updateDeploymentElement();
+  }
+
+  setEquipmentHoldingOrganization(
+    equipment: EquipmentItem,
+    newSuperiorHandle: string,
+  ) {
+    const superior = this.getUnitOrForceSideById(newSuperiorHandle);
+    if (!superior) {
+      throw new Error(`Superior unit or side ${newSuperiorHandle} not found`);
+    }
+    const oldSuperior = equipment.superiorHandle;
+    this.removeUnitOrEquipmentFromSuperior(equipment);
+    equipment.setHoldingOrganization(superior);
+    this.addEquipmentItemToOwner(equipment);
   }
 
   private detectNETN() {

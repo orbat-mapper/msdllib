@@ -251,6 +251,32 @@ describe("MilitaryScenario equipment", () => {
       expect(unit.equipment[0]?.relations).toBeDefined();
       expect(unit.equipment[0]?.relations.ownerChoice).toBe("UNIT");
     });
+    describe("when equipment is moved to side", () => {
+      let unit: Unit;
+      let forceSide: ForceSide;
+      let equipment: EquipmentItem;
+      beforeAll(() => {
+        unit = scenario.getUnitById("f9e16593-2dcd-11e2-be2b-000c294c9df8")!;
+        forceSide = scenario.getForceSideById(
+          "e7ae4710-2dcd-11e2-be2b-000c294c9df8",
+        )!;
+        equipment = unit.equipment[0]!;
+        scenario.setEquipmentHoldingOrganization(
+          equipment,
+          forceSide.objectHandle,
+        );
+      });
+      it("should have forceside as owner", () => {
+        expect(equipment.relations).toBeDefined();
+        expect(equipment.relations.ownerChoice).toBe("FORCE_SIDE");
+        expect(equipment.superiorHandle).toBe(forceSide.objectHandle);
+        expect(forceSide.equipment.length).toBe(2);
+        console.log(equipment.toString());
+      });
+      it("should not have unit as owner", () => {
+        expect(unit.equipment.length).toBe(0);
+      });
+    });
   });
   describe("when an equipment item has an unknown owner", () => {
     it("should put it into the root equipment list", () => {
@@ -314,6 +340,13 @@ describe("MilitaryScenario with NETN", () => {
     });
     it("should list 3 federates", () => {
       expect(scenario.deployment?.federates).toHaveLength(3);
+    });
+    it("should find the correct federate for unit and equipment", () => {
+      const federateUnit = scenario.getFederateOfUnitOrEquipment(unitHQ);
+      const federateEquipment =
+        scenario.getFederateOfUnitOrEquipment(equipment111);
+      expect(federateUnit?.name).toBe("SIM B");
+      expect(federateEquipment?.name).toBe("SIM C");
     });
     it("should have unit HQ at SIM B", () => {
       const federate = scenario.getFederateOfUnit(unitHQ);
