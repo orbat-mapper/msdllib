@@ -606,7 +606,11 @@ export class MilitaryScenario implements MilitaryScenarioType {
     this.element!.appendChild(this.deployment!.element);
   }
 
-  assignUnitToFederate(unitHandle: string, federateHandle: string) {
+  assignUnitToFederate(
+    unitHandle: string,
+    federateHandle: string,
+    includeSubordinates: boolean = false,
+  ) {
     if (!this.deployment) return;
     const unit = this.getUnitById(unitHandle);
     const federate = this.getFederateById(federateHandle);
@@ -616,7 +620,49 @@ export class MilitaryScenario implements MilitaryScenarioType {
     if (!federate) {
       throw new Error(`Federate ${federateHandle} not found`);
     }
-    this.deployment.assignUnitToFederate(federateHandle, unitHandle);
+    this.deployment.assignUnitToFederate(unitHandle, federateHandle);
+    if (includeSubordinates) {
+      for (const sub of unit.subordinates) {
+        this.assignUnitToFederate(
+          sub.objectHandle,
+          federateHandle,
+          includeSubordinates,
+        );
+      }
+      for (const eq of unit.equipment) {
+        this.assignEquipmentItemToFederate(eq.objectHandle, federateHandle);
+      }
+    }
+    this.updateDeploymentElement();
+  }
+
+  removeUnitFromFederate(
+    unitHandle: string,
+    federateHandle: string,
+    includeSubordinates: boolean = false,
+  ) {
+    if (!this.deployment) return;
+    const unit = this.getUnitById(unitHandle);
+    const federate = this.getFederateById(federateHandle);
+    if (!unit) {
+      throw new Error(`Unit ${unitHandle} not found`);
+    }
+    if (!federate) {
+      throw new Error(`Federate ${federateHandle} not found`);
+    }
+    this.deployment.removeUnitFromFederate(unitHandle, federateHandle);
+    if (includeSubordinates) {
+      for (const sub of unit.subordinates) {
+        this.removeUnitFromFederate(
+          sub.objectHandle,
+          federateHandle,
+          includeSubordinates,
+        );
+      }
+      for (const eq of unit.equipment) {
+        this.removeEquipmentFromFederate(eq.objectHandle, federateHandle);
+      }
+    }
     this.updateDeploymentElement();
   }
 
@@ -633,8 +679,30 @@ export class MilitaryScenario implements MilitaryScenarioType {
       throw new Error(`Federate ${federateHandle} not found`);
     }
     const oldFederate = this.getFederateOfEquipment(equipmentItemHandle);
-    if (oldFederate) oldFederate.removeEquipmentItem(equipmentItemHandle);
-    federate.addEquipmentItem(equipmentItemHandle);
+    if (oldFederate) {
+      oldFederate.removeEquipmentItem(equipmentItemHandle);
+    }
+    this.deployment?.assignEquipmentToFederate(
+      equipmentItemHandle,
+      federate.objectHandle,
+    );
+    this.updateDeploymentElement();
+  }
+
+  removeEquipmentFromFederate(equipmentHandle: string, federateHandle: string) {
+    if (!this.deployment) return;
+    const equipment = this.getEquipmentById(equipmentHandle);
+    const federate = this.getFederateById(federateHandle);
+    if (!equipment) {
+      throw new Error(`Equipment ${equipmentHandle} not found`);
+    }
+    if (!federate) {
+      throw new Error(`Federate ${federateHandle} not found`);
+    }
+    this.deployment.removeEquipmentFromFederate(
+      equipmentHandle,
+      federateHandle,
+    );
     this.updateDeploymentElement();
   }
 

@@ -117,7 +117,7 @@ describe("Deployment class", () => {
     );
     const unit = deployment.federates[1]?.units[0]!;
     expect(unit).toBeDefined();
-    deployment.removeUnitFromFederate(FED_1, unit);
+    deployment.removeUnitFromFederate(unit, FED_1);
     expect(deployment.getFederateOfUnit(unit)).toBeUndefined();
     expect(deployment.getUnallocatedUnits()).toContain(unit);
     const xml = xmlToString(deployment.element);
@@ -130,7 +130,7 @@ describe("Deployment class", () => {
     );
     const equipment = deployment.federates[2]?.equipment[0]!;
     expect(equipment).toBeDefined();
-    deployment.removeEquipmentFromFederate(FED_2, equipment);
+    deployment.removeEquipmentFromFederate(equipment, FED_2);
     expect(deployment.getFederateOfUnit(equipment)).toBeUndefined();
     expect(deployment.getUnallocatedEquipment()).toContain(equipment);
     const xml = xmlToString(deployment.element);
