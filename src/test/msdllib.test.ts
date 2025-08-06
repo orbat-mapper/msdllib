@@ -271,7 +271,6 @@ describe("MilitaryScenario equipment", () => {
         expect(equipment.relations.ownerChoice).toBe("FORCE_SIDE");
         expect(equipment.superiorHandle).toBe(forceSide.objectHandle);
         expect(forceSide.equipment.length).toBe(2);
-        console.log(equipment.toString());
       });
       it("should not have unit as owner", () => {
         expect(unit.equipment.length).toBe(0);
@@ -371,6 +370,7 @@ describe("MilitaryScenario with NETN", () => {
     });
     describe("when moving unit HQ to SIM C", () => {
       beforeAll(() => {
+        scenario = loadNetnTestScenario();
         scenario.assignUnitToFederate(unitHQ, simC);
       });
       it("SIM C should have unit HQ", () => {
@@ -401,8 +401,42 @@ describe("MilitaryScenario with NETN", () => {
         expect(countXmlTagOccurrences(xml, "Unit")).toBe(1);
       });
     });
+    describe("when moving unit HQ + subordinates to SIM C", () => {
+      beforeAll(() => {
+        scenario = loadNetnTestScenario();
+        scenario.assignUnitToFederate(unitHQ, simC, true);
+      });
+      it("SIM C should have unit HQ", () => {
+        const federate = scenario.getFederateOfUnit(unitHQ);
+        expect(federate).toBeDefined();
+        expect(federate?.name).toBe("SIM C");
+        const xml = federate?.toString();
+        expect(xml?.includes(unitHQ)).toBeTruthy();
+      });
+      it("SIM B should not have unit HQ", () => {
+        const federate = scenario.getFederateById(simB);
+        expect(federate?.units).not.toContain(unitHQ);
+        const xml = federate?.toString();
+        expect(xml?.includes(unitHQ)).toBeFalsy();
+      });
+      it("SIM C should have 7 units", () => {
+        const federate = scenario.getFederateById(simC);
+        expect(federate).toBeDefined();
+        expect(federate?.units).toHaveLength(7);
+        const xml = federate?.toString() || "";
+        expect(countXmlTagOccurrences(xml, "Unit")).toBe(7);
+      });
+      it("SIM B should have 1 unit", () => {
+        const federate = scenario.getFederateById(simB);
+        expect(federate).toBeDefined();
+        expect(federate?.units).toHaveLength(1);
+        const xml = federate?.toString() || "";
+        expect(countXmlTagOccurrences(xml, "Unit")).toBe(1);
+      });
+    });
     describe("when moving all units to SIM C", () => {
       beforeAll(() => {
+        scenario = loadNetnTestScenario();
         scenario.assignAllUnitsToFederate(simB, simC);
       });
       it("SIM C should have unit HQ", () => {
@@ -433,6 +467,26 @@ describe("MilitaryScenario with NETN", () => {
         expect(countXmlTagOccurrences(xml, "Unit")).toBe(0);
       });
     });
+    describe("when unassigning unit HQ + subordinates from SIM C", () => {
+      beforeAll(() => {
+        scenario = loadNetnTestScenario();
+        scenario.removeUnitFromFederate(unitHQ, simB, true);
+      });
+      it("deployment should have unallocated unit HQ", () => {
+        const federate = scenario.getFederateOfUnit(unitHQ);
+        expect(federate).toBeUndefined();
+        expect(scenario.deployment).toBeDefined();
+        expect(
+          scenario.deployment?.getUnallocatedUnits().includes(unitHQ),
+        ).toBeTruthy();
+      });
+      it("SIM B should not have unit HQ", () => {
+        const federate = scenario.getFederateById(simB);
+        expect(federate?.units).not.toContain(unitHQ);
+        const xml = federate?.toString();
+        expect(xml?.includes(unitHQ)).toBeFalsy();
+      });
+    });
     it("SIM C should have equipment 111 ", () => {
       const federate = scenario.getFederateOfEquipment(equipment111);
       expect(federate).toBeDefined();
@@ -456,6 +510,7 @@ describe("MilitaryScenario with NETN", () => {
     });
     describe("when moving equipment 111 to SIM B", () => {
       beforeAll(() => {
+        scenario = loadNetnTestScenario();
         scenario.assignEquipmentItemToFederate(equipment111, simB);
       });
       it("SIM B should have equipment 111", () => {
@@ -488,6 +543,7 @@ describe("MilitaryScenario with NETN", () => {
     });
     describe("when moving all equipment from SIM C to SIM B", () => {
       beforeAll(() => {
+        scenario = loadNetnTestScenario();
         scenario.assignAllEquipmentToFederate(simC, simB);
       });
       it("SIM B should have equipment 111", () => {

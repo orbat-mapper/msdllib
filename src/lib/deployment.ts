@@ -50,37 +50,37 @@ export class Deployment {
     this.federates = [...this.#federates, fed];
   }
 
-  assignUnitToFederate(federateHandle: string, unitHandle: string) {
+  assignUnitToFederate(unitHandle: string, federateHandle: string) {
     const federate = this.getFederateById(federateHandle);
     if (!federate) return;
     const oldFed = this.getFederateOfUnit(unitHandle);
-    if (oldFed) this.removeUnitFromFederate(oldFed.objectHandle, unitHandle);
+    if (oldFed) this.removeUnitFromFederate(unitHandle, oldFed.objectHandle);
     federate.addUnit(unitHandle);
     this._unallocatedUnits = this._unallocatedUnits.filter(
       (u) => u !== unitHandle,
     );
   }
 
-  removeUnitFromFederate(federateHandle: string, unitHandle: string) {
+  removeUnitFromFederate(unitHandle: string, federateHandle: string) {
     const federate = this.getFederateById(federateHandle);
     if (!federate) return;
     federate.removeUnit(unitHandle);
     this._unallocatedUnits.push(unitHandle);
   }
 
-  assignEquipmentToFederate(federateHandle: string, equipmentHandle: string) {
+  assignEquipmentToFederate(equipmentHandle: string, federateHandle: string) {
     const federate = this.getFederateById(federateHandle);
     if (!federate) return;
     const oldFed = this.getFederateOfEquipment(equipmentHandle);
     if (oldFed)
-      this.removeEquipmentFromFederate(oldFed.objectHandle, equipmentHandle);
+      this.removeEquipmentFromFederate(equipmentHandle, oldFed.objectHandle);
     federate.addEquipmentItem(equipmentHandle);
     this._unallocatedEquipment = this._unallocatedEquipment.filter(
       (e) => e !== equipmentHandle,
     );
   }
 
-  removeEquipmentFromFederate(federateHandle: string, equipmentHandle: string) {
+  removeEquipmentFromFederate(equipmentHandle: string, federateHandle: string) {
     const federate = this.getFederateById(federateHandle);
     if (!federate) return;
     federate.removeEquipmentItem(equipmentHandle);
