@@ -1,5 +1,19 @@
 # @orbat-mapper/msdllib
 
+## 1.1.2
+
+### Patch Changes
+
+- 1d7062e: Fix some issues with federate deployment.
+
+  Add functions to `MilitaryScenario`:
+  - removeEquipmentFromFederate(equipmentHandle: string, federateHandle: string): void
+  - removeUnitFromFederate(
+    unitHandle: string,
+    federateHandle: string,
+    includeSubordinates: boolean = false,
+    ): void
+
 ## 1.1.1
 
 ### Patch Changes
