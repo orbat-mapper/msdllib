@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 1.2.0
+
+### Minor Changes
+
+- 7a44af1: Add `toObject` and `updateFromObject` methods for `UnitModel` and `EquipmentModel` classes
+
 ## 1.1.3
 
 ### Patch Changes
