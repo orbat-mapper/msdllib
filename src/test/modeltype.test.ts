@@ -7,7 +7,12 @@ import {
   UNIT_MGRS,
   UNIT_NETN,
 } from "./testdata.js";
-import { EquipmentModel, UnitModel } from "../lib/modelType.js";
+import {
+  EquipmentModel,
+  type EquipmentModelType,
+  UnitModel,
+  type UnitModelType,
+} from "../index.js";
 import { Unit } from "../lib/units.js";
 import { xmlToString } from "../lib/domutils.js";
 import { EquipmentItem } from "../lib/equipment.js";
@@ -124,6 +129,30 @@ describe("UnitModelType class", () => {
         expect(unit2.model?.aggregateBased).toBe(true);
       });
     });
+
+    it("should convert UnitModel to object correctly", () => {
+      const modelType = new UnitModel(
+        parseFromString(UNIT_MODEL_TYPE_TEMPLATE_NETN),
+      );
+      expect(modelType.toObject()).toEqual({
+        resolution: "HIGH",
+        entityType: "1.1.0.3.17.4.0",
+        aggregateBased: true,
+      });
+    });
+
+    it("should create UnitModel from object using fromModel", () => {
+      const obj = {
+        resolution: "ENHANCED",
+        entityType: "2.2.2.2.2.2.2",
+        aggregateBased: false,
+      } as UnitModelType;
+      const modelType = UnitModel.fromModel(obj);
+      expect(modelType).toBeInstanceOf(UnitModel);
+      expect(modelType.resolution).toBe("ENHANCED");
+      expect(modelType.entityType).toBe("2.2.2.2.2.2.2");
+      expect(modelType.aggregateBased).toBe(false);
+    });
   });
 });
 
@@ -211,6 +240,27 @@ describe("EquipmentModelType class", () => {
         expect(unit2.model?.entityType).toBe("1.2.3.4.5");
         expect(unit2.model?.resolution).toBe("HIGH");
       });
+    });
+
+    it("should convert EquipmentModel to object correctly", () => {
+      const modelType = new EquipmentModel(
+        parseFromString(EQUIPMENT_MODEL_TYPE_TEMPLATE),
+      );
+      expect(modelType.toObject()).toEqual({
+        resolution: "HIGH",
+        entityType: "1.1.0.3.17.4.0",
+      });
+    });
+
+    it("should create EquipmentModel from object using fromModel", () => {
+      const obj = {
+        resolution: "ENHANCED",
+        entityType: "3.3.3.3.3.3.3",
+      } as EquipmentModelType;
+      const modelType = EquipmentModel.fromModel(obj);
+      expect(modelType).toBeInstanceOf(EquipmentModel);
+      expect(modelType.resolution).toBe("ENHANCED");
+      expect(modelType.entityType).toBe("3.3.3.3.3.3.3");
     });
   });
 });
