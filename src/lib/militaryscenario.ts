@@ -284,7 +284,11 @@ export class MilitaryScenario implements MilitaryScenarioType {
   private initializeDeployment() {
     const deploymentEl = getTagElement(this.element, "Deployment");
     if (!deploymentEl) return;
-    this.deployment = new Deployment(deploymentEl);
+    this.createDeployment(deploymentEl);
+  }
+
+  createDeployment(element?: Element) {
+    this.deployment = element ? new Deployment(element) : Deployment.create();
     for (const unit in this.unitMap) {
       if (!this.deployment.getFederateOfUnit(unit))
         this.deployment.addUnallocatedUnit(unit);
@@ -598,7 +602,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
       this.element,
       Deployment.TAG_NAME,
     );
-    this.deployment = new Deployment(deploymentEl);
+    this.createDeployment(deploymentEl);
   }
 
   private updateDeploymentElement() {
