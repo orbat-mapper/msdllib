@@ -1,5 +1,12 @@
 # @orbat-mapper/msdllib
 
+## 1.1.3
+
+### Patch Changes
+
+- 2e3fb2d: Add function to `MilitaryScenario`:
+  - createDeployment(element?: Element): void;
+
 ## 1.1.2
 
 ### Patch Changes
