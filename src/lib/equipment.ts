@@ -167,11 +167,10 @@ export class EquipmentItem extends UnitEquipmentBase {
       return;
     }
 
-    let test =
+    this.#disposition =
       disposition instanceof EquipmentItemDisposition
         ? disposition
         : EquipmentItemDisposition.fromModel(disposition);
-    this.#disposition = test;
     if (dispElm) {
       this.element.replaceChild(this.#disposition.element, dispElm);
     } else {

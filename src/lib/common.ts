@@ -49,9 +49,6 @@ export type UnitEquipmentInterface = {
 
 export class UnitEquipmentBase implements UnitEquipmentInterface {
   sidc: string;
-  // location?: LngLatTuple | LngLatElevationTuple;
-  // speed?: number;
-  // directionOfMovement?: number;
   #symbolIdentifier: string;
   #name: string;
   #objectHandle: string;

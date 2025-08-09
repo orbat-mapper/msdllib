@@ -119,11 +119,10 @@ export class Unit extends UnitEquipmentBase implements UnitEquipmentInterface {
       return;
     }
 
-    let test =
+    this.#disposition =
       disposition instanceof UnitDisposition
         ? disposition
         : UnitDisposition.fromModel(disposition);
-    this.#disposition = test;
     if (dispElm) {
       this.element.replaceChild(this.#disposition.element, dispElm);
     } else {
