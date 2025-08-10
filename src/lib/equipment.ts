@@ -27,6 +27,7 @@ import {
   EquipmentSymbolModifiers,
   type EquipmentSymbolModifiersType,
 } from "./symbolmodifiers.js";
+import type { EquipmentRelationsType } from "./relations.js";
 
 export type EquipmentItemGeoJsonOptions = IdGeoJsonOptions;
 
@@ -275,12 +276,6 @@ export class EquipmentItem extends UnitEquipmentBase {
     return equipment;
   }
 }
-
-export type EquipmentRelationsType = {
-  organicSuperiorHandle?: string;
-  ownerChoice: ForceOwnerType;
-  ownerHandle: string;
-};
 
 function createUnitRelation(superiorHandle: string) {
   return createXMLElement(

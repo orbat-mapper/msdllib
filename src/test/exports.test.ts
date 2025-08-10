@@ -17,4 +17,8 @@ describe("Package exports", () => {
   it("should export EquipmentSymbolModifiers", () => {
     expect(pkg.EquipmentSymbolModifiers).toBeDefined();
   });
+
+  it("should export UnitRelations", () => {
+    expect(pkg.UnitRelations).toBeDefined();
+  });
 });

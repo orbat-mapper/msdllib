@@ -56,3 +56,5 @@ export {
   EquipmentSymbolModifiers,
   type EquipmentSymbolModifiersType,
 } from "./lib/symbolmodifiers.js";
+
+export { UnitRelations, type UnitRelationsType } from "./lib/relations.js";
