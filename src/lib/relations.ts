@@ -1,6 +1,7 @@
 import { EnumCommandRelationshipType, ForceOwnerType } from "./enums.js";
 import {
   getTagValue,
+  getValueOrUndefined,
   removeUndefinedValues,
   setOrCreateTagValue,
 } from "./domutils.js";
@@ -80,6 +81,43 @@ export class UnitRelations implements UnitRelationsType {
     return "";
   }
 
+  set superiorHandle(superiorHandle: string) {
+    this.#superiorHandle = superiorHandle;
+    if (this.forceRelationChoice === ForceOwnerType.Unit) {
+      setOrCreateTagValue(
+        this.element,
+        "CommandingSuperiorHandle",
+        superiorHandle,
+      );
+    } else if (this.forceRelationChoice === ForceOwnerType.ForceSide) {
+      setOrCreateTagValue(this.element, "ForceSideHandle", superiorHandle);
+    }
+  }
+
+  get commandRelationshipType(): EnumCommandRelationshipType | undefined {
+    return (
+      this.#commandRelationshipType ||
+      getValueOrUndefined(this.element, "CommandRelationshipType")
+    );
+  }
+
+  set commandRelationshipType(
+    commandRelationshipType: EnumCommandRelationshipType | undefined,
+  ) {
+    this.#commandRelationshipType = commandRelationshipType;
+    if (commandRelationshipType) {
+      setOrCreateTagValue(
+        this.element,
+        "CommandRelationshipType",
+        commandRelationshipType,
+      );
+    } else {
+      this.element.removeChild(
+        this.element.querySelector("CommandRelationshipType")!,
+      );
+    }
+  }
+
   get isCommandRelation(): boolean {
     return this.forceRelationChoice === ForceOwnerType.Unit;
   }
@@ -99,7 +137,13 @@ export class UnitRelations implements UnitRelationsType {
   updateFromObject(data: Partial<UnitRelationsType>) {
     Object.entries(data).forEach(([key, value]) => {
       if (key in this) {
-        this[key] = value;
+        if (key === "forceRelationChoice") {
+          this.forceRelationChoice = value as ForceOwnerType;
+        } else if (key === "superiorHandle") {
+          this.superiorHandle = value as string;
+        } else if (key === "commandRelationshipType") {
+          this.commandRelationshipType = value as EnumCommandRelationshipType;
+        }
       } else {
         console.warn(`Property ${key} does not exist on Holding class.`);
       }
