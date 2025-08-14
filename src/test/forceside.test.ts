@@ -129,8 +129,8 @@ describe("Side relations", () => {
     expect(scenario.forceSides.length).toBe(3);
     let forceSide = scenario.forceSides[0]!;
     expect(forceSide.name).toBe("Friendly");
-    expect(forceSide.rootUnits.length).toBe(1);
-    expect(forceSide.rootUnits[0]!.name).toBe("HQ");
+    expect(forceSide.subordinates.length).toBe(1);
+    expect(forceSide.subordinates[0]!.name).toBe("HQ");
   });
 });
 
@@ -174,7 +174,7 @@ describe("ForceSide methods", () => {
     //   expect(side.getAffiliation()).toBe(StandardIdentities.NoneSpecified);
     // });
     it("should return the affiliation of the first unit", () => {
-      side.rootUnits[0]?.setAffiliation(StandardIdentity.Hostile);
+      side.subordinates[0]?.setAffiliation(StandardIdentity.Hostile);
       expect(side.getAffiliation()).toBe(StandardIdentity.Hostile);
     });
   });

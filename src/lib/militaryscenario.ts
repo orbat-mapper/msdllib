@@ -361,7 +361,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
         this.rootUnits.push(unit);
         let forceSide = this.forceSideMap[unit.superiorHandle];
         if (forceSide) {
-          forceSide.rootUnits.push(unit);
+          forceSide.subordinates.push(unit);
         }
       } else {
         let parentUnit = this.unitMap[unit.superiorHandle];
@@ -480,8 +480,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
   private updateSidesRootUnits() {
     for (let side of this.sides) {
       for (let force of side.forces) {
-        for (let rootUnit of force.rootUnits) {
-          side.rootUnits.push(rootUnit);
+        for (let rootUnit of force.subordinates) {
+          side.subordinates.push(rootUnit);
         }
       }
     }
@@ -787,7 +787,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
       this.rootUnits.push(unit);
       let forceSide = this.forceSideMap[unit.superiorHandle];
       if (forceSide) {
-        forceSide.rootUnits.push(unit);
+        forceSide.subordinates.push(unit);
       }
     } else {
       let parentUnit = this.unitMap[unit.superiorHandle];
@@ -874,7 +874,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
       superior.subordinates.push(unit);
     } else {
       unit.setForceRelation(superior);
-      superior.rootUnits.push(unit);
+      superior.subordinates.push(unit);
     }
   }
 
@@ -954,7 +954,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
           targetItem.subordinates.push(sourceItem);
         } else {
           sourceItem.setForceRelation(targetItem);
-          targetItem.rootUnits.push(sourceItem);
+          targetItem.subordinates.push(sourceItem);
         }
         unitsElement?.appendChild(sourceItem.element);
       } else if (
@@ -976,11 +976,15 @@ export class MilitaryScenario implements MilitaryScenarioType {
               );
         } else if (targetSuperior instanceof ForceSide) {
           sourceItem.setForceRelation(targetSuperior);
-          const targetIndex = targetSuperior.rootUnits.indexOf(targetItem);
+          const targetIndex = targetSuperior.subordinates.indexOf(targetItem);
           if (targetIndex < 0) return;
           instruction === "reorder-above"
-            ? targetSuperior.rootUnits.splice(targetIndex, 0, sourceItem)
-            : targetSuperior.rootUnits.splice(targetIndex + 1, 0, sourceItem);
+            ? targetSuperior.subordinates.splice(targetIndex, 0, sourceItem)
+            : targetSuperior.subordinates.splice(
+                targetIndex + 1,
+                0,
+                sourceItem,
+              );
         }
         targetItem.element.insertAdjacentElement(
           instruction === "reorder-above" ? "beforebegin" : "afterend",
@@ -1050,7 +1054,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
         (u) => u.objectHandle !== item.objectHandle,
       );
     } else if (originalSuperior instanceof ForceSide) {
-      originalSuperior.rootUnits = originalSuperior.rootUnits.filter(
+      originalSuperior.subordinates = originalSuperior.subordinates.filter(
         (u) => u.objectHandle !== item.objectHandle,
       );
       originalSuperior.equipment = originalSuperior.equipment.filter(

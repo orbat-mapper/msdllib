@@ -94,15 +94,15 @@ describe("Simple scenario", () => {
   it("default primary force side ", () => {
     let scenario = loadTestScenario();
     expect(scenario.primarySide).toBe(scenario.forceSides[0]);
-    expect(scenario.forceSides[0]?.rootUnits[0]?.sidc[1]).toBe("F");
-    expect(scenario.forceSides[1]?.rootUnits[0]?.sidc[1]).toBe("H");
+    expect(scenario.forceSides[0]?.subordinates[0]?.sidc[1]).toBe("F");
+    expect(scenario.forceSides[1]?.subordinates[0]?.sidc[1]).toBe("H");
   });
 
   it("set primary force side ", () => {
     let scenario = loadTestScenario();
     scenario.primarySide = scenario.forceSides[1]!;
-    expect(scenario.forceSides[0]?.rootUnits[0]?.sidc[1]).toBe("H");
-    expect(scenario.forceSides[1]?.rootUnits[0]?.sidc[1]).toBe("F");
+    expect(scenario.forceSides[0]?.subordinates[0]?.sidc[1]).toBe("H");
+    expect(scenario.forceSides[1]?.subordinates[0]?.sidc[1]).toBe("F");
   });
 
   it("has sides property", () => {
@@ -655,7 +655,7 @@ describe("MilitaryScenario.setForceRelation()", () => {
 
       // check internal state
       expect(originalUnitParent?.subordinates).not.toContain(unit);
-      expect(forceSide.rootUnits).toContain(unit);
+      expect(forceSide.subordinates).toContain(unit);
     });
 
     it("should work after serialization", () => {
@@ -684,7 +684,7 @@ describe("MilitaryScenario.setForceRelation()", () => {
 
       expect(newUnit.superiorHandle).toBe(forceSide.objectHandle);
       expect(newUnit.isRoot).toBe(true);
-      expect(newForceSide.rootUnits).toContain(newUnit);
+      expect(newForceSide.subordinates).toContain(newUnit);
       expect(newOriginalUnitParent?.subordinates).not.toContain(newUnit);
     });
   });
@@ -919,7 +919,7 @@ describe("Add/remove ForceSide", () => {
         });
       });
       it("should add it to the side's root units", () => {
-        expect(newForceSide.rootUnits.includes(newUnit)).toBe(true);
+        expect(newForceSide.subordinates.includes(newUnit)).toBe(true);
       });
     });
     describe("then removing the side", () => {

@@ -25,14 +25,14 @@ export interface ForceSideType {
   allegianceHandle?: string;
   militaryService?: MilitaryService;
   countryCode?: string;
-  rootUnits: Unit[];
+  subordinates: Unit[];
   equipment: EquipmentItem[];
   associations?: AssociationType[];
 }
 
 export type ForceSideTypeUpdate = Omit<
   ForceSideType,
-  "allegianceHandle" | "rootUnits" | "equipment"
+  "allegianceHandle" | "subordinates" | "equipment"
 >;
 
 export type ForceSideTypeInput = Omit<ForceSideTypeUpdate, "objectHandle">;
@@ -55,7 +55,7 @@ export class ForceSide implements ForceSideType {
   #militaryService?: MilitaryService;
   #countryCode?: string;
   #allegianceHandle?: string;
-  rootUnits: Unit[] = [];
+  subordinates: Unit[] = [];
   #associations: Association[] = [];
   forces: ForceSide[] = [];
   equipment: EquipmentItem[] = [];
@@ -165,6 +165,15 @@ export class ForceSide implements ForceSideType {
     }
   }
 
+  /** @deprecated Use `subordinates` directly instead. */
+  get rootUnits(): Unit[] {
+    return this.subordinates;
+  }
+
+  /** @deprecated Use `subordinates` directly instead. */
+  set rootUnits(units: Unit[]) {
+    this.subordinates = units;
+  }
   setAffiliation(s: StandardIdentity) {
     function helper(unit: Unit) {
       unit.setAffiliation(s);
@@ -172,7 +181,7 @@ export class ForceSide implements ForceSideType {
         helper(subordinate);
       }
     }
-    for (let rootUnit of this.rootUnits) {
+    for (let rootUnit of this.subordinates) {
       helper(rootUnit);
     }
 
@@ -182,7 +191,7 @@ export class ForceSide implements ForceSideType {
   }
 
   getAffiliation(): StandardIdentity {
-    const firstUnitOrEquipment = this.rootUnits[0] ?? this.equipment[0];
+    const firstUnitOrEquipment = this.subordinates[0] ?? this.equipment[0];
     if (!firstUnitOrEquipment) {
       return StandardIdentity.NoneSpecified;
     }
@@ -203,7 +212,7 @@ export class ForceSide implements ForceSideType {
         }
       }
     }
-    for (let rootUnit of this.rootUnits) {
+    for (let rootUnit of this.subordinates) {
       units.push(rootUnit);
       if (rootUnit.subordinates) {
         addSubordinates(rootUnit.subordinates);
@@ -240,7 +249,7 @@ export class ForceSide implements ForceSideType {
       }
     }
 
-    for (let rootUnit of this.rootUnits) {
+    for (let rootUnit of this.subordinates) {
       if (includeUnits && (includeEmptyLocations || rootUnit.location)) {
         features.push(rootUnit.toGeoJson(options));
       }
