@@ -6,6 +6,7 @@ import { getTagElement, getTagValue } from "../lib/domutils.js";
 
 import { EquipmentItemDisposition } from "../lib/disposition.js";
 import { EquipmentSymbolModifiers } from "../lib/symbolmodifiers.js";
+import { StandardIdentity } from "../lib/enums.js";
 
 const EQUIPMENT_NO_NAME_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -266,6 +267,34 @@ describe("EquipmentItem class", () => {
       expect(equipment.element.querySelector("Name")?.textContent).toBe(
         "New Name",
       );
+    });
+  });
+
+  describe("when modifying the symbolIdentifier", () => {
+    it("should set the symbolIdentifier", () => {
+      const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+      equipment.symbolIdentifier = "S-G-XXXX------G";
+      expect(equipment.symbolIdentifier).toBe("S-G-XXXX------G");
+    });
+
+    it("should set the sidc when modifying symbolIdentifier", () => {
+      const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+      equipment.symbolIdentifier = "S-G-XXXX------G";
+      expect(equipment.sidc).toBe("SOG-XXXX------G");
+      equipment.setAffiliation(StandardIdentity.Hostile);
+      expect(equipment.sidc).toBe("SHG-XXXX------G");
+      expect(equipment.symbolIdentifier).toBe("S-G-XXXX------G");
+    });
+
+    it("should set the symbolIdentifier in the XML element", () => {
+      const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+      expect(getTagValue(equipment.element, "SymbolIdentifier")).toBe(
+        "S-G-EVAT------G",
+      );
+      equipment.symbolIdentifier = "S-G-XXXX------G";
+      expect(
+        equipment.element.querySelector("SymbolIdentifier")?.textContent,
+      ).toBe("S-G-XXXX------G");
     });
   });
 });

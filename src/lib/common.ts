@@ -72,6 +72,14 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
     this.initHoldings();
   }
 
+  private updateSidc() {
+    this.sidc = setCharAt(
+      this.#symbolIdentifier,
+      1,
+      this.getAffiliation() ?? StandardIdentity.NoneSpecified,
+    );
+  }
+
   get name(): string {
     return this.#name ?? getTagValue(this.element, "Name");
   }
@@ -99,6 +107,7 @@ export class UnitEquipmentBase implements UnitEquipmentInterface {
   set symbolIdentifier(symbolIdentifier: string) {
     this.#symbolIdentifier = symbolIdentifier;
     setOrCreateTagValue(this.element, "SymbolIdentifier", symbolIdentifier);
+    this.updateSidc();
   }
 
   get holdings(): Holding[] {

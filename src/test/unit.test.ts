@@ -202,6 +202,15 @@ describe("Unit class", () => {
       expect(unit.getAffiliation()).toBe(StandardIdentity.Hostile);
     });
 
+    it("should update the sidc", () => {
+      const unit = new Unit(parseFromString(UNIT_MGRS));
+      expect(unit.symbolIdentifier).toBe("S-G-UH-----E---");
+      expect(unit.sidc).toBe("SOG-UH-----E---");
+      unit.setAffiliation(StandardIdentity.Hostile);
+      expect(unit.getAffiliation()).toBe(StandardIdentity.Hostile);
+      expect(unit.sidc).toBe("SHG-UH-----E---");
+    });
+
     it("should change affiliation of subordinates if the setSubordinates option is set", () => {
       const scenario = loadTestScenario();
       const unit = scenario.rootUnits[0]!;
@@ -217,6 +226,28 @@ describe("Unit class", () => {
           expect(childUnit.getAffiliation()).toBe(StandardIdentity.Hostile);
         }
       }
+    });
+  });
+
+  describe("when modifying symbolIdentifier", () => {
+    it("should update the sidc", () => {
+      const unit = new Unit(parseFromString(UNIT_MGRS));
+      expect(unit.symbolIdentifier).toBe("S-G-UH-----E---");
+      expect(unit.sidc).toBe("SOG-UH-----E---");
+      unit.symbolIdentifier = "S-G-UH-----AA--";
+      expect(unit.symbolIdentifier).toBe("S-G-UH-----AA--");
+      expect(unit.sidc).toBe("SOG-UH-----AA--");
+    });
+
+    it("should keep the sidc affiliation after changing the symbolIdentifier", () => {
+      const unit = new Unit(parseFromString(UNIT_MGRS));
+      expect(unit.getAffiliation()).toBe(StandardIdentity.NoneSpecified);
+      expect(unit.symbolIdentifier).toBe("S-G-UH-----E---");
+      expect(unit.sidc).toBe("SOG-UH-----E---");
+      unit.setAffiliation(StandardIdentity.Hostile);
+      expect(unit.sidc).toBe("SHG-UH-----E---");
+      unit.symbolIdentifier = "S-G-UH-----AA--";
+      expect(unit.sidc).toBe("SHG-UH-----AA--");
     });
   });
 
