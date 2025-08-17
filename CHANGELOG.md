@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 1.2.1
+
+### Patch Changes
+
+- e1c39d3: Update `sidc` property when `symbolIdentifier` is modified
+
 ## 1.2.0
 
 ### Minor Changes
