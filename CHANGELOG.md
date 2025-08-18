@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 1.2.2
+
+### Patch Changes
+
+- 80d30ae: Add function `evaluateAssociations` to `militaryscenario.ts`
+
 ## 1.2.1
 
 ### Patch Changes
