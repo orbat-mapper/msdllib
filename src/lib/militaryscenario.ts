@@ -410,18 +410,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
     }
     this._primarySide = side;
     side.setAffiliation(StandardIdentity.Friend);
-
-    for (let association of side.associations) {
-      let code = rel2code(association.relationship);
-      if (association.affiliateHandle === side.objectHandle) {
-        console.warn(side.name + " has an association with itself");
-        continue;
-      }
-      const relatedForceSide = this.forceSideMap[association.affiliateHandle];
-      if (relatedForceSide) {
-        relatedForceSide.setAffiliation(code);
-      }
-    }
+    this.evaluateAssociations(side);
   }
 
   get primarySide(): ForceSide | null | undefined {
@@ -475,6 +464,20 @@ export class MilitaryScenario implements MilitaryScenarioType {
 
   getFederateOfUnitOrEquipment(objectHandle: string): Federate | undefined {
     return this.deployment?.getFederateOfUnitOrEquipment(objectHandle);
+  }
+
+  evaluateAssociations(side: ForceSide) {
+    for (let association of side.associations) {
+      let code = rel2code(association.relationship);
+      if (association.affiliateHandle === side.objectHandle) {
+        console.warn(side.name + " has an association with itself");
+        continue;
+      }
+      const relatedForceSide = this.forceSideMap[association.affiliateHandle];
+      if (relatedForceSide) {
+        relatedForceSide.setAffiliation(code);
+      }
+    }
   }
 
   private updateSidesRootUnits() {
