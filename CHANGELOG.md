@@ -1,5 +1,127 @@
 # @orbat-mapper/msdllib
 
+## 1.2.2
+
+### Patch Changes
+
+- 80d30ae: Add function `evaluateAssociations` to `militaryscenario.ts`
+
+## 1.2.1
+
+### Patch Changes
+
+- e1c39d3: Update `sidc` property when `symbolIdentifier` is modified
+
+## 1.2.0
+
+### Minor Changes
+
+- 7a44af1: Add `toObject` and `updateFromObject` methods for `UnitModel` and `EquipmentModel` classes
+- cd5e1bc: Rename `ForceSide.rootUnits` to `ForceSide.subordinates`.
+
+## 1.1.3
+
+### Patch Changes
+
+- 2e3fb2d: Add function to `MilitaryScenario`:
+  - createDeployment(element?: Element): void;
+
+## 1.1.2
+
+### Patch Changes
+
+- 1d7062e: Fix some issues with federate deployment.
+
+  Add functions to `MilitaryScenario`:
+  - removeEquipmentFromFederate(equipmentHandle: string, federateHandle: string): void
+  - removeUnitFromFederate(
+    unitHandle: string,
+    federateHandle: string,
+    includeSubordinates: boolean = false,
+    ): void
+
+## 1.1.1
+
+### Patch Changes
+
+- ca525da: Add logic for unallocated units and equipment
+
+## 1.1.0
+
+### Minor Changes
+
+- 87a1994: Add support for writing GCC (geocentric) coordinates
+
+### Patch Changes
+
+- 5b2aa97: Use first equipment item for affiliation if there are no units in a ForceSide
+
+## 1.0.3
+
+### Patch Changes
+
+- 0dd52e1: Update `ForceSide` root equipment when setting primary side
+
+## 1.0.2
+
+### Patch Changes
+
+- 6d1bdce: `ForceSide.setAffiliation` now sets the affiliation of equipment assigned directly to the `ForceSide`
+
+## 1.0.1
+
+### Patch Changes
+
+- ffb2e18: Fix bug in equipment assignment introduced by changes to `EquipmentItem.superiorHandle` behavior
+
+## 1.0.0
+
+### Major Changes
+
+- c64b6cd: `EquipmentItem.superiorHandle` now returns `ownerHandle` instead of `organicSuperiorHandle`
+
+  This may potentially break existing code that relies on the previous behavior. In cases where you need to access the
+  organic superior handle, you can use `EquipmentItem.relations.organicSuperiorHandle` (read only).
+
+## 0.29.0
+
+### Minor Changes
+
+- 4006566: Make `EquipmentItem.symbolModifiers` writable
+- f227e34: Make `Unit.symbolModifiers` writable
+
+## 0.28.0
+
+### Minor Changes
+
+- 40a3b0c: Make `ForceSide` associations writable:
+  - `ForceSide.associations` is writable
+  - added `addAssociation`, `removeAssociation` and `updateAssociation` methods to `ForceSide` class
+
+## 0.27.0
+
+### Minor Changes
+
+- 165cb7e: Add `MilitaryScenario.setItemRelation(.)` `ForceSide` reordering support
+
+## 0.26.1
+
+### Patch Changes
+
+- e579c3c: Fix bug where Unit and EquipmentItem elements were put in wrong parent element
+
+## 0.26.0
+
+### Minor Changes
+
+- d8318ba: Add `MilitaryScenario.msdlOptions:MsdlOptions` attribute
+
+## 0.25.1
+
+### Patch Changes
+
+- 25b7685: Improve `setItemRelation` error handling and input validation
+
 ## 0.25.0
 
 ### Minor Changes

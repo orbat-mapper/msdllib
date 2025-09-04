@@ -7,9 +7,11 @@ import {
 import { Unit } from "./units.js";
 import {
   createEmptyXMLElementFromTagName,
+  getTagElement,
   getTagElements,
   getTagValue,
   getValueOrUndefined,
+  removeTagValues,
   removeUndefinedValues,
   setOrCreateTagValue,
 } from "./domutils.js";
@@ -23,13 +25,14 @@ export interface ForceSideType {
   allegianceHandle?: string;
   militaryService?: MilitaryService;
   countryCode?: string;
-  rootUnits: Unit[];
+  subordinates: Unit[];
   equipment: EquipmentItem[];
+  associations?: AssociationType[];
 }
 
 export type ForceSideTypeUpdate = Omit<
   ForceSideType,
-  "allegianceHandle" | "rootUnits" | "equipment"
+  "allegianceHandle" | "subordinates" | "equipment"
 >;
 
 export type ForceSideTypeInput = Omit<ForceSideTypeUpdate, "objectHandle">;
@@ -52,8 +55,8 @@ export class ForceSide implements ForceSideType {
   #militaryService?: MilitaryService;
   #countryCode?: string;
   #allegianceHandle?: string;
-  rootUnits: Unit[] = [];
-  associations: AssociationType[] = [];
+  subordinates: Unit[] = [];
+  #associations: Association[] = [];
   forces: ForceSide[] = [];
   equipment: EquipmentItem[] = [];
   element: Element;
@@ -69,6 +72,31 @@ export class ForceSide implements ForceSideType {
     this.#objectHandle = getTagValue(element, "ObjectHandle");
     this.#allegianceHandle = getValueOrUndefined(element, "AllegianceHandle");
     this.initAssociations();
+  }
+
+  get associations(): Association[] {
+    return this.#associations;
+  }
+
+  set associations(associations: (Association | AssociationType)[]) {
+    this.#associations = [];
+    let associationsEl = getTagElement(this.element, "Associations");
+    if (!associationsEl) {
+      associationsEl = createEmptyXMLElementFromTagName("Associations");
+      this.element.appendChild(associationsEl);
+    }
+    removeTagValues(associationsEl, Association.TAG_NAME);
+
+    for (const association of associations) {
+      let associationInstance: Association;
+      if (association instanceof Association) {
+        associationInstance = association;
+      } else {
+        associationInstance = Association.fromModel(association);
+      }
+      this.#associations.push(associationInstance);
+      associationsEl.appendChild(associationInstance.element);
+    }
   }
 
   get objectHandle(): string {
@@ -137,6 +165,15 @@ export class ForceSide implements ForceSideType {
     }
   }
 
+  /** @deprecated Use `subordinates` directly instead. */
+  get rootUnits(): Unit[] {
+    return this.subordinates;
+  }
+
+  /** @deprecated Use `subordinates` directly instead. */
+  set rootUnits(units: Unit[]) {
+    this.subordinates = units;
+  }
   setAffiliation(s: StandardIdentity) {
     function helper(unit: Unit) {
       unit.setAffiliation(s);
@@ -144,17 +181,21 @@ export class ForceSide implements ForceSideType {
         helper(subordinate);
       }
     }
-    for (let rootUnit of this.rootUnits) {
+    for (let rootUnit of this.subordinates) {
       helper(rootUnit);
+    }
+
+    for (let equipmentItem of this.equipment) {
+      equipmentItem.setAffiliation(s);
     }
   }
 
   getAffiliation(): StandardIdentity {
-    const firstUnit = this.rootUnits[0];
-    if (!firstUnit) {
+    const firstUnitOrEquipment = this.subordinates[0] ?? this.equipment[0];
+    if (!firstUnitOrEquipment) {
       return StandardIdentity.NoneSpecified;
     }
-    return firstUnit.getAffiliation();
+    return firstUnitOrEquipment.getAffiliation();
   }
 
   getEquipmentItems(): EquipmentItem[] {
@@ -171,7 +212,7 @@ export class ForceSide implements ForceSideType {
         }
       }
     }
-    for (let rootUnit of this.rootUnits) {
+    for (let rootUnit of this.subordinates) {
       units.push(rootUnit);
       if (rootUnit.subordinates) {
         addSubordinates(rootUnit.subordinates);
@@ -208,7 +249,7 @@ export class ForceSide implements ForceSideType {
       }
     }
 
-    for (let rootUnit of this.rootUnits) {
+    for (let rootUnit of this.subordinates) {
       if (includeUnits && (includeEmptyLocations || rootUnit.location)) {
         features.push(rootUnit.toGeoJson(options));
       }
@@ -235,13 +276,31 @@ export class ForceSide implements ForceSideType {
   }
 
   private initAssociations() {
-    for (let e of getTagElements(this.element, "Association")) {
-      let association = {
-        affiliateHandle: getTagValue(e, "AffiliateHandle"),
-        relationship: getTagValue(e, "Relationship") as HostilityStatusCode,
-      };
-      this.associations.push(association);
+    const associationsEl = getTagElement(this.element, "Associations");
+    for (let e of getTagElements(associationsEl, Association.TAG_NAME)) {
+      this.#associations.push(new Association(e));
     }
+  }
+
+  addAssociation(association: Association | AssociationType): void {
+    this.associations = [...this.#associations, association];
+  }
+
+  updateAssociation({ affiliateHandle, relationship }: AssociationType): void {
+    const existingAssociation = this.#associations.find(
+      (a) => a.affiliateHandle === affiliateHandle,
+    );
+    if (existingAssociation) {
+      existingAssociation.relationship = relationship;
+    } else {
+      this.addAssociation({ affiliateHandle, relationship });
+    }
+  }
+
+  removeAssociation(affiliateHandle: string): void {
+    this.associations = this.#associations.filter(
+      (a) => a.affiliateHandle !== affiliateHandle,
+    );
   }
 
   toObject(): ForceSideTypeUpdate {
@@ -250,7 +309,14 @@ export class ForceSide implements ForceSideType {
       name: this.name,
       militaryService: this.militaryService,
       countryCode: this.countryCode,
+      associations: this.associations.map((a) => a.toObject()),
     });
+  }
+
+  toString() {
+    if (!this.element) return "";
+    const oSerializer = new XMLSerializer();
+    return oSerializer.serializeToString(this.element);
   }
 
   updateFromObject(data: Partial<ForceSideTypeUpdate>): void {
@@ -275,5 +341,80 @@ export class ForceSide implements ForceSideType {
     );
     side.objectHandle = uuidv4();
     return side;
+  }
+}
+
+export class Association implements AssociationType {
+  static readonly TAG_NAME = "Association";
+  element: Element;
+  #affiliateHandle: string;
+  #relationship: HostilityStatusCode;
+
+  constructor(element: Element) {
+    this.element = element;
+    this.#affiliateHandle = getTagValue(element, "AffiliateHandle");
+    this.#relationship = getTagValue(
+      element,
+      "Relationship",
+    ) as HostilityStatusCode;
+  }
+
+  get affiliateHandle(): string {
+    return (
+      this.#affiliateHandle ?? getTagValue(this.element, "AffiliateHandle")
+    );
+  }
+
+  set affiliateHandle(affiliateHandle: string) {
+    this.#affiliateHandle = affiliateHandle;
+    setOrCreateTagValue(this.element, "AffiliateHandle", affiliateHandle);
+  }
+
+  get relationship(): HostilityStatusCode {
+    return (
+      this.#relationship ??
+      (getTagValue(this.element, "Relationship") as HostilityStatusCode)
+    );
+  }
+  set relationship(relationship: HostilityStatusCode) {
+    this.#relationship = relationship;
+    setOrCreateTagValue(this.element, "Relationship", relationship);
+  }
+
+  toString() {
+    if (!this.element) return "";
+    const oSerializer = new XMLSerializer();
+    return oSerializer.serializeToString(this.element);
+  }
+
+  updateFromObject(data: Partial<AssociationType>): void {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key in this) {
+        (this as any)[key] = value;
+      } else {
+        console.warn(`Property ${key} does not exist.`);
+      }
+    });
+  }
+
+  toObject(): AssociationType {
+    return removeUndefinedValues({
+      affiliateHandle: this.affiliateHandle,
+      relationship: this.relationship,
+    });
+  }
+
+  static fromModel(model: AssociationType): Association {
+    const association = Association.create();
+    association.updateFromObject(model);
+    return association;
+  }
+
+  static create(): Association {
+    const association = new Association(
+      createEmptyXMLElementFromTagName(Association.TAG_NAME),
+    );
+    association.affiliateHandle = uuidv4();
+    return association;
   }
 }

@@ -32,7 +32,7 @@ export type UnitRelationType = {
 };
 
 export type SetItemRelationOptions = {
-  source: Unit | EquipmentItem | string;
+  source: Unit | EquipmentItem | ForceSide | string;
   target: Unit | EquipmentItem | ForceSide | string;
   instruction?: InstructionType;
   // relationData?: ForceSideRelationType | UnitRelationType;
@@ -284,7 +284,19 @@ export class MilitaryScenario implements MilitaryScenarioType {
   private initializeDeployment() {
     const deploymentEl = getTagElement(this.element, "Deployment");
     if (!deploymentEl) return;
-    this.deployment = new Deployment(deploymentEl);
+    this.createDeployment(deploymentEl);
+  }
+
+  createDeployment(element?: Element) {
+    this.deployment = element ? new Deployment(element) : Deployment.create();
+    for (const unit in this.unitMap) {
+      if (!this.deployment.getFederateOfUnit(unit))
+        this.deployment.addUnallocatedUnit(unit);
+    }
+    for (const equipment in this.equipmentMap) {
+      if (!this.deployment.getFederateOfEquipment(equipment))
+        this.deployment.addUnallocatedEquipment(equipment);
+    }
   }
 
   private initializeMetaInfo() {
@@ -349,7 +361,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
         this.rootUnits.push(unit);
         let forceSide = this.forceSideMap[unit.superiorHandle];
         if (forceSide) {
-          forceSide.rootUnits.push(unit);
+          forceSide.subordinates.push(unit);
         }
       } else {
         let parentUnit = this.unitMap[unit.superiorHandle];
@@ -372,22 +384,23 @@ export class MilitaryScenario implements MilitaryScenarioType {
   }
 
   private addEquipmentItemToOwner(eq: EquipmentItem) {
-    if (
-      eq.relations.organicSuperiorHandle ||
-      eq.relations.ownerChoice === "UNIT"
-    ) {
-      let unit = this.unitMap[eq.superiorHandle];
-      if (unit) {
-        unit.equipment.push(eq);
-      }
-    } else if (eq.relations.ownerChoice === "FORCE_SIDE") {
+    if (eq.relations.ownerChoice === "FORCE_SIDE") {
       const side = this.forceSideMap[eq.relations.ownerHandle];
       if (side) {
         side.equipment.push(eq);
+        return;
       }
-    } else {
-      this.equipment.push(eq);
     }
+
+    if (eq.superiorHandle) {
+      let unit = this.unitMap[eq.superiorHandle];
+      if (unit) {
+        unit.equipment.push(eq);
+        return;
+      }
+    }
+    console.warn("Could not find the owner of EquipmentItem " + eq.label);
+    this.equipment.push(eq);
   }
 
   set primarySide(side: ForceSide | null) {
@@ -396,20 +409,8 @@ export class MilitaryScenario implements MilitaryScenarioType {
       return;
     }
     this._primarySide = side;
-    for (let rootUnit of side.rootUnits) {
-      this.setAffiliation(rootUnit, StandardIdentity.Friend);
-    }
-    for (let association of side.associations) {
-      let code = rel2code(association.relationship);
-      if (association.affiliateHandle === side.objectHandle) {
-        console.warn(side.name + " has an association with itself");
-        continue;
-      }
-      let rootUnits = this.forceSideMap[association.affiliateHandle]?.rootUnits;
-      for (let unit of rootUnits ?? []) {
-        this.setAffiliation(unit, code);
-      }
-    }
+    side.setAffiliation(StandardIdentity.Friend);
+    this.evaluateAssociations(side);
   }
 
   get primarySide(): ForceSide | null | undefined {
@@ -461,11 +462,29 @@ export class MilitaryScenario implements MilitaryScenarioType {
     return this.deployment?.getFederateOfEquipment(objectHandle);
   }
 
+  getFederateOfUnitOrEquipment(objectHandle: string): Federate | undefined {
+    return this.deployment?.getFederateOfUnitOrEquipment(objectHandle);
+  }
+
+  evaluateAssociations(side: ForceSide) {
+    for (let association of side.associations) {
+      let code = rel2code(association.relationship);
+      if (association.affiliateHandle === side.objectHandle) {
+        console.warn(side.name + " has an association with itself");
+        continue;
+      }
+      const relatedForceSide = this.forceSideMap[association.affiliateHandle];
+      if (relatedForceSide) {
+        relatedForceSide.setAffiliation(code);
+      }
+    }
+  }
+
   private updateSidesRootUnits() {
     for (let side of this.sides) {
       for (let force of side.forces) {
-        for (let rootUnit of force.rootUnits) {
-          side.rootUnits.push(rootUnit);
+        for (let rootUnit of force.subordinates) {
+          side.subordinates.push(rootUnit);
         }
       }
     }
@@ -586,7 +605,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
       this.element,
       Deployment.TAG_NAME,
     );
-    this.deployment = new Deployment(deploymentEl);
+    this.createDeployment(deploymentEl);
   }
 
   private updateDeploymentElement() {
@@ -594,7 +613,11 @@ export class MilitaryScenario implements MilitaryScenarioType {
     this.element!.appendChild(this.deployment!.element);
   }
 
-  assignUnitToFederate(unitHandle: string, federateHandle: string) {
+  assignUnitToFederate(
+    unitHandle: string,
+    federateHandle: string,
+    includeSubordinates: boolean = false,
+  ) {
     if (!this.deployment) return;
     const unit = this.getUnitById(unitHandle);
     const federate = this.getFederateById(federateHandle);
@@ -604,7 +627,49 @@ export class MilitaryScenario implements MilitaryScenarioType {
     if (!federate) {
       throw new Error(`Federate ${federateHandle} not found`);
     }
-    this.deployment.assignUnitToFederate(federateHandle, unitHandle);
+    this.deployment.assignUnitToFederate(unitHandle, federateHandle);
+    if (includeSubordinates) {
+      for (const sub of unit.subordinates) {
+        this.assignUnitToFederate(
+          sub.objectHandle,
+          federateHandle,
+          includeSubordinates,
+        );
+      }
+      for (const eq of unit.equipment) {
+        this.assignEquipmentItemToFederate(eq.objectHandle, federateHandle);
+      }
+    }
+    this.updateDeploymentElement();
+  }
+
+  removeUnitFromFederate(
+    unitHandle: string,
+    federateHandle: string,
+    includeSubordinates: boolean = false,
+  ) {
+    if (!this.deployment) return;
+    const unit = this.getUnitById(unitHandle);
+    const federate = this.getFederateById(federateHandle);
+    if (!unit) {
+      throw new Error(`Unit ${unitHandle} not found`);
+    }
+    if (!federate) {
+      throw new Error(`Federate ${federateHandle} not found`);
+    }
+    this.deployment.removeUnitFromFederate(unitHandle, federateHandle);
+    if (includeSubordinates) {
+      for (const sub of unit.subordinates) {
+        this.removeUnitFromFederate(
+          sub.objectHandle,
+          federateHandle,
+          includeSubordinates,
+        );
+      }
+      for (const eq of unit.equipment) {
+        this.removeEquipmentFromFederate(eq.objectHandle, federateHandle);
+      }
+    }
     this.updateDeploymentElement();
   }
 
@@ -621,8 +686,30 @@ export class MilitaryScenario implements MilitaryScenarioType {
       throw new Error(`Federate ${federateHandle} not found`);
     }
     const oldFederate = this.getFederateOfEquipment(equipmentItemHandle);
-    if (oldFederate) oldFederate.removeEquipmentItem(equipmentItemHandle);
-    federate.addEquipmentItem(equipmentItemHandle);
+    if (oldFederate) {
+      oldFederate.removeEquipmentItem(equipmentItemHandle);
+    }
+    this.deployment?.assignEquipmentToFederate(
+      equipmentItemHandle,
+      federate.objectHandle,
+    );
+    this.updateDeploymentElement();
+  }
+
+  removeEquipmentFromFederate(equipmentHandle: string, federateHandle: string) {
+    if (!this.deployment) return;
+    const equipment = this.getEquipmentById(equipmentHandle);
+    const federate = this.getFederateById(federateHandle);
+    if (!equipment) {
+      throw new Error(`Equipment ${equipmentHandle} not found`);
+    }
+    if (!federate) {
+      throw new Error(`Federate ${federateHandle} not found`);
+    }
+    this.deployment.removeEquipmentFromFederate(
+      equipmentHandle,
+      federateHandle,
+    );
     this.updateDeploymentElement();
   }
 
@@ -660,6 +747,20 @@ export class MilitaryScenario implements MilitaryScenarioType {
     this.updateDeploymentElement();
   }
 
+  setEquipmentHoldingOrganization(
+    equipment: EquipmentItem,
+    newSuperiorHandle: string,
+  ) {
+    const superior = this.getUnitOrForceSideById(newSuperiorHandle);
+    if (!superior) {
+      throw new Error(`Superior unit or side ${newSuperiorHandle} not found`);
+    }
+    const oldSuperior = equipment.superiorHandle;
+    this.removeUnitOrEquipmentFromSuperior(equipment);
+    equipment.setHoldingOrganization(superior);
+    this.addEquipmentItemToOwner(equipment);
+  }
+
   private detectNETN() {
     const netnElement =
       getTagElement(this.element, "EntityType") ??
@@ -689,7 +790,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
       this.rootUnits.push(unit);
       let forceSide = this.forceSideMap[unit.superiorHandle];
       if (forceSide) {
-        forceSide.rootUnits.push(unit);
+        forceSide.subordinates.push(unit);
       }
     } else {
       let parentUnit = this.unitMap[unit.superiorHandle];
@@ -776,7 +877,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
       superior.subordinates.push(unit);
     } else {
       unit.setForceRelation(superior);
-      superior.rootUnits.push(unit);
+      superior.subordinates.push(unit);
     }
   }
 
@@ -794,8 +895,15 @@ export class MilitaryScenario implements MilitaryScenarioType {
     if (sourceItem.objectHandle === targetItem.objectHandle) {
       throw new Error("Source and target items cannot be the same");
     }
+
     if (sourceItem instanceof EquipmentItem) {
-      const equipmentElement = getTagElement(this.element, "Equipment");
+      if (targetItem instanceof EquipmentItem && instruction === "make-child") {
+        throw new Error(
+          "Cannot make EquipmentItem a child of another EquipmentItem",
+        );
+      }
+      const organizationsElement = getTagElement(this.element, "Organizations");
+      const equipmentElement = getTagElement(organizationsElement, "Equipment");
       this.removeUnitOrEquipmentFromSuperior(sourceItem);
       // Add to new superior
       if (
@@ -832,7 +940,15 @@ export class MilitaryScenario implements MilitaryScenarioType {
       if (targetItem instanceof EquipmentItem) {
         throw new Error("Cannot make a Unit a child of EquipmentItem");
       }
-      const unitsElement = getTagElement(this.element, "Units");
+
+      // is source a superior of target?
+      const { hierarchy } = this.getItemHierarchy(targetItem);
+      if (hierarchy.includes(sourceItem)) {
+        throw new Error("Cannot make source a subordinate of itself");
+      }
+
+      const organizationsElement = getTagElement(this.element, "Organizations");
+      const unitsElement = getTagElement(organizationsElement, "Units");
       this.removeUnitOrEquipmentFromSuperior(sourceItem);
       // Add to new superior
       if (instruction === "make-child") {
@@ -841,7 +957,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
           targetItem.subordinates.push(sourceItem);
         } else {
           sourceItem.setForceRelation(targetItem);
-          targetItem.rootUnits.push(sourceItem);
+          targetItem.subordinates.push(sourceItem);
         }
         unitsElement?.appendChild(sourceItem.element);
       } else if (
@@ -863,17 +979,53 @@ export class MilitaryScenario implements MilitaryScenarioType {
               );
         } else if (targetSuperior instanceof ForceSide) {
           sourceItem.setForceRelation(targetSuperior);
-          const targetIndex = targetSuperior.rootUnits.indexOf(targetItem);
+          const targetIndex = targetSuperior.subordinates.indexOf(targetItem);
           if (targetIndex < 0) return;
           instruction === "reorder-above"
-            ? targetSuperior.rootUnits.splice(targetIndex, 0, sourceItem)
-            : targetSuperior.rootUnits.splice(targetIndex + 1, 0, sourceItem);
+            ? targetSuperior.subordinates.splice(targetIndex, 0, sourceItem)
+            : targetSuperior.subordinates.splice(
+                targetIndex + 1,
+                0,
+                sourceItem,
+              );
         }
         targetItem.element.insertAdjacentElement(
           instruction === "reorder-above" ? "beforebegin" : "afterend",
           sourceItem.element,
         );
       }
+    } else if (sourceItem instanceof ForceSide) {
+      if (targetItem instanceof EquipmentItem) {
+        throw new Error("Cannot make a ForceSide a child of an EquipmentItem");
+      }
+      if (targetItem instanceof Unit) {
+        throw new Error("Cannot make a ForceSide a child of a Unit");
+      }
+      if (instruction === "make-child") {
+        console.warn("The make-child instruction is not supported yet");
+        return;
+      }
+      const forceSides = this.forceSides.filter(
+        (s) => s.objectHandle !== sourceItem.objectHandle,
+      );
+      const targetIndex = forceSides.indexOf(targetItem);
+      if (targetIndex < 0) {
+        throw new Error("Target ForceSide not found in sides");
+      }
+      if (instruction === "reorder-above") {
+        forceSides.splice(targetIndex, 0, sourceItem);
+        targetItem.element.insertAdjacentElement(
+          "beforebegin",
+          sourceItem.element,
+        );
+      } else if (instruction === "reorder-below") {
+        forceSides.splice(targetIndex + 1, 0, sourceItem);
+        targetItem.element.insertAdjacentElement(
+          "afterend",
+          sourceItem.element,
+        );
+      }
+      this.forceSides = forceSides;
     }
   }
 
@@ -905,7 +1057,7 @@ export class MilitaryScenario implements MilitaryScenarioType {
         (u) => u.objectHandle !== item.objectHandle,
       );
     } else if (originalSuperior instanceof ForceSide) {
-      originalSuperior.rootUnits = originalSuperior.rootUnits.filter(
+      originalSuperior.subordinates = originalSuperior.subordinates.filter(
         (u) => u.objectHandle !== item.objectHandle,
       );
       originalSuperior.equipment = originalSuperior.equipment.filter(

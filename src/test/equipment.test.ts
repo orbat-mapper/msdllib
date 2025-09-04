@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { EQUIPMENT_TEMPLATE, parseFromString } from "./testdata.js";
 
-import { EquipmentItem, EquipmentSymbolModifiers } from "../lib/equipment.js";
+import { EquipmentItem } from "../lib/equipment.js";
 import { getTagElement, getTagValue } from "../lib/domutils.js";
 
 import { EquipmentItemDisposition } from "../lib/disposition.js";
+import { EquipmentSymbolModifiers } from "../lib/symbolmodifiers.js";
+import { StandardIdentity } from "../lib/enums.js";
 
 const EQUIPMENT_NO_NAME_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
@@ -267,6 +269,34 @@ describe("EquipmentItem class", () => {
       );
     });
   });
+
+  describe("when modifying the symbolIdentifier", () => {
+    it("should set the symbolIdentifier", () => {
+      const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+      equipment.symbolIdentifier = "S-G-XXXX------G";
+      expect(equipment.symbolIdentifier).toBe("S-G-XXXX------G");
+    });
+
+    it("should set the sidc when modifying symbolIdentifier", () => {
+      const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+      equipment.symbolIdentifier = "S-G-XXXX------G";
+      expect(equipment.sidc).toBe("SOG-XXXX------G");
+      equipment.setAffiliation(StandardIdentity.Hostile);
+      expect(equipment.sidc).toBe("SHG-XXXX------G");
+      expect(equipment.symbolIdentifier).toBe("S-G-XXXX------G");
+    });
+
+    it("should set the symbolIdentifier in the XML element", () => {
+      const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+      expect(getTagValue(equipment.element, "SymbolIdentifier")).toBe(
+        "S-G-EVAT------G",
+      );
+      equipment.symbolIdentifier = "S-G-XXXX------G";
+      expect(
+        equipment.element.querySelector("SymbolIdentifier")?.textContent,
+      ).toBe("S-G-XXXX------G");
+    });
+  });
 });
 
 describe("New EquipmentItem", () => {
@@ -335,5 +365,92 @@ describe("New EquipmentItem", () => {
       sidc: "SH-------------",
     });
     expect(equipment.name, "Relations").toBe("Battery");
+  });
+});
+
+const EQUIPMENT_FORCE_OWNER_TEMPLATE = `<EquipmentItem>
+    <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
+    <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
+    <Name>111</Name>
+
+    <Relations>
+        <OrganicSuperiorHandle>f9e2ec3e-2dcd-11e2-be2b-xxxxxxxxxxxx</OrganicSuperiorHandle>
+   
+        <HoldingOrganization>
+            <OwnerChoice>FORCE_SIDE</OwnerChoice>
+            <OwnerData>
+                <ForceOwnerHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</ForceOwnerHandle>
+            </OwnerData>
+        </HoldingOrganization>
+    </Relations>
+    <Model>
+        <Resolution>HIGH</Resolution>
+    </Model>
+</EquipmentItem>`;
+
+const EQUIPMENT_NO_DIFFERENT_ORGANIC_TEMPLATE = `<EquipmentItem>
+    <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
+    <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
+    <Name>111</Name>
+ 
+    <Relations>
+        <OrganicSuperiorHandle>f9e2ec3e-2dcd-11e2-be2b-000c294ccccc</OrganicSuperiorHandle>
+        <HoldingOrganization>
+            <OwnerChoice>UNIT</OwnerChoice>
+            <OwnerData>
+                <UnitOwnerHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</UnitOwnerHandle>
+            </OwnerData>
+        </HoldingOrganization>
+    </Relations>
+    <Model>
+        <Resolution>HIGH</Resolution>
+    </Model>
+</EquipmentItem>`;
+
+describe("EquipmentItem relations", () => {
+  it("should have a relations property", () => {
+    const equipment = new EquipmentItem(parseFromString(EQUIPMENT_TEMPLATE));
+    expect(equipment.relations).toBeDefined();
+    expect(equipment.relations.organicSuperiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(equipment.relations.ownerChoice).toBe("UNIT");
+    expect(equipment.relations.ownerHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(equipment.superiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+  });
+
+  it("should support FORCE_OWNER relations", () => {
+    const equipment = new EquipmentItem(
+      parseFromString(EQUIPMENT_FORCE_OWNER_TEMPLATE),
+    );
+    expect(equipment.relations).toBeDefined();
+    expect(equipment.relations.ownerChoice).toBe("FORCE_SIDE");
+    expect(equipment.relations.ownerHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(equipment.superiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+  });
+
+  it("should prefer UNIT relations over organic relations", () => {
+    const equipment = new EquipmentItem(
+      parseFromString(EQUIPMENT_NO_DIFFERENT_ORGANIC_TEMPLATE),
+    );
+    expect(equipment.relations).toBeDefined();
+    expect(equipment.relations.organicSuperiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294ccccc",
+    );
+    expect(equipment.relations.ownerChoice).toBe("UNIT");
+    expect(equipment.relations.ownerHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(equipment.superiorHandle).toBe(
+      "f9e2ec3e-2dcd-11e2-be2b-000c294c9df8",
+    );
   });
 });

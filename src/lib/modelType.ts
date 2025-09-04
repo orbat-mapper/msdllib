@@ -72,11 +72,27 @@ export class UnitModel extends UnitEquipmentModelBase {
     setOrCreateBooleanValue(this.element, "AggregateBased", aggregateBased);
   }
 
+  toObject(): UnitModelType {
+    return {
+      resolution: this.resolution,
+      entityType: this.entityType,
+      aggregateBased: this.aggregateBased,
+    };
+  }
+
+  updateFromObject(data: Partial<UnitModelType>) {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key in this) {
+        (this as any)[key] = value;
+      } else {
+        console.warn(`Property ${key} does not exist.`);
+      }
+    });
+  }
+
   static fromModel(model: UnitModelType): UnitModel {
     const modelType = UnitModel.create();
-    modelType.resolution = model.resolution;
-    modelType.entityType = model.entityType;
-    modelType.aggregateBased = model.aggregateBased;
+    modelType.updateFromObject(model);
     return modelType;
   }
 
@@ -90,10 +106,26 @@ export class EquipmentModel extends UnitEquipmentModelBase {
     super(element);
   }
 
-  static fromModel(model: UnitEquipmentModelBaseType): EquipmentModel {
+  toObject(): EquipmentModelType {
+    return {
+      resolution: this.resolution,
+      entityType: this.entityType,
+    };
+  }
+
+  updateFromObject(data: Partial<EquipmentModelType>) {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key in this) {
+        (this as any)[key] = value;
+      } else {
+        console.warn(`Property ${key} does not exist.`);
+      }
+    });
+  }
+
+  static fromModel(model: EquipmentModelType): EquipmentModel {
     const modelType = EquipmentModel.create();
-    modelType.resolution = model.resolution;
-    modelType.entityType = model.entityType;
+    modelType.updateFromObject(model);
     return modelType;
   }
 

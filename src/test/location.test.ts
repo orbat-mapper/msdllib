@@ -32,4 +32,14 @@ describe("MSDL Location", () => {
     let loc = new MsdlLocation(element);
     expect(loc).toBeInstanceOf(MsdlLocation);
   });
+
+  it("create from model", () => {
+    let loc = MsdlLocation.fromModel({
+      coordinateChoice: "GDC",
+      location: [10, 11],
+    });
+    expect(loc.location[0]).toBe(10);
+    expect(loc.location[1]).toBe(11);
+    expect(loc.location[2]).toBeUndefined();
+  });
 });

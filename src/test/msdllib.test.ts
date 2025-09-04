@@ -82,7 +82,7 @@ describe("Simple scenario", () => {
   it("load from file", () => {
     let scenario = loadTestScenario();
     expect(scenario.unitCount).toBe(6);
-    expect(scenario.equipmentCount).toBe(2);
+    expect(scenario.equipmentCount).toBe(3);
     expect(scenario.forceSides).toBeInstanceOf(Array);
     expect(scenario.forceSides.length).toBe(3);
     expect(scenario.scenarioId).toBeInstanceOf(ScenarioId);
@@ -94,15 +94,15 @@ describe("Simple scenario", () => {
   it("default primary force side ", () => {
     let scenario = loadTestScenario();
     expect(scenario.primarySide).toBe(scenario.forceSides[0]);
-    expect(scenario.forceSides[0]?.rootUnits[0]?.sidc[1]).toBe("F");
-    expect(scenario.forceSides[1]?.rootUnits[0]?.sidc[1]).toBe("H");
+    expect(scenario.forceSides[0]?.subordinates[0]?.sidc[1]).toBe("F");
+    expect(scenario.forceSides[1]?.subordinates[0]?.sidc[1]).toBe("H");
   });
 
   it("set primary force side ", () => {
     let scenario = loadTestScenario();
     scenario.primarySide = scenario.forceSides[1]!;
-    expect(scenario.forceSides[0]?.rootUnits[0]?.sidc[1]).toBe("H");
-    expect(scenario.forceSides[1]?.rootUnits[0]?.sidc[1]).toBe("F");
+    expect(scenario.forceSides[0]?.subordinates[0]?.sidc[1]).toBe("H");
+    expect(scenario.forceSides[1]?.subordinates[0]?.sidc[1]).toBe("F");
   });
 
   it("has sides property", () => {
@@ -251,6 +251,37 @@ describe("MilitaryScenario equipment", () => {
       expect(unit.equipment[0]?.relations).toBeDefined();
       expect(unit.equipment[0]?.relations.ownerChoice).toBe("UNIT");
     });
+    describe("when equipment is moved to side", () => {
+      let unit: Unit;
+      let forceSide: ForceSide;
+      let equipment: EquipmentItem;
+      beforeAll(() => {
+        unit = scenario.getUnitById("f9e16593-2dcd-11e2-be2b-000c294c9df8")!;
+        forceSide = scenario.getForceSideById(
+          "e7ae4710-2dcd-11e2-be2b-000c294c9df8",
+        )!;
+        equipment = unit.equipment[0]!;
+        scenario.setEquipmentHoldingOrganization(
+          equipment,
+          forceSide.objectHandle,
+        );
+      });
+      it("should have forceside as owner", () => {
+        expect(equipment.relations).toBeDefined();
+        expect(equipment.relations.ownerChoice).toBe("FORCE_SIDE");
+        expect(equipment.superiorHandle).toBe(forceSide.objectHandle);
+        expect(forceSide.equipment.length).toBe(2);
+      });
+      it("should not have unit as owner", () => {
+        expect(unit.equipment.length).toBe(0);
+      });
+    });
+  });
+  describe("when an equipment item has an unknown owner", () => {
+    it("should put it into the root equipment list", () => {
+      expect(scenario.equipment).toBeDefined();
+      expect(scenario.equipment.length).toBe(1);
+    });
   });
 });
 
@@ -309,6 +340,13 @@ describe("MilitaryScenario with NETN", () => {
     it("should list 3 federates", () => {
       expect(scenario.deployment?.federates).toHaveLength(3);
     });
+    it("should find the correct federate for unit and equipment", () => {
+      const federateUnit = scenario.getFederateOfUnitOrEquipment(unitHQ);
+      const federateEquipment =
+        scenario.getFederateOfUnitOrEquipment(equipment111);
+      expect(federateUnit?.name).toBe("SIM B");
+      expect(federateEquipment?.name).toBe("SIM C");
+    });
     it("should have unit HQ at SIM B", () => {
       const federate = scenario.getFederateOfUnit(unitHQ);
       expect(federate).toBeDefined();
@@ -332,6 +370,7 @@ describe("MilitaryScenario with NETN", () => {
     });
     describe("when moving unit HQ to SIM C", () => {
       beforeAll(() => {
+        scenario = loadNetnTestScenario();
         scenario.assignUnitToFederate(unitHQ, simC);
       });
       it("SIM C should have unit HQ", () => {
@@ -362,8 +401,42 @@ describe("MilitaryScenario with NETN", () => {
         expect(countXmlTagOccurrences(xml, "Unit")).toBe(1);
       });
     });
+    describe("when moving unit HQ + subordinates to SIM C", () => {
+      beforeAll(() => {
+        scenario = loadNetnTestScenario();
+        scenario.assignUnitToFederate(unitHQ, simC, true);
+      });
+      it("SIM C should have unit HQ", () => {
+        const federate = scenario.getFederateOfUnit(unitHQ);
+        expect(federate).toBeDefined();
+        expect(federate?.name).toBe("SIM C");
+        const xml = federate?.toString();
+        expect(xml?.includes(unitHQ)).toBeTruthy();
+      });
+      it("SIM B should not have unit HQ", () => {
+        const federate = scenario.getFederateById(simB);
+        expect(federate?.units).not.toContain(unitHQ);
+        const xml = federate?.toString();
+        expect(xml?.includes(unitHQ)).toBeFalsy();
+      });
+      it("SIM C should have 7 units", () => {
+        const federate = scenario.getFederateById(simC);
+        expect(federate).toBeDefined();
+        expect(federate?.units).toHaveLength(7);
+        const xml = federate?.toString() || "";
+        expect(countXmlTagOccurrences(xml, "Unit")).toBe(7);
+      });
+      it("SIM B should have 1 unit", () => {
+        const federate = scenario.getFederateById(simB);
+        expect(federate).toBeDefined();
+        expect(federate?.units).toHaveLength(1);
+        const xml = federate?.toString() || "";
+        expect(countXmlTagOccurrences(xml, "Unit")).toBe(1);
+      });
+    });
     describe("when moving all units to SIM C", () => {
       beforeAll(() => {
+        scenario = loadNetnTestScenario();
         scenario.assignAllUnitsToFederate(simB, simC);
       });
       it("SIM C should have unit HQ", () => {
@@ -394,6 +467,26 @@ describe("MilitaryScenario with NETN", () => {
         expect(countXmlTagOccurrences(xml, "Unit")).toBe(0);
       });
     });
+    describe("when unassigning unit HQ + subordinates from SIM C", () => {
+      beforeAll(() => {
+        scenario = loadNetnTestScenario();
+        scenario.removeUnitFromFederate(unitHQ, simB, true);
+      });
+      it("deployment should have unallocated unit HQ", () => {
+        const federate = scenario.getFederateOfUnit(unitHQ);
+        expect(federate).toBeUndefined();
+        expect(scenario.deployment).toBeDefined();
+        expect(
+          scenario.deployment?.getUnallocatedUnits().includes(unitHQ),
+        ).toBeTruthy();
+      });
+      it("SIM B should not have unit HQ", () => {
+        const federate = scenario.getFederateById(simB);
+        expect(federate?.units).not.toContain(unitHQ);
+        const xml = federate?.toString();
+        expect(xml?.includes(unitHQ)).toBeFalsy();
+      });
+    });
     it("SIM C should have equipment 111 ", () => {
       const federate = scenario.getFederateOfEquipment(equipment111);
       expect(federate).toBeDefined();
@@ -417,6 +510,7 @@ describe("MilitaryScenario with NETN", () => {
     });
     describe("when moving equipment 111 to SIM B", () => {
       beforeAll(() => {
+        scenario = loadNetnTestScenario();
         scenario.assignEquipmentItemToFederate(equipment111, simB);
       });
       it("SIM B should have equipment 111", () => {
@@ -449,6 +543,7 @@ describe("MilitaryScenario with NETN", () => {
     });
     describe("when moving all equipment from SIM C to SIM B", () => {
       beforeAll(() => {
+        scenario = loadNetnTestScenario();
         scenario.assignAllEquipmentToFederate(simC, simB);
       });
       it("SIM B should have equipment 111", () => {
@@ -560,7 +655,7 @@ describe("MilitaryScenario.setForceRelation()", () => {
 
       // check internal state
       expect(originalUnitParent?.subordinates).not.toContain(unit);
-      expect(forceSide.rootUnits).toContain(unit);
+      expect(forceSide.subordinates).toContain(unit);
     });
 
     it("should work after serialization", () => {
@@ -589,7 +684,7 @@ describe("MilitaryScenario.setForceRelation()", () => {
 
       expect(newUnit.superiorHandle).toBe(forceSide.objectHandle);
       expect(newUnit.isRoot).toBe(true);
-      expect(newForceSide.rootUnits).toContain(newUnit);
+      expect(newForceSide.subordinates).toContain(newUnit);
       expect(newOriginalUnitParent?.subordinates).not.toContain(newUnit);
     });
   });
@@ -824,7 +919,7 @@ describe("Add/remove ForceSide", () => {
         });
       });
       it("should add it to the side's root units", () => {
-        expect(newForceSide.rootUnits.includes(newUnit)).toBe(true);
+        expect(newForceSide.subordinates.includes(newUnit)).toBe(true);
       });
     });
     describe("then removing the side", () => {

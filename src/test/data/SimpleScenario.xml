@@ -1,4 +1,5 @@
-﻿<MilitaryScenario xmlns="urn:sisostds:scenario:military:data:draft:msdl:1" xmlns:modelID="http://www.sisostds.org/schemas/modelID">
+﻿<MilitaryScenario xmlns="urn:sisostds:scenario:military:data:draft:msdl:1"
+                  xmlns:modelID="http://www.sisostds.org/schemas/modelID">
     <ScenarioID>
         <modelID:name>Simple scenario</modelID:name>
         <modelID:type/>
@@ -364,6 +365,7 @@
                     </FormationPosition>
                 </Disposition>
                 <Relations>
+                    <OrganicSuperiorHandle>f9e16593-2dcd-11e2-be2b-000c294c9df8</OrganicSuperiorHandle>
                     <HoldingOrganization>
                         <OwnerChoice>FORCE_SIDE</OwnerChoice>
                         <OwnerData>
@@ -377,6 +379,49 @@
                     <Resolution>HIGH</Resolution>
                 </Model>
             </EquipmentItem>
+            <EquipmentItem>
+                <ObjectHandle>f811c987-eb6a-11df-8ea2-001d099eeeee</ObjectHandle>
+                <SymbolIdentifier>S-G-----------G</SymbolIdentifier>
+                <Name>TEST TEST</Name>
+                <EquipmentSymbolModifiers>
+                    <Quantity>1</Quantity>
+                    <CombatEffectiveness>GREEN</CombatEffectiveness>
+                    <UniqueDesignation>2nd SQD IFV</UniqueDesignation>
+                    <EquipmentType>Bradley CFV M3A2</EquipmentType>
+                </EquipmentSymbolModifiers>
+                <Disposition>
+                    <Location>
+                        <CoordinateChoice>GCC</CoordinateChoice>
+                        <CoordinateData>
+                            <GCC>
+                                <X>3305482.60217702</X>
+                                <Y>3582555.3692267</Y>
+                                <Z>4099566.61040932</Z>
+                            </GCC>
+                        </CoordinateData>
+                    </Location>
+                    <DirectionOfMovement>154.94884</DirectionOfMovement>
+                    <Speed>0.0</Speed>
+                    <FormationPosition>
+                        <FormationOrder>2</FormationOrder>
+                    </FormationPosition>
+                </Disposition>
+                <Relations>
+                    <OrganicSuperiorHandle>f9e16593-2dcd-11e2-be2b-000c294zzzzz</OrganicSuperiorHandle>
+                    <HoldingOrganization>
+                        <OwnerChoice>FORCE_SIDE</OwnerChoice>
+                        <OwnerData>
+                            <ForceOwnerHandle>
+                                e7ae4710-2dcd-11e2-be2b-000c294yyyyy
+                            </ForceOwnerHandle>
+                        </OwnerData>
+                    </HoldingOrganization>
+                </Relations>
+                <Model>
+                    <Resolution>HIGH</Resolution>
+                </Model>
+            </EquipmentItem>
+
 
         </Equipment>
     </Organizations>

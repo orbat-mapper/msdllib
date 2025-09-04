@@ -9,6 +9,7 @@ export { Unit } from "./lib/units.js";
 export { EquipmentItem } from "./lib/equipment.js";
 export {
   ForceSide,
+  Association,
   type AssociationType,
   type ForceSideType,
   type ForceSideTypeUpdate,
@@ -48,3 +49,10 @@ export {
   DispositionBase,
   type DispositionType,
 } from "./lib/disposition.js";
+
+export {
+  UnitSymbolModifiers,
+  type UnitSymbolModifiersType,
+  EquipmentSymbolModifiers,
+  type EquipmentSymbolModifiersType,
+} from "./lib/symbolmodifiers.js";

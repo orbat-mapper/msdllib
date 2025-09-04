@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  ASSOCIATION_TEMPLATE,
   FORCESIDE_TEMPLATE_IS_FORCE,
   FORCESIDE_TEMPLATE_IS_SIDE,
   FORCESIDE_TEMPLATE_IS_SIDE2,
@@ -10,9 +11,11 @@ import { loadTestScenario } from "./testutils.js";
 import { HostilityStatusCode, StandardIdentity } from "../lib/enums.js";
 import {
   getTagElement,
+  getTagElements,
   getTagValue,
   getValueOrUndefined,
 } from "../lib/domutils.js";
+import { Association } from "../lib/forcesides.js";
 
 describe("ForceSide class", () => {
   it("is defined", () => {
@@ -126,19 +129,19 @@ describe("Side relations", () => {
     expect(scenario.forceSides.length).toBe(3);
     let forceSide = scenario.forceSides[0]!;
     expect(forceSide.name).toBe("Friendly");
-    expect(forceSide.rootUnits.length).toBe(1);
-    expect(forceSide.rootUnits[0]!.name).toBe("HQ");
+    expect(forceSide.subordinates.length).toBe(1);
+    expect(forceSide.subordinates[0]!.name).toBe("HQ");
   });
 });
 
 describe("Force and side relations", () => {
-  it("has correct number of ForceSides and Side", () => {
+  it("should have the correct number of ForceSides and Side", () => {
     let scenario = loadTestScenario("/data/ForceSideMinimal.xml");
     expect(scenario.forceSides.length).toBe(6);
     expect(scenario.sides.length).toBe(3);
   });
 
-  it("the sides have forces", () => {
+  it("should have sides with forces", () => {
     let scenario = loadTestScenario("/data/ForceSideMinimal.xml");
     expect(scenario.sides.length).toBe(3);
     expect(scenario.sides[0]?.forces.length).toBe(1);
@@ -171,7 +174,7 @@ describe("ForceSide methods", () => {
     //   expect(side.getAffiliation()).toBe(StandardIdentities.NoneSpecified);
     // });
     it("should return the affiliation of the first unit", () => {
-      side.rootUnits[0]?.setAffiliation(StandardIdentity.Hostile);
+      side.subordinates[0]?.setAffiliation(StandardIdentity.Hostile);
       expect(side.getAffiliation()).toBe(StandardIdentity.Hostile);
     });
   });
@@ -188,6 +191,17 @@ describe("ForceSide methods", () => {
       for (let unit of side.getAllUnits()) {
         expect(unit.getAffiliation()).toBe(StandardIdentity.Joker);
       }
+    });
+
+    it("should set the affiliation of root equipment", () => {
+      let scenario = loadTestScenario("/data/SimpleScenario.xml");
+      const side = scenario.sides[1]!;
+      expect(side.equipment.length).toBeGreaterThan(0);
+      expect(side.equipment[0]!.getAffiliation()).toBe(
+        StandardIdentity.Hostile,
+      );
+      side.setAffiliation(StandardIdentity.Faker);
+      expect(side.equipment[0]!.getAffiliation()).toBe(StandardIdentity.Faker);
     });
   });
 
@@ -357,5 +371,191 @@ describe("New ForceSide from model", () => {
     expect(side).toBeInstanceOf(ForceSide);
     expect(getTagElement(side.element, "ObjectHandle")).toBeDefined();
     expect(getTagElement(side.element, "Name")).toBeUndefined();
+  });
+});
+
+describe("Association class", () => {
+  it("is defined", () => {
+    expect(Association).toBeDefined();
+  });
+
+  it("can be created from Element", () => {
+    let element = parseFromString(ASSOCIATION_TEMPLATE);
+    let association = new Association(element);
+    expect(association).toBeInstanceOf(Association);
+    expect(association.affiliateHandle).toBe(
+      "e7ae4710-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(association.relationship).toBe(HostilityStatusCode.Hostile);
+  });
+
+  it("can be modified", () => {
+    let element = parseFromString(ASSOCIATION_TEMPLATE);
+    let association = new Association(element);
+    association.affiliateHandle = "new-affiliate-handle";
+    association.relationship = HostilityStatusCode.Friend;
+    expect(association.affiliateHandle).toBe("new-affiliate-handle");
+    expect(association.relationship).toBe(HostilityStatusCode.Friend);
+    // test serialization
+    const xml = association.toString();
+    const newAssociation = new Association(parseFromString(xml));
+    expect(newAssociation.affiliateHandle).toBe("new-affiliate-handle");
+    expect(newAssociation.relationship).toBe(HostilityStatusCode.Friend);
+  });
+
+  it("can be serialized to an object", () => {
+    let element = parseFromString(ASSOCIATION_TEMPLATE);
+    let association = new Association(element);
+    const obj = association.toObject();
+    expect(obj).toBeDefined();
+    expect(obj.affiliateHandle).toBe("e7ae4710-2dcd-11e2-be2b-000c294c9df8");
+    expect(obj.relationship).toBe(HostilityStatusCode.Hostile);
+  });
+
+  it("can be created from model", () => {
+    const association = Association.fromModel({
+      affiliateHandle: "e7ae4710-2dcd-11e2-be2b-000c294c9df8",
+      relationship: HostilityStatusCode.Hostile,
+    });
+    expect(association).toBeInstanceOf(Association);
+    expect(association.affiliateHandle).toBe(
+      "e7ae4710-2dcd-11e2-be2b-000c294c9df8",
+    );
+    expect(association.relationship).toBe(HostilityStatusCode.Hostile);
+    // test serialization
+    const xml = association.toString();
+    expect(xml.includes("<Association>")).toBe(true);
+    expect(
+      xml.includes(
+        "<AffiliateHandle>e7ae4710-2dcd-11e2-be2b-000c294c9df8</AffiliateHandle>",
+      ),
+    ).toBe(true);
+    expect(xml.includes("<Relationship>HO</Relationship>")).toBe(true);
+  });
+});
+
+describe("ForceSide associations", () => {
+  it("should have associations", () => {
+    const forceSide = new ForceSide(
+      parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
+    );
+    expect(forceSide.associations).toBeDefined();
+  });
+
+  it("should have associations instance of Association", () => {
+    const forceSide = new ForceSide(
+      parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
+    );
+    expect(forceSide.associations[0]).toBeInstanceOf(Association);
+    expect(forceSide.associations[1]).toBeInstanceOf(Association);
+  });
+
+  it("should be part of ForceSide.toObject()", () => {
+    const forceSide = new ForceSide(
+      parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
+    );
+    const obj = forceSide.toObject();
+    expect(obj.associations).toBeDefined();
+  });
+
+  it("should be editable", () => {
+    const forceSide = new ForceSide(
+      parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
+    );
+    const originalCount = forceSide.associations.length;
+    const newAssociation = Association.fromModel({
+      affiliateHandle: "new-affiliate-handle",
+      relationship: HostilityStatusCode.Friend,
+    });
+    newAssociation.affiliateHandle = "new-affiliate-handle";
+    newAssociation.relationship = HostilityStatusCode.Friend;
+    forceSide.associations = [...forceSide.associations, newAssociation];
+    expect(forceSide.associations.length).toBe(originalCount + 1);
+    expect(forceSide.associations[originalCount]).toBe(newAssociation);
+    // check after serialization
+    const newForceSide = new ForceSide(parseFromString(forceSide.toString()));
+    expect(newForceSide.associations.length).toBe(originalCount + 1);
+    const lastAssociation =
+      newForceSide.associations[newForceSide.associations.length - 1];
+    expect(lastAssociation?.affiliateHandle).toBe("new-affiliate-handle");
+    expect(lastAssociation?.relationship).toBe(HostilityStatusCode.Friend);
+  });
+
+  it("should create the Associations element if not present", () => {
+    const forceSide = ForceSide.create();
+    expect(forceSide.associations.length).toBe(0);
+    expect(forceSide.toString().includes("<Associations>")).toBe(false);
+    forceSide.associations = [
+      {
+        affiliateHandle: "new-affiliate-handle",
+        relationship: HostilityStatusCode.Friend,
+      },
+    ];
+    expect(forceSide.associations.length).toBe(1);
+    expect(forceSide.toString().includes("<Associations>")).toBe(true);
+    const newForceSide = new ForceSide(parseFromString(forceSide.toString()));
+    expect(newForceSide.associations.length).toBe(1);
+    expect(newForceSide.associations[0]?.affiliateHandle).toBe(
+      "new-affiliate-handle",
+    );
+    expect(newForceSide.associations[0]?.relationship).toBe(
+      HostilityStatusCode.Friend,
+    );
+  });
+
+  it("should have an addAssociation method", () => {
+    const forceSide = new ForceSide(
+      parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
+    );
+    expect(forceSide.addAssociation).toBeDefined();
+    const originalCount = forceSide.associations.length;
+    forceSide.addAssociation({
+      affiliateHandle: "new-affiliate-handle",
+      relationship: HostilityStatusCode.Friend,
+    });
+    expect(forceSide.associations.length).toBe(originalCount + 1);
+    const lastAssociation =
+      forceSide.associations[forceSide.associations.length - 1];
+    expect(lastAssociation?.affiliateHandle).toBe("new-affiliate-handle");
+    expect(lastAssociation?.relationship).toBe(HostilityStatusCode.Friend);
+  });
+
+  it("should have an updateAssociation method", () => {
+    const forceSide = new ForceSide(
+      parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
+    );
+    expect(forceSide.updateAssociation).toBeDefined();
+    const originalCount = forceSide.associations.length;
+    const associationToUpdate = forceSide.associations[0]!;
+    forceSide.updateAssociation({
+      affiliateHandle: associationToUpdate.affiliateHandle,
+      relationship: HostilityStatusCode.Joker,
+    });
+    expect(forceSide.associations.length).toBe(originalCount);
+    expect(forceSide.associations[0]?.relationship).toBe(
+      HostilityStatusCode.Joker,
+    );
+  });
+
+  it("should have a removeAssociation method", () => {
+    const forceSide = new ForceSide(
+      parseFromString(FORCESIDE_TEMPLATE_IS_SIDE),
+    );
+    const affiliateHandle = "e7ae4710-2dcd-11e2-be2b-000c294c9df8";
+    expect(forceSide.removeAssociation).toBeDefined();
+    expect(
+      forceSide.associations.find((a) => a.affiliateHandle === affiliateHandle),
+    ).toBeDefined();
+    forceSide.removeAssociation(affiliateHandle);
+    expect(
+      forceSide.associations.find((a) => a.affiliateHandle === affiliateHandle),
+    ).toBeUndefined();
+    // check after serialization
+    const newForceSide = new ForceSide(parseFromString(forceSide.toString()));
+    expect(
+      newForceSide.associations.find(
+        (a) => a.affiliateHandle === affiliateHandle,
+      ),
+    ).toBeUndefined();
   });
 });

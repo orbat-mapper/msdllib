@@ -1,14 +1,12 @@
 // NETN Deployment element
 import { v4 as uuidv4 } from "uuid";
 import {
-  addChildElementWithValue,
   createEmptyXMLElementFromTagName,
   createXMLElementWithValue,
   getTagElement,
   getTagElements,
   getTagValue,
   getValueOrUndefined,
-  removeTagValue,
   removeTagValues,
   setOrCreateTagValue,
   xmlToString,
@@ -22,6 +20,8 @@ export class Deployment {
   static readonly TAG_NAME = "Deployment";
   element: Element;
   #federates: Federate[] = [];
+  private _unallocatedUnits: string[] = [];
+  private _unallocatedEquipment: string[] = [];
 
   constructor(element: Element) {
     this.element = element;
@@ -50,33 +50,49 @@ export class Deployment {
     this.federates = [...this.#federates, fed];
   }
 
-  assignUnitToFederate(federateHandle: string, unitHandle: string) {
+  assignUnitToFederate(unitHandle: string, federateHandle: string) {
     const federate = this.getFederateById(federateHandle);
     if (!federate) return;
     const oldFed = this.getFederateOfUnit(unitHandle);
-    if (oldFed) this.removeUnitFromFederate(oldFed.objectHandle, unitHandle);
+    if (oldFed) this.removeUnitFromFederate(unitHandle, oldFed.objectHandle);
     federate.addUnit(unitHandle);
+    this._unallocatedUnits = this._unallocatedUnits.filter(
+      (u) => u !== unitHandle,
+    );
   }
 
-  removeUnitFromFederate(federateHandle: string, unitHandle: string) {
+  removeUnitFromFederate(unitHandle: string, federateHandle: string) {
     const federate = this.getFederateById(federateHandle);
     if (!federate) return;
     federate.removeUnit(unitHandle);
+    this._unallocatedUnits.push(unitHandle);
   }
 
-  assignEquipmentToFederate(federateHandle: string, equipmentHandle: string) {
+  assignEquipmentToFederate(equipmentHandle: string, federateHandle: string) {
     const federate = this.getFederateById(federateHandle);
     if (!federate) return;
     const oldFed = this.getFederateOfEquipment(equipmentHandle);
     if (oldFed)
-      this.removeEquipmentFromFederate(oldFed.objectHandle, equipmentHandle);
+      this.removeEquipmentFromFederate(equipmentHandle, oldFed.objectHandle);
     federate.addEquipmentItem(equipmentHandle);
+    this._unallocatedEquipment = this._unallocatedEquipment.filter(
+      (e) => e !== equipmentHandle,
+    );
   }
 
-  removeEquipmentFromFederate(federateHandle: string, equipmentHandle: string) {
+  removeEquipmentFromFederate(equipmentHandle: string, federateHandle: string) {
     const federate = this.getFederateById(federateHandle);
     if (!federate) return;
-    federate.addEquipmentItem(equipmentHandle);
+    federate.removeEquipmentItem(equipmentHandle);
+    this._unallocatedEquipment.push(equipmentHandle);
+  }
+
+  addUnallocatedUnit(unitHandle: string) {
+    this._unallocatedUnits.push(unitHandle);
+  }
+
+  addUnallocatedEquipment(equipmentHandle: string) {
+    this._unallocatedEquipment.push(equipmentHandle);
   }
 
   getFederateById(objectHandle: string): Federate | undefined {
@@ -91,6 +107,21 @@ export class Deployment {
     return this.federates.find((f) => f.equipment.includes(objectHandle));
   }
 
+  getFederateOfUnitOrEquipment(objectHandle: string): Federate | undefined {
+    return this.federates.find(
+      (f) =>
+        f.units.includes(objectHandle) || f.equipment.includes(objectHandle),
+    );
+  }
+
+  getUnallocatedUnits() {
+    return this._unallocatedUnits;
+  }
+
+  getUnallocatedEquipment() {
+    return this._unallocatedEquipment;
+  }
+
   updateFromObject(data: Partial<DeploymentType>) {
     Object.entries(data).forEach(([key, value]) => {
       if (key in this) {
@@ -103,8 +134,7 @@ export class Deployment {
 
   toString() {
     if (!this.element) return "";
-    const oSerializer = new XMLSerializer();
-    return oSerializer.serializeToString(this.element);
+    xmlToString(this.element);
   }
 
   static fromModel(model: Partial<DeploymentType>): Deployment {
@@ -294,8 +324,7 @@ export class Federate {
 
   toString() {
     if (!this.element) return "";
-    const oSerializer = new XMLSerializer();
-    return oSerializer.serializeToString(this.element);
+    return xmlToString(this.element);
   }
 
   static fromModel(model: Partial<FederateType>): Federate {

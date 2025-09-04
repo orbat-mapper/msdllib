@@ -72,7 +72,6 @@ export const UNIT_TEMPLATE = `<Unit>
     <ObjectHandle></ObjectHandle>
     <SymbolIdentifier>S-G-U----------</SymbolIdentifier>
     <Name>NEW UNIT</Name>
-    <UnitSymbolModifiers></UnitSymbolModifiers>
     <Relations>
         <ForceRelation>
             <ForceRelationChoice></ForceRelationChoice>
@@ -406,6 +405,25 @@ export const FORCESIDE_TEMPLATE_IS_FORCE = `<ForceSide>
     <AllegianceHandle>e7ad0e8d-2dcd-11e2-be2b-000c294c9df8</AllegianceHandle>
 </ForceSide>`;
 
+export const ASSOCIATIONS_TEMPLATE = `
+    <Associations>
+        <Association>
+            <AffiliateHandle>e7ae4710-2dcd-11e2-be2b-000c294c9df8</AffiliateHandle>
+            <Relationship>HO</Relationship>
+        </Association>
+        <Association>
+            <AffiliateHandle>e7ae4710-2ccc-11e2-be2b-000c294c9df8</AffiliateHandle>
+            <Relationship>FR</Relationship>
+        </Association>
+    </Associations>`;
+
+export const ASSOCIATION_TEMPLATE = `
+        <Association>
+            <AffiliateHandle>e7ae4710-2dcd-11e2-be2b-000c294c9df8</AffiliateHandle>
+            <Relationship>HO</Relationship>
+        </Association>
+    `;
+
 export const EQUIPMENT_TEMPLATE = `<EquipmentItem>
     <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
     <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
@@ -433,6 +451,25 @@ export const EQUIPMENT_TEMPLATE = `<EquipmentItem>
             <FormationOrder>1</FormationOrder>
         </FormationPosition>
     </Disposition>
+    <Relations>
+        <OrganicSuperiorHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</OrganicSuperiorHandle>
+        <HoldingOrganization>
+            <OwnerChoice>UNIT</OwnerChoice>
+            <OwnerData>
+                <UnitOwnerHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</UnitOwnerHandle>
+            </OwnerData>
+        </HoldingOrganization>
+    </Relations>
+    <Model>
+        <Resolution>HIGH</Resolution>
+    </Model>
+</EquipmentItem>`;
+
+export const EQUIPMENT_NO_MODIFIERS_TEMPLATE = `<EquipmentItem>
+    <ObjectHandle>f9ee8509-2dcd-11e2-be2b-000c294c9df8</ObjectHandle>
+    <SymbolIdentifier>S-G-EVAT------G</SymbolIdentifier>
+    <Name>111</Name>
+ 
     <Relations>
         <OrganicSuperiorHandle>f9e2ec3e-2dcd-11e2-be2b-000c294c9df8</OrganicSuperiorHandle>
         <HoldingOrganization>

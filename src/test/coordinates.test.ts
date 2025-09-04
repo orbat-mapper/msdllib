@@ -257,29 +257,73 @@ describe("MSDL Coordinates write", () => {
     });
   });
 
-  //   describe("MGRS", () => {
-  //     it("should write MGRS location", () => {
-  //       let element = parseFromString(LOCATION_MGRS_TEMPLATE);
-  //       let loc = new MsdlCoordinates(element);
-  //       expect(loc.location).toBeDefined();
-  //       if (loc.location) {
-  //         expect(loc.location.length).toBe(3);
-  //         expect(loc.location[0]).toBeCloseTo(15.038887, 5);
-  //         expect(loc.location[1]).toBeCloseTo(58.54383, 5);
-  //         expect(loc.location[2]).toBe(10);
-  //       }
-  //       loc.location = [5.0, 8.0, 100];
-  //       let newElement = createXMLElement(xmlToString(loc.element));
-  //       let newLoc = new MsdlCoordinates(newElement);
-  //       expect(newLoc.location).toBeDefined();
-  //       if (newLoc.location) {
-  //         expect(newLoc.location.length).toBe(3);
-  //         expect(newLoc.location[0]).toBeCloseTo(5.0, 5);
-  //         expect(newLoc.location[1]).toBeCloseTo(8.0, 5);
-  //         expect(newLoc.location[2]).toBe(100);
-  //       }
-  //     });
-  //   });
+  describe("MGRS", () => {
+    it("should write MGRS location", () => {
+      let element = parseFromString(LOCATION_MGRS_TEMPLATE);
+      let loc = new MsdlCoordinates(element);
+      expect(loc.location).toBeDefined();
+      if (loc.location) {
+        expect(loc.location.length).toBe(3);
+        expect(loc.location[0]).toBeCloseTo(15.038887, 5);
+        expect(loc.location[1]).toBeCloseTo(58.54383, 5);
+        expect(loc.location[2]).toBe(10);
+      }
+      loc.location = [5.0, 8.0, 100];
+      let newElement = createXMLElement(xmlToString(loc.element));
+      let newLoc = new MsdlCoordinates(newElement);
+      expect(newLoc.location).toBeDefined();
+      if (newLoc.location) {
+        expect(newLoc.location.length).toBe(3);
+        expect(newLoc.location[0]).toBeCloseTo(5.0, 5);
+        expect(newLoc.location[1]).toBeCloseTo(8.0, 5);
+        expect(newLoc.location[2]).toBe(100);
+      }
+    });
+  });
+
+  describe("GCC", () => {
+    it("should write GCC location", () => {
+      let loc = MsdlCoordinates.fromModel({
+        coordinateChoice: "GCC",
+        location: [10, 10],
+      });
+      expect(loc.location).toBeDefined();
+      let xmlString = xmlToString(loc.element);
+      expect(xmlString).toContain("<CoordinateChoice>GCC</CoordinateChoice>");
+      expect(xmlString).toContain("<X>6186437.066");
+      expect(xmlString).toContain("<Y>1090835.769");
+      expect(xmlString).toContain("<Z>1100248.547");
+
+      let newElement = createXMLElement(xmlToString(loc.element));
+      let newLoc = new MsdlCoordinates(newElement);
+      expect(newLoc.location).toBeDefined();
+      expect(newLoc.location?.length).toBe(3);
+      expect(newLoc.location?.[0]).toBeCloseTo(10);
+      expect(newLoc.location?.[1]).toBeCloseTo(10);
+      expect(newLoc.location?.[2]).toBeCloseTo(0);
+    });
+
+    it("should write GCC location with elevation", () => {
+      let loc = MsdlCoordinates.fromModel({
+        coordinateChoice: "GCC",
+        location: [10, 10, 100],
+      });
+      expect(loc.location).toBeDefined();
+      let xmlString = xmlToString(loc.element);
+      expect(xmlString).toContain("<CoordinateChoice>GCC</CoordinateChoice>");
+      expect(xmlString).toContain("<X>6186534.05");
+      expect(xmlString).toContain("<Y>1090852.87");
+      expect(xmlString).toContain("<Z>1100265.91");
+
+      let newElement = createXMLElement(xmlToString(loc.element));
+      let newLoc = new MsdlCoordinates(newElement);
+      expect(newLoc.location).toBeDefined();
+      expect(newLoc.location?.length).toBe(3);
+      expect(newLoc.location?.[0]).toBeCloseTo(10);
+      expect(newLoc.location?.[1]).toBeCloseTo(10);
+      expect(newLoc.location?.[2]).toBeCloseTo(100);
+    });
+  });
 });
 
 describe("MsdlCoordinates serialization", () => {
