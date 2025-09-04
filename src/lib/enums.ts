@@ -204,6 +204,7 @@ export type ModelResolutionType =
   (typeof ModelResolutionType)[keyof typeof ModelResolutionType];
 
 export const SymbologyStandard = {
+  MILSTD_2525C: "MILSTD_2525C",
   MILSTD_2525B: "MILSTD_2525B",
   NATO_APP: "NATO_APP",
 } as const;
