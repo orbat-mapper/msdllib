@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 1.3.0
+
+### Minor Changes
+
+- 1ff7fdf: Add MILSTD_2525C to SymbologyStandard enum
+
 ## 1.2.2
 
 ### Patch Changes
