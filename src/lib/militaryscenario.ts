@@ -271,12 +271,10 @@ export class MilitaryScenario implements MilitaryScenarioType {
       createEmptyXMLElementFromTagName("ForceSides"),
     );
 
-    let orgElement = createEmptyXMLElementFromTagName("Organizations")
-    addEmptyChildElement(orgElement, "Units")
-    addEmptyChildElement(orgElement, "Equipment")
-    milScen.element!.appendChild(
-      orgElement
-    );
+    let orgElement = createEmptyXMLElementFromTagName("Organizations");
+    addEmptyChildElement(orgElement, "Units");
+    addEmptyChildElement(orgElement, "Equipment");
+    milScen.element!.appendChild(orgElement);
 
     return milScen;
   }
