@@ -2,6 +2,7 @@ import { ScenarioId, type ScenarioIdType } from "./scenarioid.js";
 import { MsdlOptions, type MsdlOptionsType } from "./msdlOptions.js";
 import {
   createEmptyXMLElementFromTagName,
+  addEmptyChildElement,
   getOrCreateTagElement,
   getTagElement,
   getTagElements,
@@ -269,6 +270,12 @@ export class MilitaryScenario implements MilitaryScenarioType {
     milScen.element!.appendChild(
       createEmptyXMLElementFromTagName("ForceSides"),
     );
+
+    let orgElement = createEmptyXMLElementFromTagName("Organizations");
+    addEmptyChildElement(orgElement, "Units");
+    addEmptyChildElement(orgElement, "Equipment");
+    milScen.element!.appendChild(orgElement);
+
     return milScen;
   }
 
