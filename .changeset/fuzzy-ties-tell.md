@@ -1,5 +1,5 @@
 ---
-"@orbat-mapper/msdllib": minor
+"@orbat-mapper/msdllib": patch
 ---
 
-Add `MilitaryScenario.msdlOptions:MsdlOptions` attribute
+Fix bug in `MilitaryScenario.createFromModel`
