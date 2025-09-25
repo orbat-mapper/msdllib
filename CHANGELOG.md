@@ -1,5 +1,11 @@
 # @orbat-mapper/msdllib
 
+## 1.3.1
+
+### Patch Changes
+
+- 128bb37: Fix bug in `MilitaryScenario.createFromModel`
+
 ## 1.3.0
 
 ### Minor Changes
