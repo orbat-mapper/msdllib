@@ -29,16 +29,16 @@ export interface RectangleAreaType {
 export class Environment implements EnvironmentType {
   static readonly TAG_NAME = "Environment";
   element: Element;
-  areaOfInterest?: RectangleArea;
+  #areaOfInterest?: RectangleArea;
   #scenarioTime?: string;
   constructor(element: Element) {
     this.element = element;
     this.#scenarioTime = getValueOrUndefined(element, "ScenarioTime");
     const areaOfInterestElement = getTagElement(element, "AreaOfInterest");
     if (areaOfInterestElement) {
-      this.areaOfInterest = new RectangleArea(areaOfInterestElement);
+      this.#areaOfInterest = new RectangleArea(areaOfInterestElement);
     } else {
-      this.areaOfInterest = undefined;
+      this.#areaOfInterest = undefined;
     }
   }
 
@@ -53,11 +53,40 @@ export class Environment implements EnvironmentType {
     setOrCreateTagValue(this.element, "ScenarioTime", value);
   }
 
+  get areaOfInterest(): RectangleArea | undefined {
+    if (this.#areaOfInterest) return this.#areaOfInterest;
+    const areaOfInterestElement = getTagElement(this.element, "AreaOfInterest");
+    if (areaOfInterestElement) {
+      this.#areaOfInterest = new RectangleArea(areaOfInterestElement);
+    }
+    return this.#areaOfInterest;
+  }
+
+  set areaOfInterest(value: RectangleArea | undefined) {
+    this.#areaOfInterest = value;
+    const existingElement = getTagElement(this.element, "AreaOfInterest");
+    if (existingElement) {
+      this.element.removeChild(existingElement);
+    }
+    if (value) {
+      this.element.appendChild(value.element);
+    }
+  }
+
   toObject(): EnvironmentType {
     return removeUndefinedValues({
       scenarioTime: this.scenarioTime,
       areaOfInterest: this.areaOfInterest?.toObject(),
     }) as EnvironmentType;
+  }
+
+  static create(): Environment {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(
+      `<${Environment.TAG_NAME}></${Environment.TAG_NAME}>`,
+      "text/xml",
+    );
+    return new Environment(doc.documentElement);
   }
 }
 
@@ -123,5 +152,34 @@ export class RectangleArea {
     return truncateFeature(
       bboxPolygon(bbox, { properties: { name: this.name } }),
     );
+  }
+
+  static create(
+    upperRight: MsdlCoordinates,
+    lowerLeft: MsdlCoordinates,
+  ): RectangleArea {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(
+      `<AreaOfInterest></AreaOfInterest>`,
+      "text/xml",
+    );
+    const element = doc.documentElement;
+
+    // Clone coordinates with proper tag names
+    const upperRightClone = MsdlCoordinates.create(
+      upperRight.coordinateChoice,
+      "UpperRight",
+    );
+    upperRightClone.location = upperRight.location;
+
+    const lowerLeftClone = MsdlCoordinates.create(
+      lowerLeft.coordinateChoice,
+      "LowerLeft",
+    );
+    lowerLeftClone.location = lowerLeft.location;
+
+    element.appendChild(upperRightClone.element);
+    element.appendChild(lowerLeftClone.element);
+    return new RectangleArea(element);
   }
 }

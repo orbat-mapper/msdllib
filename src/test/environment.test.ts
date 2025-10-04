@@ -154,3 +154,83 @@ describe("MilitaryScenario Environment", () => {
     expect(scenario.environment?.scenarioTime).toBe("2025-07-09T11:11:00Z");
   });
 });
+
+describe("Environment creation", () => {
+  it("should create an empty Environment using create()", () => {
+    const environment = Environment.create();
+    expect(environment).toBeInstanceOf(Environment);
+    expect(environment.element).toBeInstanceOf(Element);
+    expect(environment.scenarioTime).toBeUndefined();
+    expect(environment.areaOfInterest).toBeUndefined();
+  });
+
+  it("should allow setting scenarioTime programmatically", () => {
+    const environment = Environment.create();
+    environment.scenarioTime = "2025-12-31T23:59:59Z";
+    expect(environment.scenarioTime).toBe("2025-12-31T23:59:59Z");
+    expect(environment.element.outerHTML).toContain(
+      "<ScenarioTime>2025-12-31T23:59:59Z</ScenarioTime>",
+    );
+  });
+
+  it("should allow setting areaOfInterest programmatically", () => {
+    const environment = Environment.create();
+    const upperRight = MsdlCoordinates.createGDCLocation([10, 20, 0]);
+    const lowerLeft = MsdlCoordinates.createGDCLocation([5, 15, 0]);
+    const rectangleArea = RectangleArea.create(upperRight, lowerLeft);
+    rectangleArea.name = "Test Area";
+
+    environment.areaOfInterest = rectangleArea;
+
+    expect(environment.areaOfInterest).toBeInstanceOf(RectangleArea);
+    expect(environment.areaOfInterest?.name).toBe("Test Area");
+    expect(environment.element.outerHTML).toContain("<AreaOfInterest>");
+  });
+
+  it("should allow removing areaOfInterest", () => {
+    const environment = new Environment(
+      parseFromString(ENVIRONMENT_SAMPLE_MGRS),
+    );
+    expect(environment.areaOfInterest).toBeInstanceOf(RectangleArea);
+
+    environment.areaOfInterest = undefined;
+    expect(environment.areaOfInterest).toBeUndefined();
+    expect(environment.element.outerHTML).not.toContain("<AreaOfInterest>");
+  });
+});
+
+describe("RectangleArea creation", () => {
+  it("should create a RectangleArea using create()", () => {
+    const upperRight = MsdlCoordinates.createGDCLocation([10, 20, 0]);
+    const lowerLeft = MsdlCoordinates.createGDCLocation([5, 15, 0]);
+    const rectangleArea = RectangleArea.create(upperRight, lowerLeft);
+
+    expect(rectangleArea).toBeInstanceOf(RectangleArea);
+    expect(rectangleArea.upperRight).toBeInstanceOf(MsdlCoordinates);
+    expect(rectangleArea.lowerLeft).toBeInstanceOf(MsdlCoordinates);
+  });
+
+  it("should allow setting name on created RectangleArea", () => {
+    const upperRight = MsdlCoordinates.createGDCLocation([10, 20, 0]);
+    const lowerLeft = MsdlCoordinates.createGDCLocation([5, 15, 0]);
+    const rectangleArea = RectangleArea.create(upperRight, lowerLeft);
+
+    rectangleArea.name = "My Area";
+    expect(rectangleArea.name).toBe("My Area");
+    expect(rectangleArea.element.outerHTML).toContain("<Name>My Area</Name>");
+  });
+
+  it("should compute correct bounding box for created RectangleArea", () => {
+    const upperRight = MsdlCoordinates.createGDCLocation([10, 20, 0]);
+    const lowerLeft = MsdlCoordinates.createGDCLocation([5, 15, 0]);
+    const rectangleArea = RectangleArea.create(upperRight, lowerLeft);
+
+    const bbox = rectangleArea.toBoundingBox();
+    expect(bbox).toBeDefined();
+    expect(bbox).toHaveLength(4);
+    expect(bbox![0]).toBeCloseTo(5, 5);
+    expect(bbox![1]).toBeCloseTo(15, 5);
+    expect(bbox![2]).toBeCloseTo(10, 5);
+    expect(bbox![3]).toBeCloseTo(20, 5);
+  });
+});
