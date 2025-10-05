@@ -3,6 +3,7 @@ import {
   getValueOrUndefined,
   removeUndefinedValues,
   setOrCreateTagValue,
+  createEmptyXMLElementFromTagName,
 } from "./domutils.js";
 import { MsdlCoordinates } from "./geo.js";
 import type { BBox, Feature, Polygon } from "geojson";
@@ -81,12 +82,8 @@ export class Environment implements EnvironmentType {
   }
 
   static create(): Environment {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(
-      `<${Environment.TAG_NAME}></${Environment.TAG_NAME}>`,
-      "text/xml",
-    );
-    return new Environment(doc.documentElement);
+    const element = createEmptyXMLElementFromTagName(Environment.TAG_NAME);
+    return new Environment(element);
   }
 }
 
@@ -158,12 +155,7 @@ export class RectangleArea {
     upperRight: MsdlCoordinates,
     lowerLeft: MsdlCoordinates,
   ): RectangleArea {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(
-      `<AreaOfInterest></AreaOfInterest>`,
-      "text/xml",
-    );
-    const element = doc.documentElement;
+    const element = createEmptyXMLElementFromTagName("AreaOfInterest");
 
     // Clone coordinates with proper tag names
     const upperRightClone = MsdlCoordinates.create(
