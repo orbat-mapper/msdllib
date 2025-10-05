@@ -174,4 +174,15 @@ export class RectangleArea {
     element.appendChild(lowerLeftClone.element);
     return new RectangleArea(element);
   }
+
+  static fromModel(model: RectangleAreaType): RectangleArea {
+    if (!model.upperRight || !model.lowerLeft) {
+      throw new Error("Both upperRight and lowerLeft coordinates are required");
+    }
+    const area = RectangleArea.create(model.upperRight, model.lowerLeft);
+    if (model.name) {
+      area.name = model.name;
+    }
+    return area;
+  }
 }

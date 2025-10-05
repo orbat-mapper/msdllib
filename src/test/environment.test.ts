@@ -234,3 +234,49 @@ describe("RectangleArea creation", () => {
     expect(bbox![3]).toBeCloseTo(20, 5);
   });
 });
+
+describe("RectangleArea.fromModel", () => {
+  it("should create a RectangleArea from a valid model object", () => {
+    const upperRight = MsdlCoordinates.createGDCLocation([10, 20, 0]);
+    const lowerLeft = MsdlCoordinates.createGDCLocation([5, 15, 0]);
+    const model = {
+      name: "Test AOI",
+      upperRight,
+      lowerLeft,
+    };
+    const area = RectangleArea.fromModel(model);
+    expect(area).toBeInstanceOf(RectangleArea);
+    expect(area.name).toBe("Test AOI");
+    expect(area.upperRight.location).toEqual([10, 20, 0]);
+    expect(area.lowerLeft.location).toEqual([5, 15, 0]);
+  });
+
+  it("should throw if upperRight is missing", () => {
+    const lowerLeft = MsdlCoordinates.createGDCLocation([5, 15, 0]);
+    const model = {
+      name: "Test AOI",
+      lowerLeft,
+    };
+    expect(() => RectangleArea.fromModel(model as any)).toThrow();
+  });
+
+  it("should throw if lowerLeft is missing", () => {
+    const upperRight = MsdlCoordinates.createGDCLocation([10, 20, 0]);
+    const model = {
+      name: "Test AOI",
+      upperRight,
+    };
+    expect(() => RectangleArea.fromModel(model as any)).toThrow();
+  });
+
+  it("should set name to undefined if not provided", () => {
+    const upperRight = MsdlCoordinates.createGDCLocation([10, 20, 0]);
+    const lowerLeft = MsdlCoordinates.createGDCLocation([5, 15, 0]);
+    const model = {
+      upperRight,
+      lowerLeft,
+    };
+    const area = RectangleArea.fromModel(model);
+    expect(area.name).toBeUndefined();
+  });
+});
