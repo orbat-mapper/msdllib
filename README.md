@@ -25,10 +25,10 @@ is copyright © 2015 by the Simulation Interoperability Standards Organization, 
 
 To use MSDLlib in your project, follow these steps:
 
-1. Install the library using npm:
+1. Install the library using pnpm:
 
    ```sh
-   npm install @orbat-mapper/msdllib
+   pnpm add @orbat-mapper/msdllib
    ```
 
 2. Import and use the library in your TypeScript or JavaScript code:
@@ -66,18 +66,18 @@ MSDLlib is developed in TypeScript. To contribute or modify the library, follow 
 2. Install dependencies:
 
    ```sh
-   npm install
+   pnpm install
    ```
 
 3. Build the project:
 
    ```sh
-   npm run build
+   pnpm run build
    ```
 
 4. Run tests:
    ```sh
-   npm run test
+   pnpm run test
    ```
 
 ## License
