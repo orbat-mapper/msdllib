@@ -20,7 +20,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "ci": "npm run build && npm run check-format && npm run check-exports && npm run test",
+    "ci": "pnpm run build && pnpm run check-format && pnpm run check-exports && pnpm run test",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
     "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
@@ -28,7 +28,7 @@
     "dev": "vitest",
     "changeset": "changeset",
     "local-release": "changeset version && changeset publish",
-    "prepublishOnly": "npm run ci"
+    "prepublishOnly": "pnpm run ci"
   },
   "dependencies": {
     "@turf/bbox-polygon": "^7.2.0",
@@ -49,5 +49,9 @@
     "prettier": "^3.5.1",
     "typescript": "^5.7.3",
     "vitest": "^3.0.6"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10"
   }
 }

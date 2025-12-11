@@ -15,3 +15,7 @@ cjs/
 es/
 *.tgz
 ref/
+
+# pnpm
+.pnpm-store
+.pnpm-debug.log
