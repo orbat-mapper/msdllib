@@ -1,5 +1,14 @@
 # @orbat-mapper/msdllib
 
+## 1.4.0
+
+### Minor Changes
+
+- fe5a9d7: Add programmatic creation support for Environment elements. This includes:
+  - `Environment.create()` static factory method for creating new Environment elements
+  - `areaOfInterest` getter and setter for programmatic manipulation of AreaOfInterest
+  - `RectangleArea.create()` static factory method for creating RectangleArea elements with coordinate cloning
+
 ## 1.3.1
 
 ### Patch Changes
